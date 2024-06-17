@@ -1,5 +1,5 @@
 package controller;
 
 public class Tiendeptrainhateam {
-    private int id;
+    private String deptriavl;
 }
