@@ -6,21 +6,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
-
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Brand {
+public class OrderTracking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long brand_id;
-    private String brand_name;
-    private String description;
+    private Long orderTrackingId;
 
-    @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Products> products;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
+
+    private String trackingNumber;
+    private String trackingStatus;
 }

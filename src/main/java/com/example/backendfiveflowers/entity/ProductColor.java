@@ -13,14 +13,13 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Brand {
+public class ProductColor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long brand_id;
-    private String brand_name;
-    private String description;
+    private Long color_id;
+    private String color_name;
 
-    @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Products> products;
+    @OneToMany(mappedBy = "productColor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<ProductColorMapping> productColorMappings;
 }
