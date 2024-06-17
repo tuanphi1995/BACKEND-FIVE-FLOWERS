@@ -4,12 +4,14 @@ import java.util.Set;
 
 public class AuthResponse {
     private String userName;
+    private String email; // Thêm trường email
     private Set<String> roles;
 
     // Constructors, getters, and setters
 
-    public AuthResponse(String userName, Set<String> roles) {
+    public AuthResponse(String userName, String email, Set<String> roles) {
         this.userName = userName;
+        this.email = email;
         this.roles = roles;
     }
 
@@ -19,6 +21,14 @@ public class AuthResponse {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Set<String> getRoles() {

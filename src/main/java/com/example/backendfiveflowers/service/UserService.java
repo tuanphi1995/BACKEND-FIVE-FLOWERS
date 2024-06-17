@@ -1,7 +1,6 @@
 package com.example.backendfiveflowers.service;
 
 import com.example.backendfiveflowers.entity.User;
-
 import java.util.List;
 
 public interface UserService {

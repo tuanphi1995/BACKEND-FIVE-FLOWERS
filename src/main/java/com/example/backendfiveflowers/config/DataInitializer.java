@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
 @Configuration
 public class DataInitializer {
 
@@ -41,6 +40,7 @@ public class DataInitializer {
             User adminUser = new User();
             adminUser.setUserName("admin");
             adminUser.setPassword(passwordEncoder.encode("admin"));
+            adminUser.setEmail("admin@example.com"); // Thêm email cho admin
             adminUser.getRoles().add(roleRepository.findByName("ADMIN"));
             userRepository.save(adminUser);
         }
@@ -49,6 +49,7 @@ public class DataInitializer {
             User customerUser = new User();
             customerUser.setUserName("customer");
             customerUser.setPassword(passwordEncoder.encode("customer"));
+            customerUser.setEmail("customer@example.com"); // Thêm email cho customer
             customerUser.getRoles().add(roleRepository.findByName("CUSTOMER"));
             userRepository.save(customerUser);
         }

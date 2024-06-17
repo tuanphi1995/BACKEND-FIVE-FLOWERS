@@ -37,7 +37,8 @@ public class AuthController {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
 
-        return new AuthResponse(user.getUserName(), roles);
+        User authenticatedUser = userService.getUser(user.getUserName());
+        return new AuthResponse(authenticatedUser.getUserName(), authenticatedUser.getEmail(), roles);
     }
 
     @PostMapping("/register")

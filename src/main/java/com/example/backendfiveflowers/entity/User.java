@@ -20,6 +20,7 @@ public class User {
     private long id;
     private String userName; // Đảm bảo tên thuộc tính là userName
     private String password;
+    private String email; // Thêm trường email
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
