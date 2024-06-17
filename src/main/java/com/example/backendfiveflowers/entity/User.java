@@ -14,13 +14,20 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "Users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String userName; // Đảm bảo tên thuộc tính là userName
+
+    @Column(name = "userName", nullable = false)
+    private String userName;
+
+    @Column(name = "password", nullable = false)
     private String password;
-    private String email; // Thêm trường email
+
+    @Column(name = "email", nullable = false)
+    private String email;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -30,9 +37,5 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Address> addresses = new HashSet<>();
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL,orphanRemoval = true)
-    private Set<Blog> blogs = new HashSet<>();
 }
