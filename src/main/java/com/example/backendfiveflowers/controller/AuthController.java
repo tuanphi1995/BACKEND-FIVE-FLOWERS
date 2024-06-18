@@ -5,6 +5,7 @@ import com.example.backendfiveflowers.entity.Users;
 import com.example.backendfiveflowers.service.TokenBlacklistService;
 import com.example.backendfiveflowers.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,11 +33,13 @@ public class AuthController {
     private TokenBlacklistService tokenBlacklistService;
 
     @PostMapping("/logout")
-    public void logout() {
-        String token = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String tokenHeader) {
+        String token = tokenHeader.substring(7);
         tokenBlacklistService.blacklistToken(token); // Đưa token vào danh sách đen
         SecurityContextHolder.clearContext(); // Xóa ngữ cảnh bảo mật hiện tại
+        return ResponseEntity.ok().build(); // Trả về phản hồi thành công
     }
+
 
     @PostMapping("/login")
     public UserRoles login(@RequestBody Users user) {
