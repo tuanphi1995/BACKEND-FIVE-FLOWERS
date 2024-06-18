@@ -13,7 +13,7 @@ class ProductImage {
 
     @ManyToOne
     @JoinColumn(name = "productId", insertable = false, updatable = false)
-    private Product product;
+    private Products product;
 
     // Getters and Setters
 }

@@ -5,15 +5,16 @@ import jakarta.persistence.*;
 import java.util.Set;
 
 @Entity
-class Brand {
+class Categories {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long brandId;
+    private Long categoryId;
     private String name;
     private String description;
 
-    @OneToMany(mappedBy = "brand")
-    private Set<Product> products;
+    @OneToMany(mappedBy = "category")
+    private Set<Products> products;
 
     // Getters and Setters
 }
+

@@ -1,12 +1,11 @@
 package com.example.backendfiveflowers.config;
 
-import com.example.backendfiveflowers.entity.Role;
-import com.example.backendfiveflowers.entity.User;
+import com.example.backendfiveflowers.entity.Roles;
+import com.example.backendfiveflowers.entity.Users;
 import com.example.backendfiveflowers.repository.RoleRepository;
 import com.example.backendfiveflowers.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -25,19 +24,19 @@ public class DataInitializer {
     @PostConstruct
     public void init() {
         if (roleRepository.findByName("ADMIN") == null) {
-            Role adminRole = new Role();
+            Roles adminRole = new Roles();
             adminRole.setName("ADMIN");
             roleRepository.save(adminRole);
         }
 
         if (roleRepository.findByName("CUSTOMER") == null) {
-            Role customerRole = new Role();
+            Roles customerRole = new Roles();
             customerRole.setName("CUSTOMER");
             roleRepository.save(customerRole);
         }
 
         if (userRepository.findByUserName("admin") == null) {
-            User adminUser = new User();
+            Users adminUser = new Users();
             adminUser.setUserName("admin");
             adminUser.setPassword(passwordEncoder.encode("admin"));
             adminUser.setEmail("admin@example.com"); // Thêm email cho admin
@@ -46,7 +45,7 @@ public class DataInitializer {
         }
 
         if (userRepository.findByUserName("customer") == null) {
-            User customerUser = new User();
+            Users customerUser = new Users();
             customerUser.setUserName("customer");
             customerUser.setPassword(passwordEncoder.encode("customer"));
             customerUser.setEmail("customer@example.com"); // Thêm email cho customer

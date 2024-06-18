@@ -1,7 +1,7 @@
 package com.example.backendfiveflowers.controller;
 
 import com.example.backendfiveflowers.entity.AuthResponse;
-import com.example.backendfiveflowers.entity.User;
+import com.example.backendfiveflowers.entity.Users;
 import com.example.backendfiveflowers.service.TokenBlacklistService;
 import com.example.backendfiveflowers.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody User user) {
+    public AuthResponse login(@RequestBody Users user) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword()));
 
@@ -49,18 +49,18 @@ public class AuthController {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
 
-        User authenticatedUser = userService.getUser(user.getUserName());
+        Users authenticatedUser = userService.getUser(user.getUserName());
         return new AuthResponse(authenticatedUser.getUserName(), authenticatedUser.getEmail(), roles);
     }
 
     @PostMapping("/register")
-    public User registerUser(@RequestBody User user) {
+    public Users registerUser(@RequestBody Users user) {
         return userService.saveUser(user);
     }
 
     @PostMapping("/register/admin")
-    public User registerAdmin(@RequestBody User user) {
-        User savedUser = userService.saveUser(user);
+    public Users registerAdmin(@RequestBody Users user) {
+        Users savedUser = userService.saveUser(user);
         userService.addRoleToUser(savedUser.getUserName(), "ADMIN");
         return savedUser;
     }

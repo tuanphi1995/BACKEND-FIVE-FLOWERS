@@ -7,7 +7,7 @@ import java.security.Timestamp;
 import java.util.Set;
 
 @Entity
-class Product {
+class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
@@ -21,11 +21,11 @@ class Product {
 
     @ManyToOne
     @JoinColumn(name = "categoryId")
-    private Category category;
+    private Categories category;
 
     @ManyToOne
     @JoinColumn(name = "brandId")
-    private Brand brand;
+    private Brands brand;
 
     @OneToMany(mappedBy = "product")
     private Set<ProductImage> productImages;

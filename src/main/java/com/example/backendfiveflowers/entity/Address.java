@@ -20,7 +20,7 @@ public class Address {
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
-    private User user;
+    private Users user;
 
     private String address_line1;
     private String address_line2;

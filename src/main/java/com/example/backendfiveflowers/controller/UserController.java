@@ -1,6 +1,6 @@
 package com.example.backendfiveflowers.controller;
 
-import com.example.backendfiveflowers.entity.User;
+import com.example.backendfiveflowers.entity.Users;
 import com.example.backendfiveflowers.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +15,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public User registerUser(@RequestBody User user) {
+    public Users registerUser(@RequestBody Users user) {
         return userService.saveUser(user);
     }
 

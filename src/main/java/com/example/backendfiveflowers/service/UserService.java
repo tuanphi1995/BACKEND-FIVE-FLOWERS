@@ -1,11 +1,11 @@
 package com.example.backendfiveflowers.service;
 
-import com.example.backendfiveflowers.entity.User;
+import com.example.backendfiveflowers.entity.Users;
 import java.util.List;
 
 public interface UserService {
-    User saveUser(User user);
+    Users saveUser(Users user);
     void addRoleToUser(String username, String roleName);
-    User getUser(String username);
-    List<User> getUsers();
+    Users getUser(String username);
+    List<Users> getUsers();
 }

@@ -1,7 +1,7 @@
 package com.example.backendfiveflowers.service.impl;
 
-import com.example.backendfiveflowers.entity.Role;
-import com.example.backendfiveflowers.entity.User;
+import com.example.backendfiveflowers.entity.Roles;
+import com.example.backendfiveflowers.entity.Users;
 import com.example.backendfiveflowers.repository.RoleRepository;
 import com.example.backendfiveflowers.repository.UserRepository;
 import com.example.backendfiveflowers.service.UserService;
@@ -21,26 +21,26 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public User saveUser(User user) {
+    public Users saveUser(Users user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
     @Override
     public void addRoleToUser(String username, String roleName) {
-        User user = userRepository.findByUserName(username);
-        Role role = roleRepository.findByName(roleName);
+        Users user = userRepository.findByUserName(username);
+        Roles role = roleRepository.findByName(roleName);
         user.getRoles().add(role);
         userRepository.save(user);
     }
 
     @Override
-    public User getUser(String username) {
+    public Users getUser(String username) {
         return userRepository.findByUserName(username);
     }
 
     @Override
-    public List<User> getUsers() {
+    public List<Users> getUsers() {
         return userRepository.findAll();
     }
 }
