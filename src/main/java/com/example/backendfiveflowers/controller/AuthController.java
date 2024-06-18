@@ -2,6 +2,7 @@ package com.example.backendfiveflowers.controller;
 
 import com.example.backendfiveflowers.entity.AuthResponse;
 import com.example.backendfiveflowers.entity.User;
+import com.example.backendfiveflowers.service.TokenBlacklistService;
 import com.example.backendfiveflowers.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,17 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+
+
+    @Autowired
+    private TokenBlacklistService tokenBlacklistService;
+
+    @PostMapping("/logout")
+    public void logout() {
+        String token = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
+        tokenBlacklistService.blacklistToken(token); // Đưa token vào danh sách đen
+        SecurityContextHolder.clearContext(); // Xóa ngữ cảnh bảo mật hiện tại
+    }
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody User user) {
