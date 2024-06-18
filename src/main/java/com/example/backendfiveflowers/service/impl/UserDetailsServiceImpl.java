@@ -1,4 +1,4 @@
-package com.example.backendfiveflowers.service;
+package com.example.backendfiveflowers.service.impl;
 
 import com.example.backendfiveflowers.entity.User;
 import com.example.backendfiveflowers.repository.UserRepository;

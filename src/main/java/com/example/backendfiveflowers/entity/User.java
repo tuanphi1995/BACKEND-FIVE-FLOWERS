@@ -14,19 +14,13 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long user_id;
 
-    @Column(name = "userName", nullable = false)
     private String userName;
-
-    @Column(name = "password", nullable = false)
     private String password;
-
-    @Column(name = "email", nullable = false)
     private String email;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -37,6 +31,6 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
-
-
+    private java.sql.Timestamp createdAt;
+    private java.sql.Timestamp updatedAt;
 }

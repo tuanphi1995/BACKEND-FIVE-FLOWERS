@@ -1,9 +1,10 @@
-package com.example.backendfiveflowers.service;
+package com.example.backendfiveflowers.service.impl;
 
 import com.example.backendfiveflowers.entity.Role;
 import com.example.backendfiveflowers.entity.User;
 import com.example.backendfiveflowers.repository.RoleRepository;
 import com.example.backendfiveflowers.repository.UserRepository;
+import com.example.backendfiveflowers.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

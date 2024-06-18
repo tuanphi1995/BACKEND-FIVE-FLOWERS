@@ -1,7 +1,7 @@
 package com.example.backendfiveflowers.config;
 
 import com.example.backendfiveflowers.Filter.JwtRequestFilter;
-import com.example.backendfiveflowers.service.UserDetailsServiceImpl;
+import com.example.backendfiveflowers.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
