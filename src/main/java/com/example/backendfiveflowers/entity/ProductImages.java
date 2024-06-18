@@ -4,7 +4,7 @@ package com.example.backendfiveflowers.entity;
 import jakarta.persistence.*;
 
 @Entity
-class ProductImage {
+class ProductImages {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productImageId;

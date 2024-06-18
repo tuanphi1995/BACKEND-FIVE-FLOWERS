@@ -28,7 +28,7 @@ class Products {
     private Brands brand;
 
     @OneToMany(mappedBy = "product")
-    private Set<ProductImage> productImages;
+    private Set<ProductImages> productImages;
 
     // Getters and Setters
 }
