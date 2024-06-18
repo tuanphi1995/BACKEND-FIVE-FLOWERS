@@ -1,6 +1,5 @@
 package com.example.backendfiveflowers.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,15 +7,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+
+@Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 public class Payments {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long paymentId;
+    private Long payment_id;
 
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
@@ -29,6 +29,4 @@ public class Payments {
     private LocalDateTime paymentDate;
     private Double amount;
     private String paymentMethod;
-
-    // Getters and Setters
 }

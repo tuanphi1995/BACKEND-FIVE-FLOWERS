@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,7 +17,7 @@ import java.util.List;
 public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long orderId;
+    private Long order_id;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -37,6 +36,4 @@ public class Orders {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<Payments> payments;
-
-    // Getters and Setters
 }

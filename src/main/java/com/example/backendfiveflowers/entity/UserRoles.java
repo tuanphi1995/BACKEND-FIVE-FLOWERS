@@ -4,10 +4,8 @@ import java.util.Set;
 
 public class UserRoles {
     private String userName;
-    private String email; // Thêm trường email
+    private String email;
     private Set<String> roles;
-
-    // Constructors, getters, and setters
 
     public UserRoles(String userName, String email, Set<String> roles) {
         this.userName = userName;

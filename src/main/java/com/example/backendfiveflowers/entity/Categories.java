@@ -1,20 +1,25 @@
 package com.example.backendfiveflowers.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Set;
 
 @Entity
-class Categories {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class Categories {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long categoryId;
+    private Long category_id;
     private String name;
     private String description;
 
     @OneToMany(mappedBy = "category")
     private Set<Products> products;
-
-    // Getters and Setters
 }
-

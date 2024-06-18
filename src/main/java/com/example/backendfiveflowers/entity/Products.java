@@ -1,16 +1,24 @@
 package com.example.backendfiveflowers.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.security.Timestamp;
+import java.sql.Timestamp;
 import java.util.Set;
 
 @Entity
-class Products {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long productId;
+    private Long product_id;
     private String name;
     private String description;
     private BigDecimal price;
@@ -20,15 +28,13 @@ class Products {
     private Timestamp updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "categoryId")
+    @JoinColumn(name = "category_id")
     private Categories category;
 
     @ManyToOne
-    @JoinColumn(name = "brandId")
+    @JoinColumn(name = "brand_id")
     private Brands brand;
 
     @OneToMany(mappedBy = "product")
     private Set<ProductImages> productImages;
-
-    // Getters and Setters
 }

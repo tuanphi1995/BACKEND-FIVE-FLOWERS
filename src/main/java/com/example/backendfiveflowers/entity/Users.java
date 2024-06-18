@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,6 +32,6 @@ public class Users {
     )
     private Set<Roles> roles = new HashSet<>();
 
-    private java.sql.Timestamp createdAt;
-    private java.sql.Timestamp updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 }
