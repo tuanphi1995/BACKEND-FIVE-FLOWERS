@@ -2,8 +2,8 @@ package com.example.backendfiveflowers.config;
 
 import com.example.backendfiveflowers.entity.Roles;
 import com.example.backendfiveflowers.entity.Users;
-import com.example.backendfiveflowers.repository.RoleRepository;
-import com.example.backendfiveflowers.repository.UserRepository;
+import com.example.backendfiveflowers.repository.RolesRepository;
+import com.example.backendfiveflowers.repository.UsersRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +13,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class DataInitializer {
 
     @Autowired
-    private UserRepository userRepository;
+    private UsersRepository userRepository;
 
     @Autowired
-    private RoleRepository roleRepository;
+    private RolesRepository roleRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;

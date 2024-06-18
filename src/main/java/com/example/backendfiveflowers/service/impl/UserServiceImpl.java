@@ -2,8 +2,8 @@ package com.example.backendfiveflowers.service.impl;
 
 import com.example.backendfiveflowers.entity.Roles;
 import com.example.backendfiveflowers.entity.Users;
-import com.example.backendfiveflowers.repository.RoleRepository;
-import com.example.backendfiveflowers.repository.UserRepository;
+import com.example.backendfiveflowers.repository.RolesRepository;
+import com.example.backendfiveflowers.repository.UsersRepository;
 import com.example.backendfiveflowers.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,9 +14,9 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
-    private UserRepository userRepository;
+    private UsersRepository userRepository;
     @Autowired
-    private RoleRepository roleRepository;
+    private RolesRepository roleRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 

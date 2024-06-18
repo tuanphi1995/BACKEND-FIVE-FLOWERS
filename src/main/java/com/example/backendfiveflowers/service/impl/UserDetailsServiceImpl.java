@@ -1,7 +1,7 @@
 package com.example.backendfiveflowers.service.impl;
 
 import com.example.backendfiveflowers.entity.Users;
-import com.example.backendfiveflowers.repository.UserRepository;
+import com.example.backendfiveflowers.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,7 +16,7 @@ import java.util.Set;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
-    private UserRepository userRepository;
+    private UsersRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
