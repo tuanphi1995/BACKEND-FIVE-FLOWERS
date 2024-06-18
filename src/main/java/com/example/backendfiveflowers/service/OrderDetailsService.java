@@ -2,18 +2,20 @@ package com.example.backendfiveflowers.service;
 
 import com.example.backendfiveflowers.entity.OrderDetails;
 import com.example.backendfiveflowers.entity.OrderDetails.OrderDetailId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface OrderDetailsService {
-    List<OrderDetails> getAllOrderDetails();
+    List<OrderDetails> findAll();
 
-    Optional<OrderDetails> getOrderDetailsById(OrderDetailId id);
+    Page<OrderDetails> findAll(Pageable pageable);
 
-    OrderDetails createOrderDetails(OrderDetails orderDetails);
+    Optional<OrderDetails> findById(OrderDetailId id);
 
-    OrderDetails updateOrderDetails(OrderDetailId id, OrderDetails orderDetails);
+    OrderDetails save(OrderDetails orderDetails);
 
-    void deleteOrderDetails(OrderDetailId id);
+    void deleteById(OrderDetailId id);
 }

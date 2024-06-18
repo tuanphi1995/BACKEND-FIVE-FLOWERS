@@ -4,6 +4,8 @@ import com.example.backendfiveflowers.entity.Products;
 import com.example.backendfiveflowers.repository.ProductsRepository;
 import com.example.backendfiveflowers.service.ProductsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +20,11 @@ public class ProductsServiceImpl implements ProductsService {
     @Override
     public List<Products> findAll() {
         return productsRepository.findAll();
+    }
+
+    @Override
+    public Page<Products> findAll(Pageable pageable) {
+        return productsRepository.findAll(pageable);
     }
 
     @Override

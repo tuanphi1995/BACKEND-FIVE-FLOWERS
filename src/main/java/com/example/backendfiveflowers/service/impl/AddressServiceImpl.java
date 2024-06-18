@@ -4,6 +4,8 @@ import com.example.backendfiveflowers.entity.Address;
 import com.example.backendfiveflowers.repository.AddressRepository;
 import com.example.backendfiveflowers.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +20,11 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public List<Address> findAll() {
         return addressRepository.findAll();
+    }
+
+    @Override
+    public Page<Address> findAll(Pageable pageable) {
+        return addressRepository.findAll(pageable);
     }
 
     @Override

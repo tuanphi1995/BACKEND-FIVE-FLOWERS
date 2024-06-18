@@ -4,6 +4,8 @@ import com.example.backendfiveflowers.entity.Orders;
 import com.example.backendfiveflowers.repository.OrdersRepository;
 import com.example.backendfiveflowers.service.OrdersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +20,11 @@ public class OrdersServiceImpl implements OrdersService {
     @Override
     public List<Orders> findAll() {
         return ordersRepository.findAll();
+    }
+
+    @Override
+    public Page<Orders> findAll(Pageable pageable) {
+        return ordersRepository.findAll(pageable);
     }
 
     @Override
