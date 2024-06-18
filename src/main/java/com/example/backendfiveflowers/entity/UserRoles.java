@@ -2,14 +2,14 @@ package com.example.backendfiveflowers.entity;
 
 import java.util.Set;
 
-public class AuthResponse {
+public class UserRoles {
     private String userName;
     private String email; // Thêm trường email
     private Set<String> roles;
 
     // Constructors, getters, and setters
 
-    public AuthResponse(String userName, String email, Set<String> roles) {
+    public UserRoles(String userName, String email, Set<String> roles) {
         this.userName = userName;
         this.email = email;
         this.roles = roles;

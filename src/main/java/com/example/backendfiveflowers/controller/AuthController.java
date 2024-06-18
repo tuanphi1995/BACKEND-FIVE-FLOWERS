@@ -1,6 +1,6 @@
 package com.example.backendfiveflowers.controller;
 
-import com.example.backendfiveflowers.entity.AuthResponse;
+import com.example.backendfiveflowers.entity.UserRoles;
 import com.example.backendfiveflowers.entity.Users;
 import com.example.backendfiveflowers.service.TokenBlacklistService;
 import com.example.backendfiveflowers.service.UserService;
@@ -39,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody Users user) {
+    public UserRoles login(@RequestBody Users user) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword()));
 
@@ -50,7 +50,7 @@ public class AuthController {
                 .collect(Collectors.toSet());
 
         Users authenticatedUser = userService.getUser(user.getUserName());
-        return new AuthResponse(authenticatedUser.getUserName(), authenticatedUser.getEmail(), roles);
+        return new UserRoles(authenticatedUser.getUserName(), authenticatedUser.getEmail(), roles);
     }
 
     @PostMapping("/register")
