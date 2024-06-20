@@ -81,7 +81,7 @@ public class SecurityConfig {
 
                         //vu
                         .requestMatchers("/api/v1/reviews/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-
+                        .requestMatchers("/admin/product_images/**").hasAuthority("ROLE_ADMIN")
 
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

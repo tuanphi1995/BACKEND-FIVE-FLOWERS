@@ -20,8 +20,9 @@ public class ProductImageController {
 
     @PostMapping("/add")
     public ResponseEntity<ProductImage> addProductImage(@RequestBody ProductImage productImage) {
-        ProductImage savedProductImage = productImageService.addProductImage(productImage);
-        return ResponseEntity.ok(savedProductImage);
+            ProductImage savedProductImage = productImageService.addProductImage(productImage);
+            return ResponseEntity.ok(savedProductImage);
+
     }
 
     @PutMapping("/update")
