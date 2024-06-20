@@ -1,17 +1,65 @@
 package com.example.backendfiveflowers.service;
 
 import com.example.backendfiveflowers.entity.Address;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.example.backendfiveflowers.entity.UserInfo;
+import com.example.backendfiveflowers.repository.AddressRepository;
+import com.example.backendfiveflowers.repository.UserInfoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface AddressService {
-    List<Address> findAll();
+@Service
+public class AddressService {
 
-    Page<Address> findAll(Pageable pageable); // Thêm phương thức này
-    Optional<Address> findById(Long id);
-    Address save(Address address);
-    void deleteById(Long id);
+    @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
+    private UserInfoRepository userInfoRepository;
+
+    public Address addAddress(Address address) {
+        String username = getCurrentUsername();
+        Optional<UserInfo> userInfoOptional = userInfoRepository.findByUserName(username);
+        if (userInfoOptional.isPresent()) {
+            address.setUser(userInfoOptional.get());
+            return addressRepository.save(address);
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    public Address updateAddress(Address address) {
+        Optional<UserInfo> userInfoOptional = userInfoRepository.findById(address.getUser().getId());
+        if (userInfoOptional.isPresent()) {
+            address.setUser(userInfoOptional.get());
+            return addressRepository.save(address);
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    public void deleteAddress(Integer id) {
+        addressRepository.deleteById(id);
+    }
+
+    public Optional<Address> getAddressById(Integer id) {
+        return addressRepository.findById(id);
+    }
+
+    public List<Address> getAllAddresses() {
+        return addressRepository.findAll();
+    }
+
+    private String getCurrentUsername() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            return ((UserDetails) principal).getUsername();
+        } else {
+            return principal.toString();
+        }
+    }
 }

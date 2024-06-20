@@ -1,34 +1,33 @@
 package com.example.backendfiveflowers.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.sql.Timestamp;
 
 @Entity
-@Getter
-@Setter
+@Table(name = "address")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long address_id;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
-    private Users user;
-
-    private String address_line1;
-    private String address_line2;
+    private int addressId;
+    private String addressLine1;
+    private String addressLine2;
     private String city;
     private String state;
-    private String postal_code;
     private String country;
+    private String postalCode;
 
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserInfo user;
 }

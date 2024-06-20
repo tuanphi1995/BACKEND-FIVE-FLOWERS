@@ -1,13 +1,12 @@
 package com.example.backendfiveflowers.controller;
 
 import com.example.backendfiveflowers.entity.Address;
-import com.example.backendfiveflowers.exception.ResourceNotFoundException;
 import com.example.backendfiveflowers.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -17,36 +16,34 @@ public class AddressController {
     @Autowired
     private AddressService addressService;
 
-    @GetMapping
-    public Page<Address> getAllAddresses(Pageable pageable) {
-        return addressService.findAll(pageable);
-    }
-
-    @GetMapping("/{id}")
-    public Optional<Address> getAddressById(@PathVariable Long id) {
-        return addressService.findById(id);
-    }
-
     @PostMapping
-    public Address createAddress(@RequestBody Address address) {
-        return addressService.save(address);
+    public ResponseEntity<Address> addAddress(@RequestBody Address address) {
+        Address newAddress = addressService.addAddress(address);
+        return ResponseEntity.ok(newAddress);
     }
 
     @PutMapping("/{id}")
-    public Address updateAddress(@PathVariable Long id, @RequestBody Address addressDetails) {
-        Address address = addressService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Address not found"));
-        address.setUser(addressDetails.getUser());
-        address.setAddress_line1(addressDetails.getAddress_line1());
-        address.setAddress_line2(addressDetails.getAddress_line2());
-        address.setCity(addressDetails.getCity());
-        address.setState(addressDetails.getState());
-        address.setPostal_code(addressDetails.getPostal_code());
-        address.setCountry(addressDetails.getCountry());
-        return addressService.save(address);
+    public ResponseEntity<Address> updateAddress(@PathVariable Integer id, @RequestBody Address addressDetails) {
+        addressDetails.setAddressId(id);
+        Address updatedAddress = addressService.updateAddress(addressDetails);
+        return ResponseEntity.ok(updatedAddress);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteAddress(@PathVariable Long id) {
-        addressService.deleteById(id);
+    public ResponseEntity<Void> deleteAddress(@PathVariable Integer id) {
+        addressService.deleteAddress(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Address> getAddressById(@PathVariable Integer id) {
+        Optional<Address> address = addressService.getAddressById(id);
+        return address.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Address>> getAllAddresses() {
+        List<Address> addresses = addressService.getAllAddresses();
+        return ResponseEntity.ok(addresses);
     }
 }

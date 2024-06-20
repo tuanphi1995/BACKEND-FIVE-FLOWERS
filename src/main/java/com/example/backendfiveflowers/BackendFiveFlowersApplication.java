@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class BackendFiveFlowersApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(BackendFiveFlowersApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(BackendFiveFlowersApplication.class, args);
+    }
 
 }
