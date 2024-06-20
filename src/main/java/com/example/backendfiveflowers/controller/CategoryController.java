@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/categories")
+@RequestMapping("/api/v1/categories")
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class CategoryController {
 
@@ -21,8 +21,9 @@ public class CategoryController {
         return categoryService.addCategory(category);
     }
 
-    @PutMapping("/update")
-    public Category updateCategory(@RequestBody Category category) {
+    @PutMapping("/update/{id}")
+    public Category updateCategory(@PathVariable Integer id, @RequestBody Category category) {
+        category.setCategoryId(id); // Đảm bảo rằng ID được truyền từ URL được đặt vào đối tượng category
         return categoryService.updateCategory(category);
     }
 
@@ -41,3 +42,4 @@ public class CategoryController {
         return categoryService.getAllCategories();
     }
 }
+

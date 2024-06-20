@@ -44,8 +44,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/blogs/**").hasAuthority("ROLE_ADMIN")
 
                         //tien
-
-
+                        .requestMatchers("/api/v1/brands/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/v1/categories/**").hasAuthority("ROLE_ADMIN")
 
 
 
