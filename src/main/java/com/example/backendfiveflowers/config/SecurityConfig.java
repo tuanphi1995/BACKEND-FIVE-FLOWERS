@@ -66,6 +66,10 @@ public class SecurityConfig {
 
                         //phi
 
+                        .requestMatchers("/api/v1/orders/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/api/v1/order_details/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/api/v1/payments/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+
 
 
 

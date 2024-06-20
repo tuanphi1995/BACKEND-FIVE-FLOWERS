@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/payments")
+@RequestMapping("/api/v1/payments")
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class PaymentController {
 
@@ -17,11 +17,13 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @PostMapping("/add")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Payment addPayment(@RequestBody Payment payment) {
         return paymentService.addPayment(payment);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Payment updatePayment(@RequestBody Payment payment) {
         return paymentService.updatePayment(payment);
     }
@@ -32,11 +34,13 @@ public class PaymentController {
     }
 
     @GetMapping("/get/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public Payment getPaymentById(@PathVariable Integer id) {
         return paymentService.getPaymentById(id).orElse(null);
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<Payment> getAllPayments() {
         return paymentService.getAllPayments();
     }
