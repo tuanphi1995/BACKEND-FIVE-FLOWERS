@@ -5,6 +5,10 @@ import com.example.backendfiveflowers.entity.UserInfo;
 import com.example.backendfiveflowers.repository.AddressRepository;
 import com.example.backendfiveflowers.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -50,8 +54,10 @@ public class AddressService {
         return addressRepository.findById(id);
     }
 
-    public List<Address> getAllAddresses() {
-        return addressRepository.findAll();
+    public List<Address> getAllAddresses(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        Page<Address> addressPage = addressRepository.findAll(pageable);
+        return addressPage.getContent();
     }
 
     private String getCurrentUsername() {

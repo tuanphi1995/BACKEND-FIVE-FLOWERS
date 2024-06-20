@@ -6,6 +6,8 @@ import com.example.backendfiveflowers.entity.UserInfo;
 import com.example.backendfiveflowers.service.JwtService;
 import com.example.backendfiveflowers.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,7 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/v1/user")
 public class UserInfoController {
 
     @Autowired
@@ -33,7 +35,6 @@ public class UserInfoController {
 
     @PostMapping("/addUser")
     public String addUser(@RequestBody UserInfo userInfo) {
-        userInfo.setRoles("ROLE_USER");
         return userInfoService.addUser(userInfo);
     }
 
@@ -55,5 +56,6 @@ public class UserInfoController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
     }
-}
 
+
+}
