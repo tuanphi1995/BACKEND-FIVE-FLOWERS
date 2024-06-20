@@ -1,8 +1,6 @@
 package com.example.backendfiveflowers.controller;
 
-import com.example.backendfiveflowers.dto.ProductDTO;
 import com.example.backendfiveflowers.entity.Product;
-import com.example.backendfiveflowers.mapper.ProductMapper;
 import com.example.backendfiveflowers.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +17,12 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @Autowired
-    private ProductMapper productMapper;
-
     @PostMapping("/add")
-    public ResponseEntity<ProductDTO> addProduct(@RequestBody ProductDTO productDTO) {
-        Product product = productMapper.toEntity(productDTO);
+    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
         Product savedProduct = productService.addProduct(product);
-        return ResponseEntity.ok(productMapper.toDTO(savedProduct));
+        return ResponseEntity.ok(savedProduct);
     }
+
     @PutMapping("/update")
     public Product updateProduct(@RequestBody Product product) {
         return productService.updateProduct(product);
