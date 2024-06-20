@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/brands")
+@RequestMapping("/api/v1/brands")
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class BrandController {
 
@@ -21,7 +21,7 @@ public class BrandController {
         return brandService.addBrand(brand);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{id}")
     public Brand updateBrand(@RequestBody Brand brand) {
         return brandService.updateBrand(brand);
     }

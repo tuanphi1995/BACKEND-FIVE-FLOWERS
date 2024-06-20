@@ -19,7 +19,11 @@ public class CategoryService {
     }
 
     public Category updateCategory(Category category) {
-        return categoryRepository.save(category);
+        if (categoryRepository.existsById(category.getCategoryId())) {
+            return categoryRepository.save(category);
+        } else {
+            throw new RuntimeException("Category with ID " + category.getCategoryId() + " not found");
+        }
     }
 
     public void deleteCategory(Integer id) {
@@ -34,3 +38,4 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 }
+
