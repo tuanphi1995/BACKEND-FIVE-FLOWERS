@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/blogs")
+@RequestMapping("/api/v1/blogs")
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class BlogController {
 
@@ -37,7 +37,10 @@ public class BlogController {
     }
 
     @GetMapping("/all")
-    public List<Blog> getAllBlogs() {
-        return blogService.getAllBlogs();
+    public List<Blog> getAllBlogs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "blogId") String sortBy) {
+        return blogService.getAllBlogs(page, size, sortBy);
     }
 }
