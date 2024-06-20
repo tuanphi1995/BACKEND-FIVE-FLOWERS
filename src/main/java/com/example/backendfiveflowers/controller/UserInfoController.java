@@ -33,7 +33,7 @@ public class UserInfoController {
 
     @PostMapping("/addUser")
     public String addUser(@RequestBody UserInfo userInfo) {
-        // Loại bỏ thiết lập vai trò mặc định
+        userInfo.setRoles("ROLE_USER");
         return userInfoService.addUser(userInfo);
     }
 
@@ -56,3 +56,4 @@ public class UserInfoController {
         }
     }
 }
+
