@@ -30,7 +30,7 @@ public class UserInfoService implements UserDetailsService {
 
     public String addUser(UserInfo userInfo) {
         userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
-//        userInfo.setRoles("ROLE_USER");
+        // Loại bỏ thiết lập vai trò mặc định
         userInfoRepository.save(userInfo);
         return "User added successfully";
     }

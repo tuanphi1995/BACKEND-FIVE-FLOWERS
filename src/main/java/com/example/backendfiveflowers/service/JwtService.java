@@ -28,7 +28,8 @@ public class JwtService {
     }
 
     public String generateToken(String userName) {
-        UserInfo userInfo = userInfoRepository.findByUserName(userName).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        UserInfo userInfo = userInfoRepository.findByUserName(userName)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", userInfo.getRoles());
         return Jwts.builder()
@@ -39,7 +40,6 @@ public class JwtService {
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-
 
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
