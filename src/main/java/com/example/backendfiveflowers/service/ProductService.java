@@ -11,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
 import java.util.Optional;
 
 @Service
@@ -39,8 +38,8 @@ public class ProductService {
         }
     }
 
-    public Product updateProduct(Integer id, Product productDetails) {
-        Optional<Product> existingProduct = productRepository.findById(id);
+    public Product updateProduct(Product productDetails) {
+        Optional<Product> existingProduct = productRepository.findById(productDetails.getProductId());
         if (existingProduct.isPresent()) {
             Product product = existingProduct.get();
             product.setName(productDetails.getName());
@@ -61,7 +60,7 @@ public class ProductService {
 
             return productRepository.save(product);
         } else {
-            throw new RuntimeException("Product not found with id: " + id);
+            throw new RuntimeException("Product not found with id: " + productDetails.getProductId());
         }
     }
 

@@ -2,8 +2,10 @@ package com.example.backendfiveflowers.service;
 
 import com.example.backendfiveflowers.entity.Order;
 import com.example.backendfiveflowers.entity.UserInfo;
+import com.example.backendfiveflowers.entity.Product;
 import com.example.backendfiveflowers.repository.OrderRepository;
 import com.example.backendfiveflowers.repository.UserInfoRepository;
+import com.example.backendfiveflowers.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +24,22 @@ public class OrderService {
     @Autowired
     private UserInfoRepository userInfoRepository;
 
+    @Autowired
+    private ProductRepository productRepository;
+
     public Order addOrder(Order order) {
         String username = getCurrentUsername();
         Optional<UserInfo> userInfoOptional = userInfoRepository.findByUserName(username);
         if (userInfoOptional.isPresent()) {
             order.setUser(userInfoOptional.get());
-            return orderRepository.save(order);
+
+            Optional<Product> productOptional = productRepository.findById(order.getProduct().getProductId());
+            if (productOptional.isPresent()) {
+                order.setProduct(productOptional.get());
+                return orderRepository.save(order);
+            } else {
+                throw new RuntimeException("Product not found");
+            }
         } else {
             throw new RuntimeException("User not found");
         }
@@ -37,7 +49,14 @@ public class OrderService {
         Optional<UserInfo> userInfoOptional = userInfoRepository.findById(order.getUser().getId());
         if (userInfoOptional.isPresent()) {
             order.setUser(userInfoOptional.get());
-            return orderRepository.save(order);
+
+            Optional<Product> productOptional = productRepository.findById(order.getProduct().getProductId());
+            if (productOptional.isPresent()) {
+                order.setProduct(productOptional.get());
+                return orderRepository.save(order);
+            } else {
+                throw new RuntimeException("Product not found");
+            }
         } else {
             throw new RuntimeException("User not found");
         }

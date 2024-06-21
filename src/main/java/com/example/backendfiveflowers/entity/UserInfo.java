@@ -1,24 +1,35 @@
 package com.example.backendfiveflowers.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Entity
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Entity
+@EntityListeners(AuditingEntityListener.class)
 public class UserInfo {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String userName;
+    private String password;
     private String email;
     private String roles;
-    private String password;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 }

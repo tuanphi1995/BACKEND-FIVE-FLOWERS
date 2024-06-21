@@ -54,10 +54,8 @@ public class AddressService {
         return addressRepository.findById(id);
     }
 
-    public List<Address> getAllAddresses(int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-        Page<Address> addressPage = addressRepository.findAll(pageable);
-        return addressPage.getContent();
+    public Page<Address> getAllAddresses(Pageable pageable) {
+        return addressRepository.findAll(pageable);
     }
 
     private String getCurrentUsername() {

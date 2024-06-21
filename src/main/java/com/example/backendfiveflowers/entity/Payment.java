@@ -28,7 +28,7 @@ public class Payment {
 
     @ManyToOne
     @JoinColumn(name = "order_id")
-    private Order order;
+    private OrderDetail orderDetail;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

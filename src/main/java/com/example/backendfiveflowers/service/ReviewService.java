@@ -3,9 +3,10 @@ package com.example.backendfiveflowers.service;
 import com.example.backendfiveflowers.entity.Review;
 import com.example.backendfiveflowers.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,7 +31,8 @@ public class ReviewService {
         return reviewRepository.findById(id);
     }
 
-    public List<Review> getAllReviews() {
-        return reviewRepository.findAll();
+    public Page<Review> getAllReviews(Pageable pageable) {
+        return reviewRepository.findAll(pageable);
     }
 }
+

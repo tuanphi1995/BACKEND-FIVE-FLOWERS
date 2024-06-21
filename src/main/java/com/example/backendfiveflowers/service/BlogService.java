@@ -1,18 +1,16 @@
 package com.example.backendfiveflowers.service;
+
 import com.example.backendfiveflowers.entity.Blog;
 import com.example.backendfiveflowers.entity.UserInfo;
 import com.example.backendfiveflowers.repository.BlogRepository;
 import com.example.backendfiveflowers.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,7 +35,23 @@ public class BlogService {
     }
 
     public Blog updateBlog(Blog blog) {
-        return blogRepository.save(blog);
+        Optional<Blog> existingBlog = blogRepository.findById(blog.getBlogId());
+        if (existingBlog.isPresent()) {
+            Blog updatedBlog = existingBlog.get();
+            updatedBlog.setTitle(blog.getTitle());
+            updatedBlog.setContent(blog.getContent());
+
+            Optional<UserInfo> author = userInfoRepository.findById(blog.getAuthor().getId());
+            if (author.isPresent()) {
+                updatedBlog.setAuthor(author.get());
+            } else {
+                throw new RuntimeException("Author not found");
+            }
+
+            return blogRepository.save(updatedBlog);
+        } else {
+            throw new RuntimeException("Blog not found");
+        }
     }
 
     public void deleteBlog(Integer id) {
@@ -48,8 +62,7 @@ public class BlogService {
         return blogRepository.findById(id);
     }
 
-    public Page<Blog> getAllBlogs(int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+    public Page<Blog> getAllBlogs(Pageable pageable) {
         return blogRepository.findAll(pageable);
     }
 

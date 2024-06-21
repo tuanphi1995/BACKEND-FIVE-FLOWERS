@@ -1,8 +1,7 @@
 package com.example.backendfiveflowers.service;
 
-
-import com.example.backendfiveflowers.entity.Order;
 import com.example.backendfiveflowers.entity.OrderDetail;
+import com.example.backendfiveflowers.entity.Order;
 import com.example.backendfiveflowers.entity.Product;
 import com.example.backendfiveflowers.repository.OrderDetailRepository;
 import com.example.backendfiveflowers.repository.OrderRepository;
@@ -29,44 +28,11 @@ public class OrderDetailService {
     private ProductRepository productRepository;
 
     public OrderDetail addOrderDetail(OrderDetail orderDetail) {
-        Optional<Order> orderOptional = orderRepository.findById(orderDetail.getOrder().getOrderId());
-        if (orderOptional.isPresent()) {
-            orderDetail.setOrder(orderOptional.get());
-        } else {
-            throw new RuntimeException("Order not found");
-        }
-
-        Optional<Product> productOptional = productRepository.findById(orderDetail.getProduct().getProductId());
-        if (productOptional.isPresent()) {
-            orderDetail.setProduct(productOptional.get());
-        } else {
-            throw new RuntimeException("Product not found");
-        }
-
         return orderDetailRepository.save(orderDetail);
     }
 
     public OrderDetail updateOrderDetail(OrderDetail orderDetail) {
-        String username = getCurrentUsername();
-        if (isAdmin() || orderDetail.getOrder().getUser().getUserName().equals(username)) {
-            Optional<Order> orderOptional = orderRepository.findById(orderDetail.getOrder().getOrderId());
-            if (orderOptional.isPresent()) {
-                orderDetail.setOrder(orderOptional.get());
-            } else {
-                throw new RuntimeException("Order not found");
-            }
-
-            Optional<Product> productOptional = productRepository.findById(orderDetail.getProduct().getProductId());
-            if (productOptional.isPresent()) {
-                orderDetail.setProduct(productOptional.get());
-            } else {
-                throw new RuntimeException("Product not found");
-            }
-
-            return orderDetailRepository.save(orderDetail);
-        } else {
-            throw new RuntimeException("You do not have permission to update this order detail");
-        }
+        return orderDetailRepository.save(orderDetail);
     }
 
     public void deleteOrderDetail(Integer id) {
@@ -74,7 +40,7 @@ public class OrderDetailService {
         if (orderDetailOptional.isPresent()) {
             OrderDetail orderDetail = orderDetailOptional.get();
             String username = getCurrentUsername();
-            if (isAdmin() || orderDetail.getOrder().getUser().getUserName().equals(username)) {
+            if (isAdmin() || orderDetail.getOrders().stream().anyMatch(order -> order.getUser().getUserName().equals(username))) {
                 orderDetailRepository.deleteById(id);
             } else {
                 throw new RuntimeException("You do not have permission to delete this order detail");

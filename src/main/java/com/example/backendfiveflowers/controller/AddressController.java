@@ -3,6 +3,10 @@ package com.example.backendfiveflowers.controller;
 import com.example.backendfiveflowers.entity.Address;
 import com.example.backendfiveflowers.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -48,12 +52,13 @@ public class AddressController {
 
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<List<Address>> getAllAddresses(
+    public ResponseEntity<Page<Address>> getAllAddresses(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "addressId") String sortBy
     ) {
-        List<Address> addresses = addressService.getAllAddresses(page, size, sortBy);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        Page<Address> addresses = addressService.getAllAddresses(pageable);
         return ResponseEntity.ok(addresses);
     }
 }

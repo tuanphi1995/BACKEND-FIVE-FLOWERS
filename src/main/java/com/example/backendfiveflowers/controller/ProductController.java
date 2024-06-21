@@ -26,7 +26,10 @@ public class ProductController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody Product productDetails) {
-        Product updatedProduct = productService.updateProduct(id, productDetails);
+        if (!id.equals(productDetails.getProductId())) {
+            throw new IllegalArgumentException("Product ID does not match");
+        }
+        Product updatedProduct = productService.updateProduct(productDetails);
         return ResponseEntity.ok(updatedProduct);
     }
 

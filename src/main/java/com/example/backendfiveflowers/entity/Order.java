@@ -1,34 +1,47 @@
 package com.example.backendfiveflowers.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.sql.Timestamp;
-import java.util.List;
+import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "orders")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "orders")  // Thay đổi tên bảng thành "orders"
+@EntityListeners(AuditingEntityListener.class)
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int orderId;
-    private Timestamp orderDate;
-    private double totalAmount;
-    private String status;
-    private String shippingStatus;
-    private String trackingNumber;
+
+    private int quantity;
+    private double price;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserInfo user;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<OrderDetail> orderDetails;
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    @ManyToOne
+    @JoinColumn(name = "order_detail_id")
+    private OrderDetail orderDetail;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 }
