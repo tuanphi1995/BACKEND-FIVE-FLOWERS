@@ -8,6 +8,7 @@ import com.example.backendfiveflowers.repository.OrderRepository;
 import com.example.backendfiveflowers.repository.UserInfoRepository;
 import com.example.backendfiveflowers.repository.ProductRepository;
 import com.example.backendfiveflowers.repository.OrderDetailRepository;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ public class OrderService {
     @Autowired
     private OrderDetailRepository orderDetailRepository;
 
+    @Transactional
     public Order addOrder(Order order) {
         logger.info("Attempting to add order for user ID: {}", order.getUser().getId());
 
@@ -53,23 +55,29 @@ public class OrderService {
         order.setUser(userInfoOptional.get());
         order.setProduct(productOptional.get());
 
+        OrderDetail orderDetail;
         if (order.getOrderDetail() == null) {
-            OrderDetail orderDetail = new OrderDetail();
+            orderDetail = new OrderDetail();
             orderDetail.setOrderDate(LocalDateTime.now());
             orderDetail.setShippingStatus("Pending");
             orderDetail.setStatus("New");
             orderDetail.setTotalAmount(order.getPrice() * order.getQuantity());
             orderDetail.setUser(order.getUser());
 
+            orderDetail = orderDetailRepository.save(orderDetail);
             order.setOrderDetail(orderDetail);
         } else {
-            OrderDetail existingOrderDetail = order.getOrderDetail();
-            existingOrderDetail.setTotalAmount(existingOrderDetail.getTotalAmount() + order.getPrice() * order.getQuantity());
+            orderDetail = order.getOrderDetail();
+            orderDetail.setTotalAmount(order.getPrice() * order.getQuantity());
+            orderDetail = orderDetailRepository.save(orderDetail);
+            order.setOrderDetail(orderDetail);
         }
 
         return orderRepository.save(order);
     }
 
+
+    @Transactional
     public Order updateOrder(Integer id, Order order) {
         Optional<Order> existingOrderOptional = orderRepository.findById(id);
         if (!existingOrderOptional.isPresent()) {
@@ -94,17 +102,21 @@ public class OrderService {
         existingOrder.setUser(userInfoOptional.get());
         existingOrder.setProduct(productOptional.get());
 
+        OrderDetail orderDetail;
         if (existingOrder.getOrderDetail() == null) {
-            OrderDetail orderDetail = new OrderDetail();
+            orderDetail = new OrderDetail();
             orderDetail.setOrderDate(LocalDateTime.now());
             orderDetail.setShippingStatus("Pending");
             orderDetail.setStatus("New");
             orderDetail.setTotalAmount(order.getPrice() * order.getQuantity());
             orderDetail.setUser(order.getUser());
+            orderDetail = orderDetailRepository.save(orderDetail);
             existingOrder.setOrderDetail(orderDetail);
         } else {
-            OrderDetail existingOrderDetail = existingOrder.getOrderDetail();
-            existingOrderDetail.setTotalAmount(existingOrderDetail.getTotalAmount() + order.getPrice() * order.getQuantity());
+            orderDetail = existingOrder.getOrderDetail();
+            orderDetail.setTotalAmount(order.getPrice() * order.getQuantity());
+            orderDetail = orderDetailRepository.save(orderDetail);
+            existingOrder.setOrderDetail(orderDetail);
         }
 
         return orderRepository.save(existingOrder);
