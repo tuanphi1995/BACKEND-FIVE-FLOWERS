@@ -24,10 +24,8 @@ public class ReviewController {
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public Review updateReview(@PathVariable Integer id, @RequestBody Review review) {
-        if (!id.equals(review.getReviewId())) {
-            throw new IllegalArgumentException("Review ID does not match");
-        }
-        return reviewService.updateReview(review);
+        review.setReviewId(id);
+        return reviewService.updateReview(id, review);
     }
 
     @DeleteMapping("/delete/{id}")
