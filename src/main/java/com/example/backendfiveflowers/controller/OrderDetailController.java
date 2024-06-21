@@ -1,6 +1,5 @@
 package com.example.backendfiveflowers.controller;
 
-import com.example.backendfiveflowers.entity.Order;
 import com.example.backendfiveflowers.entity.OrderDetail;
 import com.example.backendfiveflowers.service.OrderDetailService;
 import org.springframework.beans.factory.annotation.Autowired;

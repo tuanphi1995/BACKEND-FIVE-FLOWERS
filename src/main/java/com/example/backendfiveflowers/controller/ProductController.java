@@ -26,9 +26,7 @@ public class ProductController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody Product productDetails) {
-        if (!id.equals(productDetails.getProductId())) {
-            throw new IllegalArgumentException("Product ID does not match");
-        }
+        productDetails.setProductId(id); // Đảm bảo ID của product được lấy từ đường dẫn
         Product updatedProduct = productService.updateProduct(productDetails);
         return ResponseEntity.ok(updatedProduct);
     }
@@ -47,7 +45,7 @@ public class ProductController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Page<Product>> getAllProducts(@RequestParam int page, @RequestParam int size) {
+    public ResponseEntity<Page<Product>> getAllProducts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> products = productService.getAllProducts(pageable);
         return ResponseEntity.ok(products);

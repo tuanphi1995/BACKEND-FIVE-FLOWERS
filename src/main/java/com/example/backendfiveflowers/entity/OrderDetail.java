@@ -34,6 +34,7 @@ public class OrderDetail {
     private UserInfo user;
 
     @OneToMany(mappedBy = "orderDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Order> orders;
 
     @CreatedDate

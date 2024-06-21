@@ -1,6 +1,6 @@
 package com.example.backendfiveflowers.entity;
 
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "orders")  // Thay đổi tên bảng thành "orders"
+@Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
 public class Order {
     @Id
@@ -34,7 +34,8 @@ public class Order {
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "order_detail_id")
+    @JoinColumn(name = "order_detail_id", referencedColumnName = "orderDetailId", nullable = true)
+    @JsonBackReference
     private OrderDetail orderDetail;
 
     @CreatedDate

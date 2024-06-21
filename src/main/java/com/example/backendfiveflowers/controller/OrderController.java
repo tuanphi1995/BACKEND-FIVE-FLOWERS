@@ -24,10 +24,7 @@ public class OrderController {
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public Order updateOrder(@PathVariable Integer id, @RequestBody Order order) {
-        if (!id.equals(order.getOrderId())) {
-            throw new IllegalArgumentException("Order ID does not match");
-        }
-        return orderService.updateOrder(order);
+        return orderService.updateOrder(id, order);
     }
 
     @DeleteMapping("/delete/{id}")

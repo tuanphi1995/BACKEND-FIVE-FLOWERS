@@ -3,32 +3,32 @@ package com.example.backendfiveflowers.controller;
 import com.example.backendfiveflowers.entity.Payment;
 import com.example.backendfiveflowers.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/payments")
-@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
 
     @PostMapping("/add")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public Payment addPayment(@RequestBody Payment payment) {
         return paymentService.addPayment(payment);
     }
 
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public Payment updatePayment(@RequestBody Payment payment) {
-        return paymentService.updatePayment(payment);
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public Payment updatePayment(@PathVariable Integer id, @RequestBody Payment payment) {
+        return paymentService.updatePayment(id, payment);
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public void deletePayment(@PathVariable Integer id) {
         paymentService.deletePayment(id);
     }
@@ -41,7 +41,7 @@ public class PaymentController {
 
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public List<Payment> getAllPayments() {
-        return paymentService.getAllPayments();
+    public Page<Payment> getAllPayments(Pageable pageable) {
+        return paymentService.getAllPayments(pageable);
     }
 }
