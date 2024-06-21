@@ -11,7 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+
 import java.util.Optional;
 
 @Service
@@ -39,8 +39,30 @@ public class ProductService {
         }
     }
 
-    public Product updateProduct(Product product) {
-        return productRepository.save(product);
+    public Product updateProduct(Integer id, Product productDetails) {
+        Optional<Product> existingProduct = productRepository.findById(id);
+        if (existingProduct.isPresent()) {
+            Product product = existingProduct.get();
+            product.setName(productDetails.getName());
+            product.setDescription(productDetails.getDescription());
+            product.setPrice(productDetails.getPrice());
+            product.setQuantity(productDetails.getQuantity());
+            product.setColor(productDetails.getColor());
+
+            Optional<Brand> brand = brandRepository.findById(productDetails.getBrand().getBrandId());
+            Optional<Category> category = categoryRepository.findById(productDetails.getCategory().getCategoryId());
+
+            if (brand.isPresent() && category.isPresent()) {
+                product.setBrand(brand.get());
+                product.setCategory(category.get());
+            } else {
+                throw new RuntimeException("Brand or Category not found");
+            }
+
+            return productRepository.save(product);
+        } else {
+            throw new RuntimeException("Product not found with id: " + id);
+        }
     }
 
     public void deleteProduct(Integer id) {
@@ -49,10 +71,6 @@ public class ProductService {
 
     public Optional<Product> getProductById(Integer id) {
         return productRepository.findById(id);
-    }
-
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
     }
 
     public Page<Product> getAllProducts(Pageable pageable) {

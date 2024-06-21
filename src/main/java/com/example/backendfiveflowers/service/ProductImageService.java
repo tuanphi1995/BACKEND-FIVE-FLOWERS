@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,7 @@ public class ProductImageService {
         try {
             Files.createDirectories(root);
         } catch (IOException e) {
-            throw new RuntimeException("Could not initialize folder for upload!");
+            throw new RuntimeException("Không thể khởi tạo thư mục để tải lên!");
         }
     }
 
@@ -41,31 +42,64 @@ public class ProductImageService {
             productImage.setProduct(product.get());
             return productImageRepository.save(productImage);
         } else {
-            throw new RuntimeException("Product not found");
+            throw new RuntimeException("Không tìm thấy sản phẩm");
         }
     }
 
-    public ProductImage saveImage(MultipartFile file, int productId) {
+    public List<ProductImage> saveImages(MultipartFile[] files, int productId) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (!productOptional.isPresent()) {
-            throw new RuntimeException("Product not found");
+            throw new RuntimeException("Không tìm thấy sản phẩm");
         }
+
+        Product product = productOptional.get();
+        List<ProductImage> savedProductImages = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            String filename = file.getOriginalFilename();
+            try {
+                Files.copy(file.getInputStream(), this.root.resolve(filename));
+            } catch (Exception e) {
+                throw new RuntimeException("Không thể lưu trữ tệp. Lỗi: " + e.getMessage());
+            }
+
+            ProductImage productImage = new ProductImage();
+            productImage.setImageUrl(this.root.resolve(filename).toString());
+            productImage.setProduct(product);
+
+            savedProductImages.add(productImageRepository.save(productImage));
+        }
+
+        return savedProductImages;
+    }
+
+    public ProductImage updateProductImage(ProductImage productImage) {
+        Optional<Product> product = productRepository.findById(productImage.getProduct().getProductId());
+
+        if (product.isPresent()) {
+            productImage.setProduct(product.get());
+            return productImageRepository.save(productImage);
+        } else {
+            throw new RuntimeException("Không tìm thấy sản phẩm");
+        }
+    }
+
+    public ProductImage updateImage(Integer id, MultipartFile file) {
+        Optional<ProductImage> productImageOptional = productImageRepository.findById(id);
+        if (!productImageOptional.isPresent()) {
+            throw new RuntimeException("Không tìm thấy ảnh sản phẩm");
+        }
+
+        ProductImage productImage = productImageOptional.get();
 
         String filename = file.getOriginalFilename();
         try {
             Files.copy(file.getInputStream(), this.root.resolve(filename));
         } catch (Exception e) {
-            throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
+            throw new RuntimeException("Không thể lưu trữ tệp. Lỗi: " + e.getMessage());
         }
 
-        ProductImage productImage = new ProductImage();
         productImage.setImageUrl(this.root.resolve(filename).toString());
-        productImage.setProduct(productOptional.get());
-
-        return productImageRepository.save(productImage);
-    }
-
-    public ProductImage updateProductImage(ProductImage productImage) {
         return productImageRepository.save(productImage);
     }
 

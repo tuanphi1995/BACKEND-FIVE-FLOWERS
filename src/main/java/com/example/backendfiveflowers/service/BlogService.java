@@ -48,10 +48,9 @@ public class BlogService {
         return blogRepository.findById(id);
     }
 
-    public List<Blog> getAllBlogs(int page, int size, String sortBy) {
+    public Page<Blog> getAllBlogs(int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-        Page<Blog> pagedResult = blogRepository.findAll(pageable);
-        return pagedResult.toList();
+        return blogRepository.findAll(pageable);
     }
 
     private String getCurrentUsername() {

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/orders")
-@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class OrderController {
 
     @Autowired
@@ -24,7 +23,10 @@ public class OrderController {
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
-    public Order updateOrder(@RequestBody Order order) {
+    public Order updateOrder(@PathVariable Integer id, @RequestBody Order order) {
+        if (!id.equals(order.getOrderId())) {
+            throw new IllegalArgumentException("Order ID does not match");
+        }
         return orderService.updateOrder(order);
     }
 

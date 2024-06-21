@@ -3,9 +3,12 @@ package com.example.backendfiveflowers.service;
 import com.example.backendfiveflowers.entity.Category;
 import com.example.backendfiveflowers.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,8 +37,8 @@ public class CategoryService {
         return categoryRepository.findById(id);
     }
 
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public Page<Category> getAllCategories(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return categoryRepository.findAll(pageable);
     }
 }
-

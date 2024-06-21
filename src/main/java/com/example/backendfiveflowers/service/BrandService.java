@@ -3,9 +3,12 @@ package com.example.backendfiveflowers.service;
 import com.example.backendfiveflowers.entity.Brand;
 import com.example.backendfiveflowers.repository.BrandRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,8 +21,16 @@ public class BrandService {
         return brandRepository.save(brand);
     }
 
-    public Brand updateBrand(Brand brand) {
-        return brandRepository.save(brand);
+    public Brand updateBrand(Integer id, Brand brandDetails) {
+        Optional<Brand> existingBrand = brandRepository.findById(id);
+        if (existingBrand.isPresent()) {
+            Brand brand = existingBrand.get();
+            brand.setName(brandDetails.getName());
+            brand.setDescription(brandDetails.getDescription());
+            return brandRepository.save(brand);
+        } else {
+            throw new RuntimeException("Brand not found with id: " + id);
+        }
     }
 
     public void deleteBrand(Integer id) {
@@ -30,7 +41,8 @@ public class BrandService {
         return brandRepository.findById(id);
     }
 
-    public List<Brand> getAllBrands() {
-        return brandRepository.findAll();
+    public Page<Brand> getAllBrands(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return brandRepository.findAll(pageable);
     }
 }

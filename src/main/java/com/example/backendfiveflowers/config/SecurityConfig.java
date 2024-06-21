@@ -42,51 +42,15 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/addresses/update/**", "/api/v1/addresses/delete/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/v1/addresses/get/**", "/api/v1/addresses/all").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/v1/blogs/**").hasAuthority("ROLE_ADMIN")
-
-                        //tien
                         .requestMatchers("/api/v1/brands/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/v1/categories/**").hasAuthority("ROLE_ADMIN")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        //phi
-
                         .requestMatchers("/api/v1/orders/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/v1/order_details/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/v1/payments/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        //vu
                         .requestMatchers("/api/v1/reviews/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/admin/product_images/**").hasAuthority("ROLE_ADMIN")
-
+                        .requestMatchers("/api/v1/products/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/v1/product_images/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/v1/order-details/**").hasAnyAuthority("ROLE_ADMIN","ROLE_USER")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

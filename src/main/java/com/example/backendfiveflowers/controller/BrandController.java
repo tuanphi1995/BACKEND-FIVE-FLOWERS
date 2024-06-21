@@ -3,10 +3,9 @@ package com.example.backendfiveflowers.controller;
 import com.example.backendfiveflowers.entity.Brand;
 import com.example.backendfiveflowers.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/brands")
@@ -22,8 +21,8 @@ public class BrandController {
     }
 
     @PutMapping("/update/{id}")
-    public Brand updateBrand(@RequestBody Brand brand) {
-        return brandService.updateBrand(brand);
+    public Brand updateBrand(@PathVariable Integer id, @RequestBody Brand brandDetails) {
+        return brandService.updateBrand(id, brandDetails);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -37,7 +36,10 @@ public class BrandController {
     }
 
     @GetMapping("/all")
-    public List<Brand> getAllBrands() {
-        return brandService.getAllBrands();
+    public Page<Brand> getAllBrands(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "brandId") String sortBy) {
+        return brandService.getAllBrands(page, size, sortBy);
     }
 }

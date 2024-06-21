@@ -1,53 +1,71 @@
 package com.example.backendfiveflowers.controller;
 
+import com.example.backendfiveflowers.entity.Product;
 import com.example.backendfiveflowers.entity.ProductImage;
+import com.example.backendfiveflowers.repository.ProductRepository;
 import com.example.backendfiveflowers.service.ProductImageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/admin/product_images")
+@RequestMapping("/api/v1/product_images")
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class ProductImageController {
 
     @Autowired
     private ProductImageService productImageService;
 
-    @PostMapping("/add")
-    public ResponseEntity<ProductImage> addProductImage(@RequestBody ProductImage productImage) {
-            ProductImage savedProductImage = productImageService.addProductImage(productImage);
-            return ResponseEntity.ok(savedProductImage);
+    @Autowired
+    private ProductRepository productRepository;
 
-    }
 
-    @PutMapping("/update")
-    public ProductImage updateProductImage(@RequestBody ProductImage productImage) {
-        return productImageService.updateProductImage(productImage);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ProductImage> updateProductImage(@PathVariable Integer id, @RequestParam("file") MultipartFile file) {
+        ProductImage updatedProductImage = productImageService.updateImage(id, file);
+        return ResponseEntity.ok(updatedProductImage);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteProductImage(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteProductImage(@PathVariable Integer id) {
         productImageService.deleteProductImage(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/get/{id}")
-    public ProductImage getProductImageById(@PathVariable Integer id) {
-        return productImageService.getProductImageById(id).orElse(null);
+    public ResponseEntity<ProductImage> getProductImageById(@PathVariable Integer id) {
+        Optional<ProductImage> productImage = productImageService.getProductImageById(id);
+        return productImage.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/all")
-    public List<ProductImage> getAllProductImages() {
-        return productImageService.getAllProductImages();
+    public ResponseEntity<List<ProductImage>> getAllProductImages() {
+        List<ProductImage> productImages = productImageService.getAllProductImages();
+        return ResponseEntity.ok(productImages);
     }
 
     @PostMapping("/upload/{productId}")
-    public ResponseEntity<ProductImage> uploadProductImage(@RequestParam("file") MultipartFile file, @PathVariable int productId) {
-        ProductImage savedProductImage = productImageService.saveImage(file, productId);
-        return ResponseEntity.ok(savedProductImage);
+    public ResponseEntity<Map<String, Object>> uploadProductImages(@RequestParam("files") MultipartFile[] files, @PathVariable int productId) {
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if (!productOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        Product product = productOptional.get();
+        List<ProductImage> savedProductImages = productImageService.saveImages(files, productId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("product", product);
+        response.put("productImages", savedProductImages);
+
+        return ResponseEntity.ok(response);
     }
 }

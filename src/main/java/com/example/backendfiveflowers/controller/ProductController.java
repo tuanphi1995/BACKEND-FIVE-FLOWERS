@@ -10,10 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/admin/products")
+@RequestMapping("/api/v1/products")
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class ProductController {
 
@@ -26,29 +24,29 @@ public class ProductController {
         return ResponseEntity.ok(savedProduct);
     }
 
-    @PutMapping("/update")
-    public Product updateProduct(@RequestBody Product product) {
-        return productService.updateProduct(product);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody Product productDetails) {
+        Product updatedProduct = productService.updateProduct(id, productDetails);
+        return ResponseEntity.ok(updatedProduct);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteProduct(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
         productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/get/{id}")
-    public Product getProductById(@PathVariable Integer id) {
-        return productService.getProductById(id).orElse(null);
+    public ResponseEntity<Product> getProductById(@PathVariable Integer id) {
+        return productService.getProductById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/all")
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
-    }
-
-    @GetMapping("/page")
-    public Page<Product> getAllProducts(@RequestParam int page, @RequestParam int size) {
+    public ResponseEntity<Page<Product>> getAllProducts(@RequestParam int page, @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return productService.getAllProducts(pageable);
+        Page<Product> products = productService.getAllProducts(pageable);
+        return ResponseEntity.ok(products);
     }
 }

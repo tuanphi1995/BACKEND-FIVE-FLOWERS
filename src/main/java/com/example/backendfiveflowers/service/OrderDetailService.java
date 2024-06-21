@@ -1,11 +1,19 @@
 package com.example.backendfiveflowers.service;
 
+
+import com.example.backendfiveflowers.entity.Order;
 import com.example.backendfiveflowers.entity.OrderDetail;
+import com.example.backendfiveflowers.entity.Product;
 import com.example.backendfiveflowers.repository.OrderDetailRepository;
+import com.example.backendfiveflowers.repository.OrderRepository;
+import com.example.backendfiveflowers.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,23 +22,92 @@ public class OrderDetailService {
     @Autowired
     private OrderDetailRepository orderDetailRepository;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
     public OrderDetail addOrderDetail(OrderDetail orderDetail) {
+        Optional<Order> orderOptional = orderRepository.findById(orderDetail.getOrder().getOrderId());
+        if (orderOptional.isPresent()) {
+            orderDetail.setOrder(orderOptional.get());
+        } else {
+            throw new RuntimeException("Order not found");
+        }
+
+        Optional<Product> productOptional = productRepository.findById(orderDetail.getProduct().getProductId());
+        if (productOptional.isPresent()) {
+            orderDetail.setProduct(productOptional.get());
+        } else {
+            throw new RuntimeException("Product not found");
+        }
+
         return orderDetailRepository.save(orderDetail);
     }
 
     public OrderDetail updateOrderDetail(OrderDetail orderDetail) {
-        return orderDetailRepository.save(orderDetail);
+        String username = getCurrentUsername();
+        if (isAdmin() || orderDetail.getOrder().getUser().getUserName().equals(username)) {
+            Optional<Order> orderOptional = orderRepository.findById(orderDetail.getOrder().getOrderId());
+            if (orderOptional.isPresent()) {
+                orderDetail.setOrder(orderOptional.get());
+            } else {
+                throw new RuntimeException("Order not found");
+            }
+
+            Optional<Product> productOptional = productRepository.findById(orderDetail.getProduct().getProductId());
+            if (productOptional.isPresent()) {
+                orderDetail.setProduct(productOptional.get());
+            } else {
+                throw new RuntimeException("Product not found");
+            }
+
+            return orderDetailRepository.save(orderDetail);
+        } else {
+            throw new RuntimeException("You do not have permission to update this order detail");
+        }
     }
 
     public void deleteOrderDetail(Integer id) {
-        orderDetailRepository.deleteById(id);
+        Optional<OrderDetail> orderDetailOptional = orderDetailRepository.findById(id);
+        if (orderDetailOptional.isPresent()) {
+            OrderDetail orderDetail = orderDetailOptional.get();
+            String username = getCurrentUsername();
+            if (isAdmin() || orderDetail.getOrder().getUser().getUserName().equals(username)) {
+                orderDetailRepository.deleteById(id);
+            } else {
+                throw new RuntimeException("You do not have permission to delete this order detail");
+            }
+        } else {
+            throw new RuntimeException("Order detail not found");
+        }
     }
 
     public Optional<OrderDetail> getOrderDetailById(Integer id) {
         return orderDetailRepository.findById(id);
     }
 
-    public List<OrderDetail> getAllOrderDetails() {
-        return orderDetailRepository.findAll();
+    public Page<OrderDetail> getAllOrderDetails(Pageable pageable) {
+        return orderDetailRepository.findAll(pageable);
+    }
+
+    private String getCurrentUsername() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            return ((UserDetails) principal).getUsername();
+        } else {
+            return principal.toString();
+        }
+    }
+
+    private boolean isAdmin() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) principal;
+            return userDetails.getAuthorities().stream()
+                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        }
+        return false;
     }
 }
