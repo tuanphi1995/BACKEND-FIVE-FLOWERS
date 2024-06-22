@@ -61,4 +61,11 @@ public class AddressController {
         Page<Address> addresses = addressService.getAllAddresses(pageable);
         return ResponseEntity.ok(addresses);
     }
+
+    @GetMapping("/user")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    public ResponseEntity<List<Address>> getAddressesForCurrentUser() {
+        List<Address> addresses = addressService.getAddressesForCurrentUser();
+        return ResponseEntity.ok(addresses);
+    }
 }

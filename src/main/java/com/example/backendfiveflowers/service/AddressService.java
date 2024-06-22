@@ -6,9 +6,7 @@ import com.example.backendfiveflowers.repository.AddressRepository;
 import com.example.backendfiveflowers.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -56,6 +54,17 @@ public class AddressService {
 
     public Page<Address> getAllAddresses(Pageable pageable) {
         return addressRepository.findAll(pageable);
+    }
+
+    public List<Address> getAddressesForCurrentUser() {
+        String username = getCurrentUsername();
+        Optional<UserInfo> userInfoOptional = userInfoRepository.findByUserName(username);
+        if (userInfoOptional.isPresent()) {
+            UserInfo user = userInfoOptional.get();
+            return addressRepository.findByUser(user);
+        } else {
+            throw new RuntimeException("User not found");
+        }
     }
 
     private String getCurrentUsername() {
