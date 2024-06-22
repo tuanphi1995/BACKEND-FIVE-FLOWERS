@@ -24,8 +24,7 @@ public class BlogController {
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Blog updateBlog(@PathVariable Integer id, @RequestBody Blog blog) {
-        blog.setBlogId(id); // Đảm bảo blog ID được đặt từ URL
-        return blogService.updateBlog(blog);
+        return blogService.updateBlog(id, blog);
     }
 
     @DeleteMapping("/delete/{id}")

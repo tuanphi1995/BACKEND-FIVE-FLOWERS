@@ -34,19 +34,13 @@ public class BlogService {
         return blogRepository.save(blog);
     }
 
-    public Blog updateBlog(Blog blog) {
-        Optional<Blog> existingBlog = blogRepository.findById(blog.getBlogId());
+    public Blog updateBlog(Integer id, Blog blog) {
+        Optional<Blog> existingBlog = blogRepository.findById(id);
         if (existingBlog.isPresent()) {
             Blog updatedBlog = existingBlog.get();
             updatedBlog.setTitle(blog.getTitle());
             updatedBlog.setContent(blog.getContent());
-
-            Optional<UserInfo> author = userInfoRepository.findById(blog.getAuthor().getId());
-            if (author.isPresent()) {
-                updatedBlog.setAuthor(author.get());
-            } else {
-                throw new RuntimeException("Author not found");
-            }
+            // Do not update author in this method to keep the original author
 
             return blogRepository.save(updatedBlog);
         } else {
