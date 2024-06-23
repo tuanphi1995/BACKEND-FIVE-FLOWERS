@@ -12,19 +12,20 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/products")
-@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
     @PostMapping("/add")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Product> addProduct(@RequestBody Product product) {
         Product savedProduct = productService.addProduct(product);
         return ResponseEntity.ok(savedProduct);
     }
 
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody Product productDetails) {
         productDetails.setProductId(id); // Đảm bảo ID của product được lấy từ đường dẫn
         Product updatedProduct = productService.updateProduct(productDetails);
@@ -32,6 +33,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
