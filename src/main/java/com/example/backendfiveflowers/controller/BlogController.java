@@ -5,8 +5,10 @@ import com.example.backendfiveflowers.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/blogs")
@@ -19,6 +21,13 @@ public class BlogController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Blog addBlog(@RequestBody Blog blog) {
         return blogService.addBlog(blog);
+    }
+
+    @PostMapping("/upload")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+        String fileName = blogService.storeFile(file);
+        return ResponseEntity.ok(fileName);
     }
 
     @PutMapping("/update/{id}")
@@ -34,13 +43,11 @@ public class BlogController {
     }
 
     @GetMapping("/get/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Blog getBlogById(@PathVariable Integer id) {
         return blogService.getBlogById(id).orElse(null);
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Page<Blog> getAllBlogs(Pageable pageable) {
         return blogService.getAllBlogs(pageable);
     }

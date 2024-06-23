@@ -10,7 +10,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 
 @Service
@@ -22,6 +29,16 @@ public class BlogService {
     @Autowired
     private UserInfoRepository userInfoRepository;
 
+    private final Path fileStorageLocation = Paths.get("path/to/your/upload/directory").toAbsolutePath().normalize();
+
+    public BlogService() {
+        try {
+            Files.createDirectories(this.fileStorageLocation);
+        } catch (Exception ex) {
+            throw new RuntimeException("Could not create the directory where the uploaded files will be stored.", ex);
+        }
+    }
+
     public Blog addBlog(Blog blog) {
         String username = getCurrentUsername();
         Optional<UserInfo> userInfoOptional = userInfoRepository.findByUserName(username);
@@ -32,6 +49,18 @@ public class BlogService {
         }
 
         return blogRepository.save(blog);
+    }
+
+    public String storeFile(MultipartFile file) {
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+        try {
+            Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            return fileName;
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
+        }
     }
 
     public Blog updateBlog(Integer id, Blog blog) {
