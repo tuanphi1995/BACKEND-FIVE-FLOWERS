@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,42 +49,35 @@ public class ProductImageService {
         }
 
         Product product = productOptional.get();
-        // Get all current images of this product
         List<ProductImage> existingImages = productImageRepository.findByProduct(product);
-
-        // Current number of images
         int existingImageCount = existingImages.size();
 
-        // Update current images with new images
         for (int i = 0; i < files.length; i++) {
             MultipartFile file = files[i];
             String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            Path destinationFile = this.root.resolve(Paths.get(filename)).normalize().toAbsolutePath();
+            Path destinationFile = this.root.resolve(filename).normalize().toAbsolutePath();
             try {
-                Files.copy(file.getInputStream(), destinationFile);
+                Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
             }
 
             if (i < existingImageCount) {
-                // Update existing image
                 ProductImage existingImage = existingImages.get(i);
-                existingImage.setImageUrl(destinationFile.toString());
+                existingImage.setImageUrl(filename);
                 productImageRepository.save(existingImage);
             } else {
-                // Add new image if the number of new images is greater than the current images
                 ProductImage newImage = new ProductImage();
-                newImage.setImageUrl(destinationFile.toString());
+                newImage.setImageUrl(filename);
                 newImage.setProduct(product);
                 productImageRepository.save(newImage);
             }
         }
 
-        // If the number of new images is less than the current images, delete the extra images
         if (files.length < existingImageCount) {
             for (int i = files.length; i < existingImageCount; i++) {
                 ProductImage extraImage = existingImages.get(i);
-                Path filePath = Paths.get(extraImage.getImageUrl());
+                Path filePath = this.root.resolve(extraImage.getImageUrl()).normalize().toAbsolutePath();
                 try {
                     Files.deleteIfExists(filePath);
                 } catch (IOException e) {
@@ -138,15 +132,15 @@ public class ProductImageService {
 
         for (MultipartFile file : files) {
             String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            Path destinationFile = this.root.resolve(Paths.get(filename)).normalize().toAbsolutePath();
+            Path destinationFile = this.root.resolve(filename).normalize().toAbsolutePath();
             try {
-                Files.copy(file.getInputStream(), destinationFile);
+                Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
             }
 
             ProductImage productImage = new ProductImage();
-            productImage.setImageUrl(destinationFile.toString());
+            productImage.setImageUrl(filename);
             productImage.setProduct(product);
 
             savedProductImages.add(productImageRepository.save(productImage));

@@ -29,7 +29,7 @@ public class BlogService {
     @Autowired
     private UserInfoRepository userInfoRepository;
 
-    private final Path fileStorageLocation = Paths.get("path/to/your/upload/directory").toAbsolutePath().normalize();
+    private final Path fileStorageLocation = Paths.get("uploads").toAbsolutePath().normalize();
 
     public BlogService() {
         try {
@@ -55,8 +55,11 @@ public class BlogService {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         try {
+            // Copy file to the target location (Replacing existing file with the same name)
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+            // Return the file name (relative path)
             return fileName;
         } catch (IOException ex) {
             throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);

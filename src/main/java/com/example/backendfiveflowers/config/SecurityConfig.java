@@ -41,17 +41,17 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/addresses/add").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/v1/addresses/update/**", "/api/v1/addresses/delete/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/v1/addresses/get/**", "/api/v1/addresses/all").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/v1/blogs/**").permitAll() // Allow access to blogs endpoint
+                        .requestMatchers("/api/v1/blogs/**").permitAll()
                         .requestMatchers("/api/v1/brands/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/v1/categories/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/v1/orders/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/v1/order_details/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/v1/payments/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/v1/reviews/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/api/v1/products/**").permitAll() // Allow access to products endpoint
+                        .requestMatchers("/api/v1/products/**").permitAll()
                         .requestMatchers("/api/v1/product_images/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/v1/order-details/**").hasAnyAuthority("ROLE_ADMIN","ROLE_USER")
-                        .requestMatchers("/api/v1/images/**").permitAll() // Allow access to images endpoint
+                        .requestMatchers("/api/v1/images/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

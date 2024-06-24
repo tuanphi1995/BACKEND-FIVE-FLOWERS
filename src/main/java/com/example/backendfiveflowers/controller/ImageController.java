@@ -16,23 +16,25 @@ import java.nio.file.Paths;
 @RequestMapping("/api/v1/images")
 public class ImageController {
 
-    private final Path fileStorageLocation = Paths.get("path/to/your/upload/directory").toAbsolutePath().normalize();
+    private final Path root = Paths.get("uploads");
 
     @GetMapping("/{filename:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         try {
-            Path filePath = fileStorageLocation.resolve(filename).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
+            Path file = root.resolve(filename);
+            Resource resource = new UrlResource(file.toUri());
 
-            if (resource.exists()) {
+            if (resource.exists() || resource.isReadable()) {
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                         .body(resource);
             } else {
-                return ResponseEntity.notFound().build();
+                throw new RuntimeException("Could not read the file!");
             }
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            throw new RuntimeException("Error: " + e.getMessage());
         }
     }
 }
+
+
