@@ -22,7 +22,10 @@ public class Product {
     private int productId;
 
     private String name;
+
+    @Column(length = 1000)
     private String description;
+
     private double price;
     private int quantity;
     private String color;
