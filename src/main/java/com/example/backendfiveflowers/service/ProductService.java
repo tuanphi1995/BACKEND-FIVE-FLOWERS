@@ -65,7 +65,12 @@
         }
 
         public void deleteProduct(Integer id) {
-            productRepository.deleteById(id);
+            Optional<Product> product = productRepository.findById(id);
+            if (product.isPresent()) {
+                productRepository.deleteById(id);
+            } else {
+                throw new RuntimeException("Product not found with id: " + id);
+            }
         }
 
         public Optional<Product> getProductById(Integer id) {

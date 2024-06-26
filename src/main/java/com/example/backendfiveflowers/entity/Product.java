@@ -23,7 +23,7 @@ public class Product {
 
     private String name;
 
-    @Column(length = 1000)
+    @Column(length = 10000)
     private String description;
 
     private double price;
