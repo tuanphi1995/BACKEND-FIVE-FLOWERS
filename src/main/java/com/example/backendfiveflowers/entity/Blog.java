@@ -22,6 +22,8 @@ public class Blog {
     private int blogId;
 
     private String title;
+
+    @Column(length = 10000)
     private String content;
     private String imageUrl; // Thêm trường này để lưu URL của ảnh
 
