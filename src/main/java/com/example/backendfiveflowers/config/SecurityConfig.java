@@ -44,11 +44,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/blogs/**").permitAll()
                         .requestMatchers("/api/v1/brands/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/v1/categories/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/v1/orders/add").hasAuthority("ROLE_USER") // Chỉ cho phép ROLE_USER thêm order
                         .requestMatchers("/api/v1/orders/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/v1/order_details/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/v1/payments/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/v1/reviews/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/api/v1/products/**").permitAll() // Cho phép truy cập công khai
+                        .requestMatchers("/api/v1/products/**").permitAll()
                         .requestMatchers("/api/v1/product_images/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/v1/order-details/**").hasAnyAuthority("ROLE_ADMIN","ROLE_USER")
                         .requestMatchers("/api/v1/images/**").permitAll()

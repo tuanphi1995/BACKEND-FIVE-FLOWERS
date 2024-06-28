@@ -1,6 +1,6 @@
 package com.example.backendfiveflowers.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -22,21 +23,11 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int orderId;
 
-    private int quantity;
     private double price;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserInfo user;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
-
-    @ManyToOne
-    @JoinColumn(name = "order_detail_id", referencedColumnName = "orderDetailId", nullable = true)
-    @JsonBackReference
-    private OrderDetail orderDetail;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -45,4 +36,8 @@ public class Order {
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<OrderDetail> orderDetails;
 }

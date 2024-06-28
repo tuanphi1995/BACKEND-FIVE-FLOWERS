@@ -16,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -46,36 +45,33 @@ public class OrderService {
             throw new RuntimeException("User not found");
         }
 
-        Optional<Product> productOptional = productRepository.findById(order.getProduct().getProductId());
-        if (!productOptional.isPresent()) {
-            logger.error("Product not found with ID: {}", order.getProduct().getProductId());
-            throw new RuntimeException("Product not found");
-        }
-
         order.setUser(userInfoOptional.get());
-        order.setProduct(productOptional.get());
 
-        OrderDetail orderDetail;
-        if (order.getOrderDetail() == null) {
-            orderDetail = new OrderDetail();
-            orderDetail.setOrderDate(LocalDateTime.now());
-            orderDetail.setShippingStatus("Pending");
-            orderDetail.setStatus("New");
-            orderDetail.setTotalAmount(order.getPrice() * order.getQuantity());
-            orderDetail.setUser(order.getUser());
+        double totalOrderPrice = 0.0;
 
-            orderDetail = orderDetailRepository.save(orderDetail);
-            order.setOrderDetail(orderDetail);
-        } else {
-            orderDetail = order.getOrderDetail();
-            orderDetail.setTotalAmount(order.getPrice() * order.getQuantity());
-            orderDetail = orderDetailRepository.save(orderDetail);
-            order.setOrderDetail(orderDetail);
+        for (OrderDetail orderDetail : order.getOrderDetails()) {
+            Optional<Product> productOptional = productRepository.findById(orderDetail.getProduct().getProductId());
+            if (!productOptional.isPresent()) {
+                logger.error("Product not found with ID: {}", orderDetail.getProduct().getProductId());
+                throw new RuntimeException("Product not found");
+            }
+            Product product = productOptional.get();
+            orderDetail.setProduct(product);
+            orderDetail.setOrder(order);
+            orderDetail.setStatus("Pending");  // Thiết lập trạng thái ban đầu
+
+            // Tính giá trị của từng chi tiết đơn hàng
+            double detailPrice = product.getPrice() * orderDetail.getQuantity();
+            orderDetail.setPrice(detailPrice);
+            totalOrderPrice += detailPrice;
         }
+
+        // Thiết lập tổng giá của đơn hàng
+        order.setOrderDetails(order.getOrderDetails());
+        order.setPrice(totalOrderPrice);
 
         return orderRepository.save(order);
     }
-
 
     @Transactional
     public Order updateOrder(Integer id, Order order) {
@@ -85,44 +81,31 @@ public class OrderService {
         }
 
         Order existingOrder = existingOrderOptional.get();
+        existingOrder.setOrderDetails(order.getOrderDetails());
+        existingOrder.setUser(order.getUser());
 
-        existingOrder.setQuantity(order.getQuantity());
-        existingOrder.setPrice(order.getPrice());
+        double totalOrderPrice = 0.0;
 
-        Optional<UserInfo> userInfoOptional = userInfoRepository.findById(order.getUser().getId());
-        if (!userInfoOptional.isPresent()) {
-            throw new RuntimeException("User not found");
+        for (OrderDetail orderDetail : existingOrder.getOrderDetails()) {
+            Optional<Product> productOptional = productRepository.findById(orderDetail.getProduct().getProductId());
+            if (!productOptional.isPresent()) {
+                throw new RuntimeException("Product not found");
+            }
+            Product product = productOptional.get();
+            orderDetail.setProduct(product);
+            orderDetail.setOrder(existingOrder);
+
+            // Tính giá trị của từng chi tiết đơn hàng
+            double detailPrice = product.getPrice() * orderDetail.getQuantity();
+            orderDetail.setPrice(detailPrice);
+            totalOrderPrice += detailPrice;
         }
 
-        Optional<Product> productOptional = productRepository.findById(order.getProduct().getProductId());
-        if (!productOptional.isPresent()) {
-            throw new RuntimeException("Product not found");
-        }
-
-        existingOrder.setUser(userInfoOptional.get());
-        existingOrder.setProduct(productOptional.get());
-
-        OrderDetail orderDetail;
-        if (existingOrder.getOrderDetail() == null) {
-            orderDetail = new OrderDetail();
-            orderDetail.setOrderDate(LocalDateTime.now());
-            orderDetail.setShippingStatus("Pending");
-            orderDetail.setStatus("New");
-            orderDetail.setTotalAmount(order.getPrice() * order.getQuantity());
-            orderDetail.setUser(order.getUser());
-            orderDetail = orderDetailRepository.save(orderDetail);
-            existingOrder.setOrderDetail(orderDetail);
-        } else {
-            orderDetail = existingOrder.getOrderDetail();
-            orderDetail.setTotalAmount(order.getPrice() * order.getQuantity());
-            orderDetail = orderDetailRepository.save(orderDetail);
-            existingOrder.setOrderDetail(orderDetail);
-        }
+        // Thiết lập tổng giá của đơn hàng
+        existingOrder.setPrice(totalOrderPrice);
 
         return orderRepository.save(existingOrder);
     }
-
-
 
     public void deleteOrder(Integer id) {
         orderRepository.deleteById(id);
