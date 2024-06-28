@@ -8,13 +8,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Service
 public class OrderDetailService {
-
-    private static final Logger logger = Logger.getLogger(OrderDetailService.class.getName());
 
     @Autowired
     private OrderDetailRepository orderDetailRepository;

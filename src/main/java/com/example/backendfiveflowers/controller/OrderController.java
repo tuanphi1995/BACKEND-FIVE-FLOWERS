@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/v1/orders")
 public class OrderController {
@@ -36,7 +38,8 @@ public class OrderController {
     @GetMapping("/get/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public Order getOrderById(@PathVariable Integer id) {
-        return orderService.getOrderById(id).orElse(null);
+        Optional<Order> orderOptional = orderService.getOrderById(id);
+        return orderOptional.orElse(null);
     }
 
     @GetMapping("/all")

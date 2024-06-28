@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;  // Thay đổi từ int thành Integer
 
     private String userName;
     private String password;

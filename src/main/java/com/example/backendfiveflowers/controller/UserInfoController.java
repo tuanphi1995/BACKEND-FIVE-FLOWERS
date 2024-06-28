@@ -6,8 +6,6 @@ import com.example.backendfiveflowers.entity.UserInfo;
 import com.example.backendfiveflowers.service.JwtService;
 import com.example.backendfiveflowers.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,7 +44,8 @@ public class UserInfoController {
             );
 
             if (authentication.isAuthenticated()) {
-                String token = jwtService.generateToken(authRequest.getUserName());
+                UserInfo userInfo = userInfoService.findByUserName(authRequest.getUserName());
+                String token = jwtService.generateToken(userInfo.getUserName());
                 return ResponseEntity.ok(new AuthResponse(token, "Success"));
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
@@ -56,6 +55,4 @@ public class UserInfoController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
     }
-
-
 }

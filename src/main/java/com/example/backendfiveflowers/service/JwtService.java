@@ -32,6 +32,8 @@ public class JwtService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", userInfo.getRoles());
+        claims.put("userId", userInfo.getId()); // Add userId to the claims
+        claims.put("userName", userInfo.getUserName()); // Add userName to the claims
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userName)

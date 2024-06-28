@@ -34,7 +34,10 @@ public class UserInfoService implements UserDetailsService {
         userInfoRepository.save(userInfo);
         return "User added successfully";
     }
-
+    public UserInfo findByUserName(String userName) {
+        return userInfoRepository.findByUserName(userName)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
     public Page<UserInfo> getAllUsers(Pageable pageable) {
         return userInfoRepository.findAll(pageable);
     }
