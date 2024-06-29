@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 public class Media {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "media_id")
     private Long id;
 
     private String fileName;

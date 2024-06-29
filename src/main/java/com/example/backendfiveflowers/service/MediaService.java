@@ -23,7 +23,7 @@ public class MediaService {
     private static final Logger LOGGER = Logger.getLogger(MediaService.class.getName());
 
     // Đường dẫn tuyệt đối đến thư mục lưu trữ ảnh
-    private final String uploadDir = "/Users/macbookprocuaphi/Documents/fEproject02/reactDoAnKy2/FONTEND-FIVE-FLOWERS/fontend-five-flowers/src/admin/media/img";
+    private final String uploadDir = "/Users/macbookprocuaphi/Documents/ractDoAnKy02/FONTEND-FIVE-FLOWERS/fontend-five-flowers/src/admin/media/img";
     private Path root;
 
     @Autowired
