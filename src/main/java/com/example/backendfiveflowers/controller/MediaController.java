@@ -3,8 +3,6 @@ package com.example.backendfiveflowers.controller;
 import com.example.backendfiveflowers.entity.Media;
 import com.example.backendfiveflowers.service.MediaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,9 +37,10 @@ public class MediaController {
         return ResponseEntity.ok(mediaService.getAllMedia());
     }
 
-    @GetMapping("/paged")
-    public ResponseEntity<Page<Media>> getAllMediaPaged(@RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(mediaService.getAllMediaPaged(PageRequest.of(page, size)));
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMedia(@PathVariable Long id) {
+        mediaService.deleteMedia(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")

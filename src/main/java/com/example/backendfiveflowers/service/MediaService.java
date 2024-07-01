@@ -9,6 +9,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import jakarta.annotation.PostConstruct;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,8 +26,8 @@ public class MediaService {
 
     private static final Logger LOGGER = Logger.getLogger(MediaService.class.getName());
 
-    // Đường dẫn tuyệt đối đến thư mục lưu trữ ảnh
-    private final String uploadDir = "/Users/macbookprocuaphi/Documents/ractDoAnKy02/FONTEND-FIVE-FLOWERS/fontend-five-flowers/src/admin/media/img";
+    private final String uploadDir = "/Users/macbookprocuaphi/Documents/ractDoAnKy02/FONTEND-FIVE-FLOWERS/fontend-five-flowers/public";
+    private final String mediaListFile = "/Users/macbookprocuaphi/Documents/ractDoAnKy02/FONTEND-FIVE-FLOWERS/fontend-five-flowers/public/media/mediaList.json";
     private Path root;
 
     @Autowired
@@ -34,7 +38,7 @@ public class MediaService {
         this.root = Paths.get(uploadDir).toAbsolutePath().normalize();
         LOGGER.info("Upload directory: " + this.root.toString());
         if (!Files.exists(root)) {
-            Files.createDirectories(root); // Đảm bảo thư mục tồn tại
+            Files.createDirectories(root);
             LOGGER.info("Directory created: " + this.root.toString());
         } else {
             LOGGER.info("Directory already exists: " + this.root.toString());
@@ -43,23 +47,13 @@ public class MediaService {
 
     public Media store(MultipartFile file) throws IOException {
         LOGGER.info("Received file: " + file.getOriginalFilename());
-        LOGGER.info("File size: " + file.getSize());
         Path targetLocation = this.root.resolve(file.getOriginalFilename());
-        LOGGER.info("Saving file to: " + targetLocation.toString());
+        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-        try {
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            LOGGER.info("File successfully copied to target location.");
-            Media media = new Media(file.getOriginalFilename(), file.getContentType(), "/admin/media/img/" + file.getOriginalFilename());
-            LOGGER.info("File saved successfully: " + media.getFilePath());
-            return mediaRepository.save(media);
-        } catch (IOException e) {
-            LOGGER.severe("Failed to save file: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            LOGGER.severe("Unexpected error: " + e.getMessage());
-            throw new IOException("Unexpected error during file saving", e);
-        }
+        Media media = new Media(file.getOriginalFilename(), file.getContentType(), "/" + file.getOriginalFilename());
+        Media savedMedia = mediaRepository.save(media);
+        updateMediaListJson();
+        return savedMedia;
     }
 
     public List<Media> getAllMedia() {
@@ -73,6 +67,31 @@ public class MediaService {
     public Media updateMedia(Long id, Media mediaDetails) {
         Media media = mediaRepository.findById(id).orElseThrow(() -> new RuntimeException("Media not found"));
         media.setFileName(mediaDetails.getFileName());
-        return mediaRepository.save(media);
+        Media updatedMedia = mediaRepository.save(media);
+        updateMediaListJson();
+        return updatedMedia;
+    }
+
+    public void deleteMedia(Long id) {
+        mediaRepository.deleteById(id);
+        updateMediaListJson();
+    }
+
+    private void updateMediaListJson() {
+        List<Media> mediaList = mediaRepository.findAll();
+        JSONArray jsonArray = new JSONArray();
+        for (Media media : mediaList) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", media.getId());
+            jsonObject.put("fileName", media.getFileName());
+            jsonObject.put("filePath", media.getFilePath());
+            jsonObject.put("createdAt", media.getCreatedAt().toString());
+            jsonArray.put(jsonObject);
+        }
+        try (FileWriter file = new FileWriter(mediaListFile)) {
+            file.write(jsonArray.toString(2));
+        } catch (IOException e) {
+            LOGGER.severe("Error writing JSON file: " + e.getMessage());
+        }
     }
 }
