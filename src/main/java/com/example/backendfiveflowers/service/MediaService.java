@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -26,8 +27,8 @@ public class MediaService {
 
     private static final Logger LOGGER = Logger.getLogger(MediaService.class.getName());
 
-    private final String uploadDir = "/Users/macbookprocuaphi/Documents/ractDoAnKy02/FONTEND-FIVE-FLOWERS/fontend-five-flowers/public";
-    private final String mediaListFile = "/Users/macbookprocuaphi/Documents/ractDoAnKy02/FONTEND-FIVE-FLOWERS/fontend-five-flowers/public/media/mediaList.json";
+    private final String uploadDir = "/Users/macbookprocuaphi/Documents/ractDoAnKy02/REAL/FONTEND-FIVE-FLOWERS/fontend-five-flowers/public/media";
+    private final String mediaListFile = "/Users/macbookprocuaphi/Documents/ractDoAnKy02/REAL/FONTEND-FIVE-FLOWERS/fontend-five-flowers/public/media/mediaList.json";
     private Path root;
 
     @Autowired
@@ -45,15 +46,19 @@ public class MediaService {
         }
     }
 
-    public Media store(MultipartFile file) throws IOException {
-        LOGGER.info("Received file: " + file.getOriginalFilename());
-        Path targetLocation = this.root.resolve(file.getOriginalFilename());
-        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+    public List<Media> storeFiles(MultipartFile[] files) throws IOException {
+        List<Media> savedMediaList = new ArrayList<>();
+        for (MultipartFile file : files) {
+            LOGGER.info("Received file: " + file.getOriginalFilename());
+            Path targetLocation = this.root.resolve(file.getOriginalFilename());
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-        Media media = new Media(file.getOriginalFilename(), file.getContentType(), "/" + file.getOriginalFilename());
-        Media savedMedia = mediaRepository.save(media);
+            Media media = new Media(file.getOriginalFilename(), file.getContentType(), "/media/" + file.getOriginalFilename());
+            Media savedMedia = mediaRepository.save(media);
+            savedMediaList.add(savedMedia);
+        }
         updateMediaListJson();
-        return savedMedia;
+        return savedMediaList;
     }
 
     public List<Media> getAllMedia() {

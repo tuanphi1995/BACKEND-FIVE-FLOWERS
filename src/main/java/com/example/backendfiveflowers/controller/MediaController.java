@@ -21,13 +21,13 @@ public class MediaController {
     private static final Logger LOGGER = Logger.getLogger(MediaController.class.getName());
 
     @PostMapping("/upload")
-    public ResponseEntity<Media> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<List<Media>> uploadFiles(@RequestParam("files") MultipartFile[] files) {
         try {
-            LOGGER.info("Received file upload request: " + file.getOriginalFilename());
-            Media media = mediaService.store(file);
-            return ResponseEntity.ok(media);
+            LOGGER.info("Received file upload request");
+            List<Media> mediaList = mediaService.storeFiles(files);
+            return ResponseEntity.ok(mediaList);
         } catch (IOException e) {
-            LOGGER.severe("Failed to upload file: " + e.getMessage());
+            LOGGER.severe("Failed to upload files: " + e.getMessage());
             return ResponseEntity.status(500).build();
         }
     }
