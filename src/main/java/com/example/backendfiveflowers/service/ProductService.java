@@ -80,4 +80,20 @@
         public Page<Product> getAllProducts(Pageable pageable) {
             return productRepository.findAll(pageable);
         }
+
+        public void reduceQuantity(int productId, int quantity) {
+            Optional<Product> existingProduct = productRepository.findById(productId);
+            if (existingProduct.isPresent()) {
+                Product product = existingProduct.get();
+                int newQuantity = product.getQuantity() - quantity;
+                if (newQuantity >= 0) {
+                    product.setQuantity(newQuantity);
+                    productRepository.save(product);
+                } else {
+                    throw new RuntimeException("Not enough stock available");
+                }
+            } else {
+                throw new RuntimeException("Product not found with id: " + productId);
+            }
+        }
     }

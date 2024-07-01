@@ -47,7 +47,6 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-
     @GetMapping("/get/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Integer id) {
         return productService.getProductById(id)
@@ -77,4 +76,10 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/reduceQuantity/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')")
+    public ResponseEntity<Void> reduceQuantity(@PathVariable Integer id, @RequestParam int quantity) {
+        productService.reduceQuantity(id, quantity);
+        return ResponseEntity.ok().build();
+    }
 }

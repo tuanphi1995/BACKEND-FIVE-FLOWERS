@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -26,6 +28,12 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private UserInfoService userInfoService;
 
+    // Danh sách các endpoint công khai
+    private static final List<String> EXCLUDED_PATHS = Arrays.asList(
+            "/api/v1/products/get/",
+            "/api/v1/products/all"
+    );
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
@@ -33,6 +41,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String username = null;
         String jwtToken = null;
+
+        // Kiểm tra xem request path có trong danh sách loại trừ không
+        String requestPath = request.getRequestURI();
+        if (EXCLUDED_PATHS.stream().anyMatch(requestPath::startsWith)) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
