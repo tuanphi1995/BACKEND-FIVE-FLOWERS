@@ -9,28 +9,31 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/categories")
-@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class CategoryController {
 
     @Autowired
     private CategoryService categoryService;
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/add")
     public Category addCategory(@RequestBody Category category) {
         return categoryService.addCategory(category);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/update/{id}")
     public Category updateCategory(@PathVariable Integer id, @RequestBody Category category) {
         category.setCategoryId(id); // Đảm bảo rằng ID được truyền từ URL được đặt vào đối tượng category
         return categoryService.updateCategory(category);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/delete/{id}")
     public void deleteCategory(@PathVariable Integer id) {
         categoryService.deleteCategory(id);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/get/{id}")
     public Category getCategoryById(@PathVariable Integer id) {
         return categoryService.getCategoryById(id).orElse(null);
