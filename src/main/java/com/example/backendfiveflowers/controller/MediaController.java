@@ -20,11 +20,11 @@ public class MediaController {
 
     private static final Logger LOGGER = Logger.getLogger(MediaController.class.getName());
 
-    @PostMapping("/upload")
-    public ResponseEntity<List<Media>> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+    @PostMapping("/upload/{productId}")
+    public ResponseEntity<List<Media>> uploadFiles(@RequestParam("files") MultipartFile[] files, @PathVariable int productId) {
         try {
             LOGGER.info("Received file upload request");
-            List<Media> mediaList = mediaService.storeFiles(files);
+            List<Media> mediaList = mediaService.storeFiles(files, productId);
             return ResponseEntity.ok(mediaList);
         } catch (IOException e) {
             LOGGER.severe("Failed to upload files: " + e.getMessage());
@@ -41,11 +41,5 @@ public class MediaController {
     public ResponseEntity<Void> deleteMedia(@PathVariable Long id) {
         mediaService.deleteMedia(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Media> updateMedia(@PathVariable Long id, @RequestBody Media mediaDetails) {
-        Media updatedMedia = mediaService.updateMedia(id, mediaDetails);
-        return ResponseEntity.ok(updatedMedia);
     }
 }

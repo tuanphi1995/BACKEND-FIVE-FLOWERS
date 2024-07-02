@@ -25,6 +25,10 @@ public class Media {
     private String fileType;
     private String filePath;
 
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product; // Thêm quan hệ ManyToOne với Product
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
