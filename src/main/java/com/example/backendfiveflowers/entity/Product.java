@@ -39,7 +39,7 @@ public class Product {
     private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Media> media; // Đổi tên từ productImages sang media để đồng nhất
+    private List<ProductImage> productImages; // Đổi tên từ productImages sang media để đồng nhất
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
