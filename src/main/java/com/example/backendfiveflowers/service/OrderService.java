@@ -2,12 +2,14 @@ package com.example.backendfiveflowers.service;
 
 import com.example.backendfiveflowers.entity.Order;
 import com.example.backendfiveflowers.entity.OrderDetail;
+import com.example.backendfiveflowers.entity.Payment;
 import com.example.backendfiveflowers.entity.Product;
 import com.example.backendfiveflowers.entity.UserInfo;
 import com.example.backendfiveflowers.repository.OrderRepository;
 import com.example.backendfiveflowers.repository.UserInfoRepository;
 import com.example.backendfiveflowers.repository.ProductRepository;
 import com.example.backendfiveflowers.repository.OrderDetailRepository;
+import com.example.backendfiveflowers.repository.PaymentRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
 @Service
 public class OrderService {
 
@@ -34,15 +37,18 @@ public class OrderService {
     @Autowired
     private OrderDetailRepository orderDetailRepository;
 
+    @Autowired
+    private PaymentRepository paymentRepository;
+
     @Transactional
     public Order addOrder(Order order) {
         if (order.getUser() == null || order.getUser().getId() == null) {
-            throw new RuntimeException("Thông tin người dùng bị thiếu trong đơn hàng.");
+            throw new RuntimeException("User information is missing from the order.");
         }
 
         Optional<UserInfo> userInfoOptional = userInfoRepository.findById(order.getUser().getId());
         if (!userInfoOptional.isPresent()) {
-            throw new RuntimeException("Không tìm thấy người dùng với ID: " + order.getUser().getId());
+            throw new RuntimeException("User with ID not found: " + order.getUser().getId());
         }
 
         order.setUser(userInfoOptional.get());
@@ -52,7 +58,7 @@ public class OrderService {
         for (OrderDetail orderDetail : order.getOrderDetails()) {
             Optional<Product> productOptional = productRepository.findById(orderDetail.getProduct().getProductId());
             if (!productOptional.isPresent()) {
-                throw new RuntimeException("Không tìm thấy sản phẩm với ID: " + orderDetail.getProduct().getProductId());
+                throw new RuntimeException("No products found with ID: " + orderDetail.getProduct().getProductId());
             }
             Product product = productOptional.get();
             orderDetail.setProduct(product);
@@ -66,6 +72,12 @@ public class OrderService {
 
         order.setOrderDetails(order.getOrderDetails());
         order.setPrice(totalOrderPrice);
+
+        Payment payment = order.getPayment();
+        if (payment != null) {
+            payment = paymentRepository.save(payment);
+            order.setPayment(payment);
+        }
 
         return orderRepository.save(order);
     }
@@ -97,6 +109,12 @@ public class OrderService {
         }
 
         existingOrder.setPrice(totalOrderPrice);
+
+        Payment payment = order.getPayment();
+        if (payment != null) {
+            payment = paymentRepository.save(payment);
+            existingOrder.setPayment(payment);
+        }
 
         return orderRepository.save(existingOrder);
     }

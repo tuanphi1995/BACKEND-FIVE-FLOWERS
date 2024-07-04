@@ -19,19 +19,10 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int paymentId;
-    private double amount;
+
+    private String paymentMethod;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime paymentDate;
-
-    private String paymentMethod;
-
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private OrderDetail orderDetail;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserInfo user;
 }

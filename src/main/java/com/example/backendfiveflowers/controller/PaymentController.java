@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/payments")
 public class PaymentController {
@@ -16,7 +18,7 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @PostMapping("/add")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Payment addPayment(@RequestBody Payment payment) {
         return paymentService.addPayment(payment);
     }
@@ -41,7 +43,7 @@ public class PaymentController {
 
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public Page<Payment> getAllPayments(Pageable pageable) {
-        return paymentService.getAllPayments(pageable);
+    public List<Payment> getAllPayments() {
+        return paymentService.getAllPayments();
     }
 }
