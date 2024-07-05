@@ -28,7 +28,8 @@ public class Address {
     private String country;
     private String postalCode;
     private String phone;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserInfo user;
 

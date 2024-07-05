@@ -28,6 +28,7 @@ public class AddressController {
         return ResponseEntity.ok(newAddress);
     }
 
+
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<Address> updateAddress(@PathVariable Integer id, @RequestBody Address addressDetails) {

@@ -33,27 +33,30 @@ public class OrderService {
     private PaymentRepository paymentRepository;
 
     @Autowired
-    private AddressRepository addressRepository; // Thêm AddressRepository
+    private AddressRepository addressRepository;
 
     @Transactional
     public Order addOrder(Order order) {
-        if (order.getUser() == null || order.getUser().getId() == null) {
-            throw new RuntimeException("User information is missing from the order.");
-        }
-
         Optional<UserInfo> userInfoOptional = userInfoRepository.findById(order.getUser().getId());
         if (!userInfoOptional.isPresent()) {
-            throw new RuntimeException("User with ID not found: " + order.getUser().getId());
+            throw new RuntimeException("User not found");
         }
-
         order.setUser(userInfoOptional.get());
 
-        double totalOrderPrice = 0.0;
+        Optional<Address> addressOptional = addressRepository.findById(order.getAddress().getAddressId());
+        if (!addressOptional.isPresent()) {
+            throw new RuntimeException("Address not found");
+        }
+        order.setAddress(addressOptional.get());
 
+        Payment payment = paymentRepository.save(order.getPayment());
+        order.setPayment(payment);
+
+        double totalOrderPrice = 0.0;
         for (OrderDetail orderDetail : order.getOrderDetails()) {
             Optional<Product> productOptional = productRepository.findById(orderDetail.getProduct().getProductId());
             if (!productOptional.isPresent()) {
-                throw new RuntimeException("No products found with ID: " + orderDetail.getProduct().getProductId());
+                throw new RuntimeException("Product not found");
             }
             Product product = productOptional.get();
             orderDetail.setProduct(product);
@@ -65,20 +68,7 @@ public class OrderService {
             totalOrderPrice += detailPrice;
         }
 
-        order.setOrderDetails(order.getOrderDetails());
         order.setPrice(totalOrderPrice);
-
-        Payment payment = order.getPayment();
-        if (payment != null) {
-            payment = paymentRepository.save(payment);
-            order.setPayment(payment);
-        }
-
-        Address address = order.getAddress();
-        if (address != null) {
-            address = addressRepository.save(address);
-            order.setAddress(address);
-        }
 
         return orderRepository.save(order);
     }
