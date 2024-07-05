@@ -1,15 +1,7 @@
 package com.example.backendfiveflowers.service;
 
-import com.example.backendfiveflowers.entity.Order;
-import com.example.backendfiveflowers.entity.OrderDetail;
-import com.example.backendfiveflowers.entity.Payment;
-import com.example.backendfiveflowers.entity.Product;
-import com.example.backendfiveflowers.entity.UserInfo;
-import com.example.backendfiveflowers.repository.OrderRepository;
-import com.example.backendfiveflowers.repository.UserInfoRepository;
-import com.example.backendfiveflowers.repository.ProductRepository;
-import com.example.backendfiveflowers.repository.OrderDetailRepository;
-import com.example.backendfiveflowers.repository.PaymentRepository;
+import com.example.backendfiveflowers.entity.*;
+import com.example.backendfiveflowers.repository.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +31,9 @@ public class OrderService {
 
     @Autowired
     private PaymentRepository paymentRepository;
+
+    @Autowired
+    private AddressRepository addressRepository; // Thêm AddressRepository
 
     @Transactional
     public Order addOrder(Order order) {
@@ -79,6 +74,12 @@ public class OrderService {
             order.setPayment(payment);
         }
 
+        Address address = order.getAddress();
+        if (address != null) {
+            address = addressRepository.save(address);
+            order.setAddress(address);
+        }
+
         return orderRepository.save(order);
     }
 
@@ -114,6 +115,12 @@ public class OrderService {
         if (payment != null) {
             payment = paymentRepository.save(payment);
             existingOrder.setPayment(payment);
+        }
+
+        Address address = order.getAddress();
+        if (address != null) {
+            address = addressRepository.save(address);
+            existingOrder.setAddress(address);
         }
 
         return orderRepository.save(existingOrder);
