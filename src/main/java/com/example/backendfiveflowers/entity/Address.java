@@ -20,13 +20,14 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int addressId;
 
-    private String addressLine1;
-    private String addressLine2;
+    private String firstName;
+    private String lastName;
+    private String address;
+    private String apartment;
     private String city;
-    private String state;
     private String country;
     private String postalCode;
-
+    private String phone;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserInfo user;
