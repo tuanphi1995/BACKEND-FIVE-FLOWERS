@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -47,5 +48,10 @@ public class OrderController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Page<Order> getAllOrders(Pageable pageable) {
         return orderService.getAllOrders(pageable);
+    }
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public List<Order> getOrdersByUserId(@PathVariable Integer userId) {
+        return orderService.getOrdersByUserId(userId);
     }
 }
