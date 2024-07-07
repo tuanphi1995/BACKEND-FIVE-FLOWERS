@@ -128,6 +128,7 @@ public class OrderService {
     public Page<Order> getAllOrders(Pageable pageable) {
         return orderRepository.findAll(pageable);
     }
+
     public List<Order> getOrdersByUserId(Integer userId) {
         return orderRepository.findByUserId(userId);
     }

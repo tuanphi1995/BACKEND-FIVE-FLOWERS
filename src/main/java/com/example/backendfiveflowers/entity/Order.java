@@ -1,6 +1,7 @@
 // Order.java
 package com.example.backendfiveflowers.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,8 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

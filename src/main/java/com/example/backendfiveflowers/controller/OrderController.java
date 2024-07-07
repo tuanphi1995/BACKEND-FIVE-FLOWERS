@@ -49,6 +49,7 @@ public class OrderController {
     public Page<Order> getAllOrders(Pageable pageable) {
         return orderService.getAllOrders(pageable);
     }
+
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public List<Order> getOrdersByUserId(@PathVariable Integer userId) {
