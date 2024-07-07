@@ -21,7 +21,6 @@ import java.util.List;
 @Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,6 +39,8 @@ public class Order {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "payment_id")
     private Payment payment;
+
+    private String status;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

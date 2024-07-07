@@ -70,6 +70,7 @@ public class OrderService {
         }
 
         order.setPrice(totalOrderPrice);
+        order.setStatus("Pending");
 
         return orderRepository.save(order);
     }
@@ -83,6 +84,7 @@ public class OrderService {
         Order existingOrder = existingOrderOptional.get();
         existingOrder.setOrderDetails(order.getOrderDetails());
         existingOrder.setUser(order.getUser());
+        existingOrder.setStatus(order.getStatus());
 
         double totalOrderPrice = 0.0;
 
