@@ -1,7 +1,9 @@
 package com.example.backendfiveflowers.controller;
 
 import com.example.backendfiveflowers.entity.Blog;
+import com.example.backendfiveflowers.service.BlogCrawlingService;
 import com.example.backendfiveflowers.service.BlogService;
+import com.example.backendfiveflowers.service.NewsSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,12 +12,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/v1/blogs")
 public class BlogController {
 
     @Autowired
     private BlogService blogService;
+
+    @Autowired
+    private BlogCrawlingService blogCrawlingService;
+
+    @Autowired
+    private NewsSearchService newsSearchService;
 
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -50,5 +60,27 @@ public class BlogController {
     @GetMapping("/all")
     public Page<Blog> getAllBlogs(Pageable pageable) {
         return blogService.getAllBlogs(pageable);
+    }
+
+    @GetMapping("/crawl")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<String> crawlBlogPosts(@RequestParam String url) {
+        try {
+            blogCrawlingService.crawlBlogPosts(url);
+            return ResponseEntity.ok("Crawling completed successfully.");
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Error during crawling: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<String> searchNews(@RequestParam String query) {
+        try {
+            newsSearchService.searchAndSaveNews(query);
+            return ResponseEntity.ok("Search and save completed successfully.");
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Error during search: " + e.getMessage());
+        }
     }
 }
