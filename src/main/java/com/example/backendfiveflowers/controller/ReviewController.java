@@ -16,20 +16,20 @@ public class ReviewController {
     private ReviewService reviewService;
 
     @PostMapping("/add")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public Review addReview(@RequestBody Review review) {
         return reviewService.addReview(review);
     }
 
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public Review updateReview(@PathVariable Integer id, @RequestBody Review review) {
         review.setReviewId(id);
         return reviewService.updateReview(id, review);
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void deleteReview(@PathVariable Integer id) {
         reviewService.deleteReview(id);
     }
@@ -41,7 +41,6 @@ public class ReviewController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Page<Review> getAllReviews(Pageable pageable) {
         return reviewService.getAllReviews(pageable);
     }

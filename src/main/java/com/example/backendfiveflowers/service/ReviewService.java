@@ -53,11 +53,17 @@ public class ReviewService {
     }
 
     private void validateReviewEntities(Review review) {
+        if (review.getUser() == null || review.getUser().getId() == null) {
+            throw new RuntimeException("User ID must not be null");
+        }
         Optional<UserInfo> userInfoOptional = userInfoRepository.findById(review.getUser().getId());
         if (!userInfoOptional.isPresent()) {
             throw new RuntimeException("User not found");
         }
 
+        if (review.getProduct() == null || review.getProduct().getProductId() == 0) {
+            throw new RuntimeException("Product ID must not be null");
+        }
         Optional<Product> productOptional = productRepository.findById(review.getProduct().getProductId());
         if (!productOptional.isPresent()) {
             throw new RuntimeException("Product not found");

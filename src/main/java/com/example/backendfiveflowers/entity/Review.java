@@ -1,6 +1,5 @@
 package com.example.backendfiveflowers.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
