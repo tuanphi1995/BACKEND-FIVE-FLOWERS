@@ -62,17 +62,7 @@ public class BlogController {
         return blogService.getAllBlogs(pageable);
     }
 
-    @GetMapping("/crawl")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<String> crawlBlogPosts(@RequestParam String url) {
-        try {
-            blogCrawlingService.crawlBlogPosts(url);
-            return ResponseEntity.ok("Crawling completed successfully.");
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body("Error during crawling: " + e.getMessage());
-        }
-    }
-
+    // Thêm endpoint để tìm kiếm và lưu trữ tin tức
     @GetMapping("/search")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<String> searchNews(@RequestParam String query) {
