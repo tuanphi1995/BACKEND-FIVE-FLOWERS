@@ -7,17 +7,23 @@ import com.example.backendfiveflowers.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -99,5 +105,108 @@ public class BlogService {
         } else {
             return principal.toString();
         }
+    }
+
+    public List<Blog> fetchBicycleNews() {
+        // Sử dụng RestTemplate để gọi API tìm kiếm tin tức
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://newsapi.org/v2/everything?q=bicycle&apiKey=YOUR_API_KEY"; // Thay YOUR_API_KEY bằng API key của bạn
+        NewsResponse response = restTemplate.getForObject(url, NewsResponse.class);
+
+        // Xử lý và lưu tin tức vào blog
+        if (response != null && response.getArticles() != null) {
+            response.getArticles().forEach(article -> {
+                String summarizedContent = summarizeContent(article.getDescription());
+
+                Blog blog = new Blog();
+                blog.setTitle(article.getTitle());
+                blog.setContent(summarizedContent);
+                blog.setImageUrl(article.getUrlToImage());
+                blog.setCreatedAt(LocalDateTime.now());
+                blog.setUpdatedAt(LocalDateTime.now());
+
+                // Gán author cho blog
+                String username = getCurrentUsername();
+                Optional<UserInfo> userInfoOptional = userInfoRepository.findByUserName(username);
+                userInfoOptional.ifPresent(blog::setAuthor);
+
+                blogRepository.save(blog);
+            });
+        }
+        return blogRepository.findAll(); // Trả về danh sách blog sau khi thêm tin tức
+    }
+
+    private String summarizeContent(String content) {
+        // Gọi API của mô hình AI để tóm tắt nội dung
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = "https://api.openai.com/v1/engines/davinci-codex/completions";
+        String apiKey = "YOUR_OPENAI_API_KEY"; // Thay YOUR_OPENAI_API_KEY bằng API key của bạn
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(apiKey);
+
+        Map<String, Object> requestPayload = new HashMap<>();
+        requestPayload.put("prompt", "Summarize this content: " + content);
+        requestPayload.put("max_tokens", 100);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestPayload, headers);
+
+        ResponseEntity<Map> response = restTemplate.postForEntity(apiUrl, request, Map.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            Map<String, Object> responseBody = response.getBody();
+            if (responseBody != null && responseBody.containsKey("choices")) {
+                List<Map<String, Object>> choices = (List<Map<String, Object>>) responseBody.get("choices");
+                if (!choices.isEmpty()) {
+                    return (String) choices.get(0).get("text");
+                }
+            }
+        }
+
+        return content; // Trả về nội dung gốc nếu không tóm tắt được
+    }
+}
+
+// Lớp để ánh xạ dữ liệu từ API tìm kiếm tin tức
+class NewsResponse {
+    private List<Article> articles;
+
+    public List<Article> getArticles() {
+        return articles;
+    }
+
+    public void setArticles(List<Article> articles) {
+        this.articles = articles;
+    }
+}
+
+class Article {
+    private String title;
+    private String description;
+    private String urlToImage;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getUrlToImage() {
+        return urlToImage;
+    }
+
+    public void setUrlToImage(String urlToImage) {
+        this.urlToImage = urlToImage;
     }
 }

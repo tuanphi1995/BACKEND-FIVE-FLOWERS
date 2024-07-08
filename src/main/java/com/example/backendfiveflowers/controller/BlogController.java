@@ -1,9 +1,7 @@
 package com.example.backendfiveflowers.controller;
 
 import com.example.backendfiveflowers.entity.Blog;
-import com.example.backendfiveflowers.service.BlogCrawlingService;
 import com.example.backendfiveflowers.service.BlogService;
-import com.example.backendfiveflowers.service.NewsSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/blogs")
@@ -20,12 +19,6 @@ public class BlogController {
 
     @Autowired
     private BlogService blogService;
-
-    @Autowired
-    private BlogCrawlingService blogCrawlingService;
-
-    @Autowired
-    private NewsSearchService newsSearchService;
 
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -62,15 +55,10 @@ public class BlogController {
         return blogService.getAllBlogs(pageable);
     }
 
-    // Thêm endpoint để tìm kiếm và lưu trữ tin tức
-    @GetMapping("/search")
+    // Thêm phương thức để tìm kiếm và đăng tin tức về xe đạp
+    @PostMapping("/fetch-news")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<String> searchNews(@RequestParam String query) {
-        try {
-            newsSearchService.searchAndSaveNews(query);
-            return ResponseEntity.ok("Search and save completed successfully.");
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body("Error during search: " + e.getMessage());
-        }
+    public List<Blog> fetchNews() {
+        return blogService.fetchBicycleNews();
     }
 }
