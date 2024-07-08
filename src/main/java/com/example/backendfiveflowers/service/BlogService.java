@@ -12,8 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -110,7 +110,7 @@ public class BlogService {
     public List<Blog> fetchBicycleNews() {
         // Sử dụng RestTemplate để gọi API tìm kiếm tin tức
         RestTemplate restTemplate = new RestTemplate();
-        String url = "https://newsapi.org/v2/everything?q=bicycle&apiKey=YOUR_API_KEY"; // Thay YOUR_API_KEY bằng API key của bạn
+        String url = "https://newsapi.org/v2/everything?q=bicycle&apiKey=d8a0a2831ea443a1b746f7cdcd0c8e1b"; // Thay YOUR_API_KEY bằng API key của bạn
         NewsResponse response = restTemplate.getForObject(url, NewsResponse.class);
 
         // Xử lý và lưu tin tức vào blog
@@ -139,14 +139,15 @@ public class BlogService {
     private String summarizeContent(String content) {
         // Gọi API của mô hình AI để tóm tắt nội dung
         RestTemplate restTemplate = new RestTemplate();
-        String apiUrl = "https://api.openai.com/v1/engines/davinci-codex/completions";
-        String apiKey = "YOUR_OPENAI_API_KEY"; // Thay YOUR_OPENAI_API_KEY bằng API key của bạn
+        String apiUrl = "https://api.openai.com/v1/completions";
+        String apiKey = "YOUR_NEW_OPENAI_API_KEY"; // Thay YOUR_NEW_OPENAI_API_KEY bằng API key mới của bạn
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
 
         Map<String, Object> requestPayload = new HashMap<>();
+        requestPayload.put("model", "gpt-3.5-turbo"); // Sử dụng mô hình mới
         requestPayload.put("prompt", "Summarize this content: " + content);
         requestPayload.put("max_tokens", 100);
 
