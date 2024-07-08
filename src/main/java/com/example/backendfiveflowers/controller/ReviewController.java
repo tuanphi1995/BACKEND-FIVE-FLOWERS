@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/reviews")
 public class ReviewController {
@@ -43,5 +45,10 @@ public class ReviewController {
     @GetMapping("/all")
     public Page<Review> getAllReviews(Pageable pageable) {
         return reviewService.getAllReviews(pageable);
+    }
+
+    @GetMapping("/product/{productId}")
+    public List<Review> getReviewsByProductId(@PathVariable Integer productId) {
+        return reviewService.getReviewsByProductId(productId); // Thêm endpoint này
     }
 }

@@ -52,7 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/reviews/update/**").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/v1/reviews/delete/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/v1/reviews/all").permitAll()
-                        .requestMatchers("/api/v1/reviews/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/api/v1/reviews/product/**").permitAll() // Cho phép truy cập công khai
                         .requestMatchers("/api/v1/products/**").permitAll()
                         .requestMatchers("/api/v1/product_images/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/v1/order-details/**").hasAnyAuthority("ROLE_ADMIN","ROLE_USER")

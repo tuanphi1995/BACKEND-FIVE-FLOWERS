@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -50,6 +51,10 @@ public class ReviewService {
         Page<Review> reviews = reviewRepository.findAll(pageable);
         reviews.forEach(this::mapReviewEntities);
         return reviews;
+    }
+
+    public List<Review> getReviewsByProductId(Integer productId) {
+        return reviewRepository.findByProduct_ProductId(productId); // Thêm phương thức này
     }
 
     private void validateReviewEntities(Review review) {
