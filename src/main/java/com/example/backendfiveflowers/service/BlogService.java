@@ -6,6 +6,8 @@ import com.example.backendfiveflowers.model.Article;
 import com.example.backendfiveflowers.model.NewsResponse;
 import com.example.backendfiveflowers.repository.BlogRepository;
 import com.example.backendfiveflowers.repository.UserInfoRepository;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -107,16 +109,16 @@ public class BlogService {
 
     public List<Blog> fetchBicycleNews() {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "https://newsapi.org/v2/everything?q=bicycle&apiKey=d8a0a2831ea443a1b746f7cdcd0c8e1b"; // Thay YOUR_NEWSAPI_KEY bằng API key của bạn
+        String url = "https://newsapi.org/v2/everything?q=bicycle&apiKey=d8a0a2831ea443a1b746f7cdcd0c8e1b";
         NewsResponse response = restTemplate.getForObject(url, NewsResponse.class);
 
         if (response != null && response.getArticles() != null) {
             response.getArticles().forEach(article -> {
-                String summarizedContent = summarizeContent(article.getDescription());
+                String fullContent = fetchFullContentFromUrl(article.getUrl());
 
                 Blog blog = new Blog();
                 blog.setTitle(article.getTitle());
-                blog.setContent(summarizedContent);
+                blog.setContent(fullContent);
                 blog.setImageUrl(article.getUrlToImage());
                 blog.setCreatedAt(LocalDateTime.now());
                 blog.setUpdatedAt(LocalDateTime.now());
@@ -131,20 +133,18 @@ public class BlogService {
         return blogRepository.findAll();
     }
 
-    // Phương thức tìm kiếm bài viết theo từ khóa
     public NewsResponse searchArticles(String keyword) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://newsapi.org/v2/everything?q=" + keyword + "&sortBy=publishedAt&apiKey=d8a0a2831ea443a1b746f7cdcd0c8e1b";
         return restTemplate.getForObject(url, NewsResponse.class);
     }
 
-    // Phương thức xử lý và lưu bài viết từ kết quả tìm kiếm
     public void processAndSaveArticle(Article article) {
-        String summarizedContent = summarizeContent(article.getDescription());
+        String fullContent = fetchFullContentFromUrl(article.getUrl());
 
         Blog blog = new Blog();
         blog.setTitle(article.getTitle());
-        blog.setContent(summarizedContent);
+        blog.setContent(fullContent);
         blog.setImageUrl(article.getUrlToImage());
         blog.setCreatedAt(LocalDateTime.now());
         blog.setUpdatedAt(LocalDateTime.now());
@@ -156,17 +156,32 @@ public class BlogService {
         blogRepository.save(blog);
     }
 
+    private String fetchFullContentFromUrl(String url) {
+        try {
+            Document doc = Jsoup.connect(url).get();
+            // Giả sử nội dung bài viết nằm trong thẻ <article> hoặc <div class="content">
+            String content = doc.select("article").text();
+            if (content.isEmpty()) {
+                content = doc.select("div.content").text();
+            }
+            return content;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Unable to fetch full content.";
+        }
+    }
+
     private String summarizeContent(String content) {
         RestTemplate restTemplate = new RestTemplate();
         String apiUrl = "https://api.openai.com/v1/completions";
-        String apiKey = "sk-proj-4jth32x6Whl4T6P3OEtdT3BlbkFJWq8zkqeBPqMoyY5qfsHV"; // Thay YOUR_OPENAI_API_KEY bằng API key của bạn
+        String apiKey = "sk-proj-4jth32x6Whl4T6P3OEtdT3BlbkFJWq8zkqeBPqMoyY5qfsHV";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
 
         Map<String, Object> requestPayload = new HashMap<>();
-        requestPayload.put("model", "gpt-3.5-turbo"); // Sử dụng model mới
+        requestPayload.put("model", "gpt-3.5-turbo");
         requestPayload.put("prompt", "Summarize this content: " + content);
         requestPayload.put("max_tokens", 100);
 
