@@ -49,6 +49,7 @@ public class ProductImageController {
         return ResponseEntity.ok(productImageService.getAllProductImages());
     }
 
+
     @PostMapping("/upload/{productId}")
     public ResponseEntity<Map<String, Object>> uploadProductImages(@RequestParam("files") MultipartFile[] files, @PathVariable int productId) {
         List<ProductImage> savedProductImages = productImageService.saveImages(files, productId);
