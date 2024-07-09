@@ -40,8 +40,6 @@ public class ProductImageService {
         }
     }
 
-    // Other methods...
-
     public List<ProductImage> updateImages(int productId, MultipartFile[] files) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (!productOptional.isPresent()) {
@@ -94,14 +92,12 @@ public class ProductImageService {
         Optional<ProductImage> productImageOptional = productImageRepository.findById(id);
         if (productImageOptional.isPresent()) {
             ProductImage productImage = productImageOptional.get();
-            // Delete the image file from the file system
             Path filePath = Paths.get(productImage.getImageUrl());
             try {
                 Files.deleteIfExists(filePath);
             } catch (IOException e) {
                 logger.error("Could not delete file: " + filePath, e);
             }
-            // Delete the record from the database
             productImageRepository.deleteById(id);
         }
     }
@@ -120,6 +116,7 @@ public class ProductImageService {
     public List<ProductImage> getAllProductImages() {
         return productImageRepository.findAll();
     }
+
 
     public List<ProductImage> saveImages(MultipartFile[] files, int productId) {
         Optional<Product> productOptional = productRepository.findById(productId);
@@ -156,5 +153,31 @@ public class ProductImageService {
         }
         Product product = productOptional.get();
         return productImageRepository.findByProduct(product);
+    }
+
+    public void addExistingImages(int productId, List<String> imageUrls) {
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if (!productOptional.isPresent()) {
+            throw new RuntimeException("Product not found");
+        }
+
+        Product product = productOptional.get();
+        for (String imageUrl : imageUrls) {
+            // Kiểm tra xem ảnh đã tồn tại chưa
+            Optional<ProductImage> existingImage = productImageRepository.findByImageUrl(imageUrl);
+            if (existingImage.isPresent()) {
+                ProductImage productImage = existingImage.get();
+                // Kiểm tra xem ảnh đã liên kết với sản phẩm chưa
+                if (!productImage.getProduct().equals(product)) {
+                    productImage.setProduct(product);
+                    productImageRepository.save(productImage);
+                }
+            } else {
+                ProductImage productImage = new ProductImage();
+                productImage.setImageUrl(imageUrl);
+                productImage.setProduct(product);
+                productImageRepository.save(productImage);
+            }
+        }
     }
 }

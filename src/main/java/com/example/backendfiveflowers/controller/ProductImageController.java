@@ -46,8 +46,11 @@ public class ProductImageController {
 
     @GetMapping("/all")
     public ResponseEntity<List<ProductImage>> getAllProductImages() {
-        return ResponseEntity.ok(productImageService.getAllProductImages());
+        List<ProductImage> productImages = productImageService.getAllProductImages();
+        // Không thêm phần "/api/v1/images/" vào đường dẫn ảnh
+        return ResponseEntity.ok(productImages);
     }
+
 
 
     @PostMapping("/upload/{productId}")

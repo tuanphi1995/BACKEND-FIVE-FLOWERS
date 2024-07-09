@@ -1,8 +1,9 @@
 package com.example.backendfiveflowers.controller;
 
 import com.example.backendfiveflowers.entity.Product;
-import com.example.backendfiveflowers.service.ProductService;
+import com.example.backendfiveflowers.entity.ProductImage;
 import com.example.backendfiveflowers.service.ProductImageService;
+import com.example.backendfiveflowers.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -74,6 +76,13 @@ public class ProductController {
             response.put("error", e.getMessage());
         }
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/add/existing-images/{productId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Void> addExistingImages(@PathVariable int productId, @RequestBody List<String> imageUrls) {
+        productImageService.addExistingImages(productId, imageUrls);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/reduceQuantity/{id}")
