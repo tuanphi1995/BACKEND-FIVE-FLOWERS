@@ -53,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/reviews/add").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/v1/reviews/update/**").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/v1/reviews/delete/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/v1/reviews/reviewed-products").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/v1/reviews/all").permitAll()
                         .requestMatchers("/api/v1/reviews/product/**").permitAll()
                         .requestMatchers("/api/v1/products/**").permitAll()

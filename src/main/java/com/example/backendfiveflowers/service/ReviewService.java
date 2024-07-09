@@ -54,7 +54,11 @@ public class ReviewService {
     }
 
     public List<Review> getReviewsByProductId(Integer productId) {
-        return reviewRepository.findByProduct_ProductId(productId); // Thêm phương thức này
+        return reviewRepository.findByProduct_ProductId(productId);
+    }
+
+    public Page<Product> getReviewedProducts(Pageable pageable) {
+        return reviewRepository.findReviewedProducts(pageable);
     }
 
     private void validateReviewEntities(Review review) {

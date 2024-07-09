@@ -1,5 +1,6 @@
 package com.example.backendfiveflowers.controller;
 
+import com.example.backendfiveflowers.entity.Product;
 import com.example.backendfiveflowers.entity.Review;
 import com.example.backendfiveflowers.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,5 +51,9 @@ public class ReviewController {
     @GetMapping("/product/{productId}")
     public List<Review> getReviewsByProductId(@PathVariable Integer productId) {
         return reviewService.getReviewsByProductId(productId); // Thêm endpoint này
+    }
+    @GetMapping("/reviewed-products")
+    public Page<Product> getReviewedProducts(Pageable pageable) {
+        return reviewService.getReviewedProducts(pageable);
     }
 }
