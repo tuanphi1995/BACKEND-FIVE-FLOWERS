@@ -31,7 +31,9 @@ public class JwtFilter extends OncePerRequestFilter {
     // Danh sách các endpoint công khai
     private static final List<String> EXCLUDED_PATHS = Arrays.asList(
             "/api/v1/products/get/",
-            "/api/v1/products/all"
+            "/api/v1/products/all",
+            "/api/v1/brands/all", // Thêm endpoint công khai
+            "/api/v1/categories/all" // Thêm endpoint công khai
     );
 
     @Override

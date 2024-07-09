@@ -34,7 +34,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)
+                .cors().and() // Cho phép CORS
+                .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/welcome", "/api/v1/user/addUser", "/api/v1/user/login").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasAuthority("ROLE_ADMIN")
@@ -52,7 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/reviews/update/**").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/v1/reviews/delete/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/v1/reviews/all").permitAll()
-                        .requestMatchers("/api/v1/reviews/product/**").permitAll() // Cho phép truy cập công khai
+                        .requestMatchers("/api/v1/reviews/product/**").permitAll()
                         .requestMatchers("/api/v1/products/**").permitAll()
                         .requestMatchers("/api/v1/product_images/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/v1/order-details/**").hasAnyAuthority("ROLE_ADMIN","ROLE_USER")
