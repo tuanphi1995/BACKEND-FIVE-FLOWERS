@@ -121,7 +121,7 @@ public class BlogService {
                 Blog blog = new Blog();
                 blog.setTitle(article.getTitle());
                 blog.setContent(fullContent);
-                blog.setImageUrl(article.getUrlToImage());
+                blog.setImageUrl(getFirstImageUrl(fullContent));
                 blog.setCreatedAt(LocalDateTime.now());
                 blog.setUpdatedAt(LocalDateTime.now());
 
@@ -147,7 +147,7 @@ public class BlogService {
         Blog blog = new Blog();
         blog.setTitle(article.getTitle());
         blog.setContent(fullContent);
-        blog.setImageUrl(article.getUrlToImage());
+        blog.setImageUrl(getFirstImageUrl(fullContent));
         blog.setCreatedAt(LocalDateTime.now());
         blog.setUpdatedAt(LocalDateTime.now());
 
@@ -180,6 +180,12 @@ public class BlogService {
             e.printStackTrace();
             return "Unable to fetch full content.";
         }
+    }
+
+    private String getFirstImageUrl(String content) {
+        Document doc = Jsoup.parse(content);
+        Element img = doc.select("img").first();
+        return img != null ? img.absUrl("src") : null;
     }
 
     private String summarizeContent(String content) {
