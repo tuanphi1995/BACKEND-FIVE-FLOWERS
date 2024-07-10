@@ -2,6 +2,7 @@ package com.example.backendfiveflowers.controller;
 
 import com.example.backendfiveflowers.entity.Blog;
 import com.example.backendfiveflowers.model.Article;
+import com.example.backendfiveflowers.model.NewsResponse;
 import com.example.backendfiveflowers.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -55,25 +56,19 @@ public class BlogController {
         return blogService.getAllBlogs(pageable);
     }
 
-    // Thêm phương thức để tìm kiếm bài viết theo từ khóa
-    @GetMapping("/search")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> searchArticles(@RequestParam("keyword") String keyword) {
-        return ResponseEntity.ok(blogService.searchArticles(keyword));
-    }
-
-    // Thêm phương thức để xử lý và lưu bài viết từ kết quả tìm kiếm
-    @PostMapping("/process-article")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> processArticle(@RequestBody Article article) {
-        blogService.processAndSaveArticle(article);
-        return ResponseEntity.ok().build();
-    }
-
-    // Thêm phương thức để tìm kiếm và đăng tin tức về xe đạp
     @PostMapping("/fetch-news")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<Blog> fetchNews() {
         return blogService.fetchBicycleNews();
+    }
+
+    @GetMapping("/search")
+    public NewsResponse searchArticles(@RequestParam String keyword) {
+        return blogService.searchArticles(keyword);
+    }
+
+    @PostMapping("/process-article")
+    public Blog processAndSaveArticle(@RequestBody Article article) {
+        return blogService.processAndSaveArticle(article);
     }
 }

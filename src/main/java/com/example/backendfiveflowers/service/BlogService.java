@@ -8,6 +8,8 @@ import com.example.backendfiveflowers.repository.BlogRepository;
 import com.example.backendfiveflowers.repository.UserInfoRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -139,7 +141,7 @@ public class BlogService {
         return restTemplate.getForObject(url, NewsResponse.class);
     }
 
-    public void processAndSaveArticle(Article article) {
+    public Blog processAndSaveArticle(Article article) {
         String fullContent = fetchFullContentFromUrl(article.getUrl());
 
         Blog blog = new Blog();
@@ -153,18 +155,27 @@ public class BlogService {
         Optional<UserInfo> userInfoOptional = userInfoRepository.findByUserName(username);
         userInfoOptional.ifPresent(blog::setAuthor);
 
-        blogRepository.save(blog);
+        return blogRepository.save(blog);
     }
 
     private String fetchFullContentFromUrl(String url) {
         try {
             Document doc = Jsoup.connect(url).get();
-            // Giả sử nội dung bài viết nằm trong thẻ <article> hoặc <div class="content">
-            String content = doc.select("article").text();
-            if (content.isEmpty()) {
-                content = doc.select("div.content").text();
+            Elements elements = doc.select("article, article p, article img");
+            if (elements.isEmpty()) {
+                elements = doc.select("div.content, div.content p, div.content img");
             }
-            return content;
+
+            StringBuilder content = new StringBuilder();
+            for (Element element : elements) {
+                if (element.tagName().equals("img")) {
+                    String imageUrl = element.absUrl("src");
+                    content.append("<img src=\"").append(imageUrl).append("\" alt=\"Image\"><br>");
+                } else {
+                    content.append(element.text()).append("<br><br>");
+                }
+            }
+            return content.toString();
         } catch (IOException e) {
             e.printStackTrace();
             return "Unable to fetch full content.";
