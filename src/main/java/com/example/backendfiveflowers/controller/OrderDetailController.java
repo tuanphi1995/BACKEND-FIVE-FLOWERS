@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/order-details")
 public class OrderDetailController {
@@ -46,5 +48,10 @@ public class OrderDetailController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Page<OrderDetail> getAllOrderDetails(Pageable pageable) {
         return orderDetailService.getAllOrderDetails(pageable);
+    }
+    @GetMapping("/product/{productId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public List<OrderDetail> getOrderDetailsByProductId(@PathVariable Integer productId) {
+        return orderDetailService.getOrderDetailsByProductId(productId);
     }
 }

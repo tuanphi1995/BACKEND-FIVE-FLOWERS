@@ -30,9 +30,11 @@ public class ProductController {
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+        System.out.println("Received product: " + product);
         Product savedProduct = productService.addProduct(product);
         return ResponseEntity.ok(savedProduct);
     }
+
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")

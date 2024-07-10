@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,4 +40,8 @@ public class OrderDetailService {
     public Page<OrderDetail> getAllOrderDetails(Pageable pageable) {
         return orderDetailRepository.findAll(pageable);
     }
+    public List<OrderDetail> getOrderDetailsByProductId(Integer productId) {
+        return orderDetailRepository.findByProduct_ProductId(productId);
+    }
+
 }
