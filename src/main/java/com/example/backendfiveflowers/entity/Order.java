@@ -13,11 +13,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Entity
+@Table(name = "orders")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Order {
@@ -35,8 +35,8 @@ public class Order {
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "payment_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "payment_id")
     private Payment payment;
 
     private String status;

@@ -36,28 +36,37 @@ public class OrderService {
     @Autowired
     private AddressRepository addressRepository;
 
-
     @Transactional
     public Order addOrder(Order order) {
+        // Validate and set user
         Optional<UserInfo> userInfoOptional = userInfoRepository.findById(order.getUser().getId());
         if (!userInfoOptional.isPresent()) {
             throw new RuntimeException("User not found");
         }
         order.setUser(userInfoOptional.get());
 
+        // Validate and set address
         Optional<Address> addressOptional = addressRepository.findById(order.getAddress().getAddressId());
         if (!addressOptional.isPresent()) {
             throw new RuntimeException("Address not found");
         }
         order.setAddress(addressOptional.get());
 
-        // Lấy thông tin của Payment từ cơ sở dữ liệu
-        Optional<Payment> paymentOptional = paymentRepository.findById(order.getPayment().getPaymentId());
-        if (!paymentOptional.isPresent()) {
-            throw new RuntimeException("Payment not found");
+        // Handle payment
+        Payment payment = order.getPayment();
+        if (payment.getPaymentId() != 0) {
+            Optional<Payment> paymentOptional = paymentRepository.findById(payment.getPaymentId());
+            if (paymentOptional.isPresent()) {
+                order.setPayment(paymentOptional.get());
+            } else {
+                throw new RuntimeException("Payment not found");
+            }
+        } else {
+            payment = paymentRepository.save(payment);
+            order.setPayment(payment);
         }
-        order.setPayment(paymentOptional.get());
 
+        // Calculate total price and set order details
         double totalOrderPrice = 0.0;
         for (OrderDetail orderDetail : order.getOrderDetails()) {
             Optional<Product> productOptional = productRepository.findById(orderDetail.getProduct().getProductId());
@@ -79,6 +88,7 @@ public class OrderService {
 
         return orderRepository.save(order);
     }
+
 
 
     public Order updateOrder(Integer id, Order order) {
