@@ -3,8 +3,6 @@ package com.example.backendfiveflowers.controller;
 import com.example.backendfiveflowers.entity.Payment;
 import com.example.backendfiveflowers.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +37,12 @@ public class PaymentController {
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public Payment getPaymentById(@PathVariable Integer id) {
         return paymentService.getPaymentById(id).orElse(null);
+    }
+
+    @GetMapping("/admin-created")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public List<Payment> getAdminCreatedPayments() {
+        return paymentService.getAdminCreatedPayments();
     }
 
     @GetMapping("/all")

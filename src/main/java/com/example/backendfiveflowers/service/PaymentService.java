@@ -17,6 +17,7 @@ public class PaymentService {
 
     public Payment addPayment(Payment payment) {
         payment.setPaymentDate(LocalDateTime.now());
+        payment.setAdminCreated(true);  // Đánh dấu payment được tạo bởi admin
         return paymentRepository.save(payment);
     }
 
@@ -41,5 +42,9 @@ public class PaymentService {
 
     public List<Payment> getAllPayments() {
         return paymentRepository.findAll();
+    }
+
+    public List<Payment> getAdminCreatedPayments() {
+        return paymentRepository.findByIsAdminCreated(true);
     }
 }

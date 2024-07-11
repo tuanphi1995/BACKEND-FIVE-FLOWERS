@@ -25,4 +25,14 @@ public class Payment {
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime paymentDate;
+
+    private boolean isAdminCreated;
+
+    public boolean isAdminCreated() {
+        return isAdminCreated;
+    }
+
+    public void setAdminCreated(boolean adminCreated) {
+        isAdminCreated = adminCreated;
+    }
 }

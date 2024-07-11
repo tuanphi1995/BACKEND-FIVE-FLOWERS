@@ -97,7 +97,7 @@ public class BlogService {
     }
 
     public Page<Blog> getAllBlogs(Pageable pageable) {
-        return blogRepository.findAll(pageable);
+        return blogRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 
     private String getCurrentUsername() {
@@ -121,7 +121,7 @@ public class BlogService {
                 Blog blog = new Blog();
                 blog.setTitle(article.getTitle());
                 blog.setContent(fullContent);
-                blog.setImageUrl(getFirstImageUrl(fullContent));
+                blog.setImageUrl(article.getUrlToImage()); // Lưu URL ảnh đại diện
                 blog.setCreatedAt(LocalDateTime.now());
                 blog.setUpdatedAt(LocalDateTime.now());
 
@@ -147,7 +147,7 @@ public class BlogService {
         Blog blog = new Blog();
         blog.setTitle(article.getTitle());
         blog.setContent(fullContent);
-        blog.setImageUrl(getFirstImageUrl(fullContent));
+        blog.setImageUrl(article.getUrlToImage()); // Đảm bảo URL của ảnh được lưu
         blog.setCreatedAt(LocalDateTime.now());
         blog.setUpdatedAt(LocalDateTime.now());
 
