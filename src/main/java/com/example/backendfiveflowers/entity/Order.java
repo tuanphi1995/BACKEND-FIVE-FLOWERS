@@ -1,4 +1,3 @@
-// Order.java
 package com.example.backendfiveflowers.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -29,15 +28,15 @@ public class Order {
     private double price;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private UserInfo user;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "address_id")
+    @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "payment_id")
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "payment_id", nullable = false)
     private Payment payment;
 
     private String status;
@@ -50,7 +49,7 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonManagedReference
     private List<OrderDetail> orderDetails;
 }

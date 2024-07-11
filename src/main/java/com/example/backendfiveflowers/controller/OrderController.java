@@ -19,7 +19,7 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/add")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public Order addOrder(@RequestBody Order order) {
         return orderService.addOrder(order);
     }
