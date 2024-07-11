@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface BlogRepository extends JpaRepository<Blog, Integer> {
     @Query("SELECT b FROM Blog b ORDER BY b.createdAt DESC")
     Page<Blog> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    boolean existsByTitle(String title);
 }

@@ -68,7 +68,13 @@ public class BlogController {
     }
 
     @PostMapping("/process-article")
-    public Blog processAndSaveArticle(@RequestBody Article article) {
-        return blogService.processAndSaveArticle(article);
+    public Article processArticle(@RequestBody Article article) {
+        return blogService.processArticle(article);
+    }
+
+    @PostMapping("/auto-post")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public Blog autoPostBlog() {
+        return blogService.autoPostBlog();
     }
 }
