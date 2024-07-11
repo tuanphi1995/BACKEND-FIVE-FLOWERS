@@ -17,7 +17,7 @@ public class PaymentService {
 
     public Payment addPayment(Payment payment) {
         payment.setPaymentDate(LocalDateTime.now());
-        payment.setAdminCreated(true);  // Đánh dấu payment được tạo bởi admin
+        System.out.println("Adding payment with method: " + payment.getPaymentMethod());
         return paymentRepository.save(payment);
     }
 
@@ -26,7 +26,10 @@ public class PaymentService {
         if (existingPaymentOptional.isPresent()) {
             Payment existingPayment = existingPaymentOptional.get();
             existingPayment.setPaymentMethod(payment.getPaymentMethod());
-            return paymentRepository.save(existingPayment);
+            System.out.println("Updating payment with method: " + payment.getPaymentMethod());
+            Payment savedPayment = paymentRepository.save(existingPayment);
+            System.out.println("Saved payment method: " + savedPayment.getPaymentMethod());
+            return savedPayment;
         } else {
             throw new RuntimeException("Payment not found");
         }
@@ -41,10 +44,8 @@ public class PaymentService {
     }
 
     public List<Payment> getAllPayments() {
-        return paymentRepository.findAll();
-    }
-
-    public List<Payment> getAdminCreatedPayments() {
-        return paymentRepository.findByIsAdminCreated(true);
+        List<Payment> payments = paymentRepository.findAll();
+        payments.forEach(payment -> System.out.println("Fetched payment method: " + payment.getPaymentMethod()));
+        return payments;
     }
 }

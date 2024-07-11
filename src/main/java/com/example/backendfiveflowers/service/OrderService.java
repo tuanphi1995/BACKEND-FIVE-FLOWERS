@@ -36,6 +36,7 @@ public class OrderService {
     @Autowired
     private AddressRepository addressRepository;
 
+
     @Transactional
     public Order addOrder(Order order) {
         Optional<UserInfo> userInfoOptional = userInfoRepository.findById(order.getUser().getId());
@@ -50,8 +51,12 @@ public class OrderService {
         }
         order.setAddress(addressOptional.get());
 
-        Payment payment = paymentRepository.save(order.getPayment());
-        order.setPayment(payment);
+        // Lấy thông tin của Payment từ cơ sở dữ liệu
+        Optional<Payment> paymentOptional = paymentRepository.findById(order.getPayment().getPaymentId());
+        if (!paymentOptional.isPresent()) {
+            throw new RuntimeException("Payment not found");
+        }
+        order.setPayment(paymentOptional.get());
 
         double totalOrderPrice = 0.0;
         for (OrderDetail orderDetail : order.getOrderDetails()) {
@@ -74,6 +79,7 @@ public class OrderService {
 
         return orderRepository.save(order);
     }
+
 
     public Order updateOrder(Integer id, Order order) {
         Optional<Order> existingOrderOptional = orderRepository.findById(id);

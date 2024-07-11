@@ -15,39 +15,34 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    @PostMapping("/add")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PostMapping("/add")
     public Payment addPayment(@RequestBody Payment payment) {
         return paymentService.addPayment(payment);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public Payment updatePayment(@PathVariable Integer id, @RequestBody Payment payment) {
         return paymentService.updatePayment(id, payment);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public void deletePayment(@PathVariable Integer id) {
         paymentService.deletePayment(id);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/get/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public Payment getPaymentById(@PathVariable Integer id) {
         return paymentService.getPaymentById(id).orElse(null);
     }
 
-    @GetMapping("/admin-created")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public List<Payment> getAdminCreatedPayments() {
-        return paymentService.getAdminCreatedPayments();
-    }
-
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<Payment> getAllPayments() {
-        return paymentService.getAllPayments();
+        List<Payment> payments = paymentService.getAllPayments();
+        payments.forEach(payment -> System.out.println("Payment fetched in controller: " + payment.getPaymentMethod()));
+        return payments;
     }
 }

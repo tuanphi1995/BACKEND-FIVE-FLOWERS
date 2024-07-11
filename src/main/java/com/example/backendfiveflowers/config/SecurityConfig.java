@@ -48,7 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/categories/**").permitAll()
                         .requestMatchers("/api/v1/orders/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/v1/order_details/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/api/v1/payments/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/api/v1/payments/**").permitAll()
                         .requestMatchers("/api/v1/reviews/add").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/v1/reviews/update/**").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/v1/reviews/delete/**").hasAuthority("ROLE_ADMIN")
