@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -53,5 +54,12 @@ public class OrderController {
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public List<Order> getOrdersByUserId(@PathVariable Integer userId) {
         return orderService.getOrdersByUserId(userId);
+    }
+
+    @PutMapping("/{id}/status")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public Order updateOrderStatus(@PathVariable Integer id, @RequestBody Map<String, String> statusUpdate) {
+        String status = statusUpdate.get("status");
+        return orderService.updateOrderStatus(id, status);
     }
 }

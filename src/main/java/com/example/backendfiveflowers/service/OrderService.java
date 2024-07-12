@@ -150,4 +150,15 @@ public class OrderService {
     public List<Order> getOrdersByUserId(Integer userId) {
         return orderRepository.findByUserId(userId);
     }
+
+    public Order updateOrderStatus(Integer id, String status) {
+        Optional<Order> optionalOrder = orderRepository.findById(id);
+        if (optionalOrder.isPresent()) {
+            Order order = optionalOrder.get();
+            order.setStatus(status);
+            return orderRepository.save(order);
+        } else {
+            throw new RuntimeException("Order not found with id: " + id);
+        }
+    }
 }
