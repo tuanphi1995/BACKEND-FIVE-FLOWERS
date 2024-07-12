@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/order-details")
@@ -49,9 +50,17 @@ public class OrderDetailController {
     public Page<OrderDetail> getAllOrderDetails(Pageable pageable) {
         return orderDetailService.getAllOrderDetails(pageable);
     }
+
     @GetMapping("/product/{productId}")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public List<OrderDetail> getOrderDetailsByProductId(@PathVariable Integer productId) {
         return orderDetailService.getOrderDetailsByProductId(productId);
+    }
+
+    @PutMapping("/{id}/status")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public OrderDetail updateOrderDetailStatus(@PathVariable Integer id, @RequestBody Map<String, String> statusUpdate) {
+        String status = statusUpdate.get("status");
+        return orderDetailService.updateOrderDetailStatus(id, status);
     }
 }

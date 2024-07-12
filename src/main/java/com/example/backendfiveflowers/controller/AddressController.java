@@ -22,7 +22,7 @@ public class AddressController {
     private AddressService addressService;
 
     @PostMapping("/add")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<Address> addAddress(@RequestBody Address address) {
         Address newAddress = addressService.addAddress(address);
         return ResponseEntity.ok(newAddress);

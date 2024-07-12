@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/welcome", "/api/v1/user/addUser", "/api/v1/user/login").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/v1/addresses/add").hasAuthority("ROLE_USER")
+                        .requestMatchers("/api/v1/addresses/add").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/v1/addresses/update/**", "/api/v1/addresses/delete/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/v1/addresses/get/**", "/api/v1/addresses/all").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/v1/blogs/**").permitAll()

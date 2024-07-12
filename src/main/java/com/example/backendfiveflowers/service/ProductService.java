@@ -117,4 +117,7 @@ public class ProductService {
             productImageRepository.save(productImage);
         }
     }
+    public Page<Product> searchProducts(String name, Pageable pageable) {
+        return productRepository.findByNameContaining(name, pageable);
+    }
 }

@@ -33,6 +33,7 @@ public class OrderDetailService {
         }
     }
 
+
     public Optional<OrderDetail> getOrderDetailById(Integer id) {
         return orderDetailRepository.findById(id);
     }
@@ -40,8 +41,19 @@ public class OrderDetailService {
     public Page<OrderDetail> getAllOrderDetails(Pageable pageable) {
         return orderDetailRepository.findAll(pageable);
     }
+
     public List<OrderDetail> getOrderDetailsByProductId(Integer productId) {
         return orderDetailRepository.findByProduct_ProductId(productId);
     }
 
+    public OrderDetail updateOrderDetailStatus(Integer id, String status) {
+        Optional<OrderDetail> optionalOrderDetail = orderDetailRepository.findById(id);
+        if (optionalOrderDetail.isPresent()) {
+            OrderDetail orderDetail = optionalOrderDetail.get();
+            orderDetail.setStatus(status);
+            return orderDetailRepository.save(orderDetail);
+        } else {
+            throw new RuntimeException("Order detail not found with id: " + id);
+        }
+    }
 }

@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int addressId;
+    private Integer addressId;
 
     private String firstName;
     private String lastName;

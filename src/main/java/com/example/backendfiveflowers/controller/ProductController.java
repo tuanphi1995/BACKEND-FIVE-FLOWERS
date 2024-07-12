@@ -93,4 +93,13 @@ public class ProductController {
         productService.reduceQuantity(id, quantity);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/search")
+    public ResponseEntity<Page<Product>> searchProducts(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> products = productService.searchProducts(query, pageable);
+        return ResponseEntity.ok(products);
+    }
 }

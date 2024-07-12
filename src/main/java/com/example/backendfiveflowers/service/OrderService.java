@@ -89,8 +89,7 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-
-
+    @Transactional
     public Order updateOrder(Integer id, Order order) {
         Optional<Order> existingOrderOptional = orderRepository.findById(id);
         if (!existingOrderOptional.isPresent()) {
@@ -98,13 +97,17 @@ public class OrderService {
         }
 
         Order existingOrder = existingOrderOptional.get();
-        existingOrder.setOrderDetails(order.getOrderDetails());
         existingOrder.setUser(order.getUser());
+        existingOrder.setAddress(order.getAddress());
         existingOrder.setStatus(order.getStatus());
 
         double totalOrderPrice = 0.0;
 
-        for (OrderDetail orderDetail : existingOrder.getOrderDetails()) {
+        // Xóa các chi tiết đơn hàng cũ
+        existingOrder.getOrderDetails().clear();
+
+        // Thêm các chi tiết đơn hàng mới
+        for (OrderDetail orderDetail : order.getOrderDetails()) {
             Optional<Product> productOptional = productRepository.findById(orderDetail.getProduct().getProductId());
             if (!productOptional.isPresent()) {
                 throw new RuntimeException("Product not found");
@@ -116,24 +119,15 @@ public class OrderService {
             double detailPrice = product.getPrice() * orderDetail.getQuantity();
             orderDetail.setPrice(detailPrice);
             totalOrderPrice += detailPrice;
+
+            existingOrder.getOrderDetails().add(orderDetail); // Thêm chi tiết đơn hàng mới vào đơn hàng
         }
 
         existingOrder.setPrice(totalOrderPrice);
 
-        Payment payment = order.getPayment();
-        if (payment != null) {
-            payment = paymentRepository.save(payment);
-            existingOrder.setPayment(payment);
-        }
-
-        Address address = order.getAddress();
-        if (address != null) {
-            address = addressRepository.save(address);
-            existingOrder.setAddress(address);
-        }
-
         return orderRepository.save(existingOrder);
     }
+
 
     public void deleteOrder(Integer id) {
         orderRepository.deleteById(id);
