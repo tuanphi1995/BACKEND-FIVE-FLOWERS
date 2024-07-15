@@ -59,7 +59,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/product_images/**").permitAll()
                         .requestMatchers("/api/v1/order-details/**").hasAnyAuthority("ROLE_ADMIN","ROLE_USER")
                         .requestMatchers("/api/v1/images/**").permitAll()
-                        .requestMatchers("/api/analytics/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/analytics/stats").hasAuthority("ROLE_ADMIN") // Chỉ cho phép admin truy cập endpoint này
+                        .requestMatchers("/api/analytics/track").permitAll() // Cho phép truy cập không cần xác thực
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

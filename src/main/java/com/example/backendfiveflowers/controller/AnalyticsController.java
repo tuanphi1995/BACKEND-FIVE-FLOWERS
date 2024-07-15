@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/analytics")
@@ -18,14 +18,14 @@ public class AnalyticsController {
     @Autowired
     private AnalyticsService analyticsService;
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/track")
     public ResponseEntity<Void> trackVisit(@RequestBody AnalyticsVisit visit) {
+        System.out.println("Received visit tracking request: " + visit);
         analyticsService.saveVisit(visit);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/stats")
     public ResponseEntity<Map<String, List<?>>> getStats() {
         Map<String, List<?>> stats = analyticsService.getStats();

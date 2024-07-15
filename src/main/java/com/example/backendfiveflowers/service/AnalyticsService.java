@@ -17,6 +17,7 @@ public class AnalyticsService {
 
     public void saveVisit(AnalyticsVisit visit) {
         visitRepository.save(visit);
+        System.out.println("Visit saved: " + visit); // Thêm log để kiểm tra
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
