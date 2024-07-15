@@ -15,9 +15,10 @@ public class PaymentService {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    private boolean sandboxEnabled = false;
+
     public Payment addPayment(Payment payment) {
         payment.setPaymentDate(LocalDateTime.now());
-        System.out.println("Adding payment with method: " + payment.getPaymentMethod());
         return paymentRepository.save(payment);
     }
 
@@ -26,10 +27,7 @@ public class PaymentService {
         if (existingPaymentOptional.isPresent()) {
             Payment existingPayment = existingPaymentOptional.get();
             existingPayment.setPaymentMethod(payment.getPaymentMethod());
-            System.out.println("Updating payment with method: " + payment.getPaymentMethod());
-            Payment savedPayment = paymentRepository.save(existingPayment);
-            System.out.println("Saved payment method: " + savedPayment.getPaymentMethod());
-            return savedPayment;
+            return paymentRepository.save(existingPayment);
         } else {
             throw new RuntimeException("Payment not found");
         }
@@ -44,8 +42,14 @@ public class PaymentService {
     }
 
     public List<Payment> getAllPayments() {
-        List<Payment> payments = paymentRepository.findAll();
-        payments.forEach(payment -> System.out.println("Fetched payment method: " + payment.getPaymentMethod()));
-        return payments;
+        return paymentRepository.findAll();
+    }
+
+    public boolean isSandboxEnabled() {
+        return sandboxEnabled;
+    }
+
+    public void setSandboxEnabled(boolean enabled) {
+        this.sandboxEnabled = enabled;
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/payments")
@@ -45,9 +46,7 @@ public class PaymentController {
 
     @GetMapping("/all")
     public List<Payment> getAllPayments() {
-        List<Payment> payments = paymentService.getAllPayments();
-        payments.forEach(payment -> System.out.println("Payment fetched in controller: " + payment.getPaymentMethod()));
-        return payments;
+        return paymentService.getAllPayments();
     }
 
     @GetMapping("/sandbox-status")
@@ -57,7 +56,7 @@ public class PaymentController {
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/sandbox-status")
-    public void setSandboxStatus(@RequestBody boolean sandboxStatus) {
-        this.isSandbox = sandboxStatus;
+    public void setSandboxStatus(@RequestBody Map<String, Boolean> payload) {
+        this.isSandbox = payload.get("sandboxStatus");
     }
 }
