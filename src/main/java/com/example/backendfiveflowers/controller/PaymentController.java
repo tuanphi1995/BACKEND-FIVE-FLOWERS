@@ -3,6 +3,7 @@ package com.example.backendfiveflowers.controller;
 import com.example.backendfiveflowers.entity.Payment;
 import com.example.backendfiveflowers.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,9 @@ public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Value("${paypal.sandbox}")
+    private boolean isSandbox;
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/add")
@@ -44,5 +48,16 @@ public class PaymentController {
         List<Payment> payments = paymentService.getAllPayments();
         payments.forEach(payment -> System.out.println("Payment fetched in controller: " + payment.getPaymentMethod()));
         return payments;
+    }
+
+    @GetMapping("/sandbox-status")
+    public boolean getSandboxStatus() {
+        return isSandbox;
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PostMapping("/sandbox-status")
+    public void setSandboxStatus(@RequestBody boolean sandboxStatus) {
+        this.isSandbox = sandboxStatus;
     }
 }
