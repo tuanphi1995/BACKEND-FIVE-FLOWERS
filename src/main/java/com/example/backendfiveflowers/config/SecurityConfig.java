@@ -59,6 +59,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/product_images/**").permitAll()
                         .requestMatchers("/api/v1/order-details/**").hasAnyAuthority("ROLE_ADMIN","ROLE_USER")
                         .requestMatchers("/api/v1/images/**").permitAll()
+                        .requestMatchers("/api/analytics/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
