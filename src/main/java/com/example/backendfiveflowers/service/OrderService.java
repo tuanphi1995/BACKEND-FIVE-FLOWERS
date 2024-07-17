@@ -84,7 +84,11 @@ public class OrderService {
         }
 
         order.setPrice(totalOrderPrice);
-        order.setStatus("Pending");
+
+        // Set order status based on input (default to "Pending" if not provided)
+        if (order.getStatus() == null || order.getStatus().isEmpty()) {
+            order.setStatus("Pending");
+        }
 
         return orderRepository.save(order);
     }
