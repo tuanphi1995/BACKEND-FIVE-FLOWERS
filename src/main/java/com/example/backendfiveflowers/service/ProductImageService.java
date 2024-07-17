@@ -36,14 +36,14 @@ public class ProductImageService {
         try {
             Files.createDirectories(root);
         } catch (IOException e) {
-            throw new RuntimeException("Could not initialize folder for upload!");
+            throw new RuntimeException("Không thể khởi tạo thư mục để tải lên!");
         }
     }
 
     public List<ProductImage> updateImages(int productId, MultipartFile[] files) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (!productOptional.isPresent()) {
-            throw new RuntimeException("Product not found");
+            throw new RuntimeException("Không tìm thấy sản phẩm");
         }
 
         Product product = productOptional.get();
@@ -57,7 +57,7 @@ public class ProductImageService {
             try {
                 Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
-                throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
+                throw new RuntimeException("Không thể lưu trữ tệp. Lỗi: " + e.getMessage());
             }
 
             if (i < existingImageCount) {
@@ -79,7 +79,7 @@ public class ProductImageService {
                 try {
                     Files.deleteIfExists(filePath);
                 } catch (IOException e) {
-                    logger.error("Could not delete file: " + filePath, e);
+                    logger.error("Không thể xóa tệp: " + filePath, e);
                 }
                 productImageRepository.delete(extraImage);
             }
@@ -96,19 +96,19 @@ public class ProductImageService {
             try {
                 Files.deleteIfExists(filePath);
             } catch (IOException e) {
-                logger.error("Could not delete file: " + filePath, e);
+                logger.error("Không thể xóa tệp: " + filePath, e);
             }
             productImageRepository.deleteById(id);
         }
     }
 
     public Optional<ProductImage> getProductImageById(Integer id) {
-        logger.info("Fetching product image with ID: " + id);
+        logger.info("Đang tìm nạp ảnh sản phẩm với ID: " + id);
         Optional<ProductImage> productImage = productImageRepository.findById(id);
         if (productImage.isPresent()) {
-            logger.info("Product image found: " + productImage.get());
+            logger.info("Đã tìm thấy ảnh sản phẩm: " + productImage.get());
         } else {
-            logger.warn("Product image not found for ID: " + id);
+            logger.warn("Không tìm thấy ảnh sản phẩm với ID: " + id);
         }
         return productImage;
     }
@@ -117,11 +117,10 @@ public class ProductImageService {
         return productImageRepository.findAll();
     }
 
-
     public List<ProductImage> saveImages(MultipartFile[] files, int productId) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (!productOptional.isPresent()) {
-            throw new RuntimeException("Product not found");
+            throw new RuntimeException("Không tìm thấy sản phẩm");
         }
 
         Product product = productOptional.get();
@@ -133,7 +132,7 @@ public class ProductImageService {
             try {
                 Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
-                throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
+                throw new RuntimeException("Không thể lưu trữ tệp. Lỗi: " + e.getMessage());
             }
 
             ProductImage productImage = new ProductImage();
@@ -149,7 +148,7 @@ public class ProductImageService {
     public List<ProductImage> getProductImagesByProductId(int productId) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (!productOptional.isPresent()) {
-            throw new RuntimeException("Product not found");
+            throw new RuntimeException("Không tìm thấy sản phẩm");
         }
         Product product = productOptional.get();
         return productImageRepository.findByProduct(product);
@@ -158,7 +157,7 @@ public class ProductImageService {
     public void addExistingImages(int productId, List<String> imageUrls) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (!productOptional.isPresent()) {
-            throw new RuntimeException("Product not found");
+            throw new RuntimeException("Không tìm thấy sản phẩm");
         }
 
         Product product = productOptional.get();
@@ -177,6 +176,33 @@ public class ProductImageService {
                 productImage.setImageUrl(imageUrl);
                 productImage.setProduct(product);
                 productImageRepository.save(productImage);
+            }
+        }
+    }
+
+    public void updateExistingImages(int productId, List<String> imageUrls) {
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if (!productOptional.isPresent()) {
+            throw new RuntimeException("Không tìm thấy sản phẩm");
+        }
+
+        Product product = productOptional.get();
+        List<ProductImage> existingImages = productImageRepository.findByProduct(product);
+
+        // Xóa các ảnh cũ không còn trong danh sách mới
+        for (ProductImage existingImage : existingImages) {
+            if (!imageUrls.contains(existingImage.getImageUrl())) {
+                productImageRepository.delete(existingImage);
+            }
+        }
+
+        // Thêm các ảnh mới chưa có trong danh sách
+        for (String imageUrl : imageUrls) {
+            if (!existingImages.stream().anyMatch(img -> img.getImageUrl().equals(imageUrl))) {
+                ProductImage newImage = new ProductImage();
+                newImage.setImageUrl(imageUrl);
+                newImage.setProduct(product);
+                productImageRepository.save(newImage);
             }
         }
     }

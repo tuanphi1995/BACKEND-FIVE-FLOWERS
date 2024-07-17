@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -41,8 +42,31 @@ public class ProductController {
     public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody Product productDetails) {
         productDetails.setProductId(id); // Đảm bảo ID của product được lấy từ đường dẫn
         Product updatedProduct = productService.updateProduct(productDetails);
+
+        // Cập nhật các URL ảnh sản phẩm nếu có
+        if (productDetails.getProductImages() != null && !productDetails.getProductImages().isEmpty()) {
+            List<String> imageUrls = productDetails.getProductImages().stream()
+                    .map(ProductImage::getImageUrl)
+                    .collect(Collectors.toList());
+            productImageService.updateExistingImages(productDetails.getProductId(), imageUrls);
+        }
+
         return ResponseEntity.ok(updatedProduct);
     }
+
+    @PutMapping("/update/{id}/images")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Map<String, Object>> updateProductImages(@PathVariable int id, @RequestParam("files") MultipartFile[] files) {
+        List<ProductImage> updatedProductImages = productImageService.updateImages(id, files);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("productId", id);
+        response.put("productImages", updatedProductImages);
+
+        return ResponseEntity.ok(response);
+    }
+
+
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")

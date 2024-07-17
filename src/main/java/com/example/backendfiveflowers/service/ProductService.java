@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -31,6 +32,9 @@ public class ProductService {
     @Autowired
     private ProductImageRepository productImageRepository;
 
+    @Autowired
+    private ProductImageService productImageService;
+
     public Product addProduct(Product product) {
         Optional<Brand> brand = brandRepository.findById(product.getBrand().getBrandId());
         Optional<Category> category = categoryRepository.findById(product.getCategory().getCategoryId());
@@ -40,7 +44,7 @@ public class ProductService {
             product.setCategory(category.get());
             return productRepository.save(product);
         } else {
-            throw new RuntimeException("Brand or Category not found");
+            throw new RuntimeException("Không tìm thấy thương hiệu hoặc danh mục");
         }
     }
 
@@ -61,12 +65,22 @@ public class ProductService {
                 product.setBrand(brand.get());
                 product.setCategory(category.get());
             } else {
-                throw new RuntimeException("Brand or Category not found");
+                throw new RuntimeException("Không tìm thấy thương hiệu hoặc danh mục");
             }
 
-            return productRepository.save(product);
+            Product updatedProduct = productRepository.save(product);
+
+            // Cập nhật các URL ảnh sản phẩm nếu có
+            if (productDetails.getProductImages() != null && !productDetails.getProductImages().isEmpty()) {
+                List<String> imageUrls = productDetails.getProductImages().stream()
+                        .map(ProductImage::getImageUrl)
+                        .collect(Collectors.toList());
+                productImageService.updateExistingImages(productDetails.getProductId(), imageUrls);
+            }
+
+            return updatedProduct;
         } else {
-            throw new RuntimeException("Product not found with id: " + productDetails.getProductId());
+            throw new RuntimeException("Không tìm thấy sản phẩm với id: " + productDetails.getProductId());
         }
     }
 
@@ -75,7 +89,7 @@ public class ProductService {
         if (product.isPresent()) {
             productRepository.deleteById(id);
         } else {
-            throw new RuntimeException("Product not found with id: " + id);
+            throw new RuntimeException("Không tìm thấy sản phẩm với id: " + id);
         }
     }
 
@@ -96,27 +110,58 @@ public class ProductService {
                 product.setQuantity(newQuantity);
                 productRepository.save(product);
             } else {
-                throw new RuntimeException("Not enough stock available");
+                throw new RuntimeException("Không đủ hàng trong kho");
             }
         } else {
-            throw new RuntimeException("Product not found with id: " + productId);
+            throw new RuntimeException("Không tìm thấy sản phẩm với id: " + productId);
         }
     }
 
     public void addExistingImages(int productId, List<String> imageUrls) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (!productOptional.isPresent()) {
-            throw new RuntimeException("Product not found");
+            throw new RuntimeException("Không tìm thấy sản phẩm");
         }
 
         Product product = productOptional.get();
         for (String imageUrl : imageUrls) {
-            ProductImage productImage = new ProductImage();
-            productImage.setImageUrl(imageUrl);
-            productImage.setProduct(product);
-            productImageRepository.save(productImage);
+            // Kiểm tra xem ảnh đã tồn tại chưa
+            if (!productImageRepository.existsByImageUrlAndProduct(imageUrl, product)) {
+                ProductImage productImage = new ProductImage();
+                productImage.setImageUrl(imageUrl);
+                productImage.setProduct(product);
+                productImageRepository.save(productImage);
+            }
         }
     }
+
+    public void updateExistingImages(int productId, List<String> imageUrls) {
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if (!productOptional.isPresent()) {
+            throw new RuntimeException("Không tìm thấy sản phẩm");
+        }
+
+        Product product = productOptional.get();
+        List<ProductImage> existingImages = productImageRepository.findByProduct(product);
+
+        // Xóa các ảnh cũ không còn trong danh sách mới
+        for (ProductImage existingImage : existingImages) {
+            if (!imageUrls.contains(existingImage.getImageUrl())) {
+                productImageRepository.delete(existingImage);
+            }
+        }
+
+        // Thêm các ảnh mới
+        for (String imageUrl : imageUrls) {
+            if (!existingImages.stream().anyMatch(img -> img.getImageUrl().equals(imageUrl))) {
+                ProductImage newImage = new ProductImage();
+                newImage.setImageUrl(imageUrl);
+                newImage.setProduct(product);
+                productImageRepository.save(newImage);
+            }
+        }
+    }
+
     public Page<Product> searchProducts(String name, Pageable pageable) {
         return productRepository.findByNameContaining(name, pageable);
     }
