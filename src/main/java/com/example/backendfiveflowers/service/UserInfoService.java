@@ -29,15 +29,22 @@ public class UserInfoService implements UserDetailsService {
     }
 
     public String addUser(UserInfo userInfo) {
+        // Kiểm tra tên người dùng trùng lặp (không phân biệt chữ hoa chữ thường)
+        if (userInfoRepository.findByUserNameIgnoreCase(userInfo.getUserName()).isPresent()) {
+            throw new RuntimeException("Username already exists");
+        }
+
         userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
         userInfo.setRoles("ROLE_USER");
         userInfoRepository.save(userInfo);
         return "User added successfully";
     }
+
     public UserInfo findByUserName(String userName) {
         return userInfoRepository.findByUserName(userName)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
+
     public Page<UserInfo> getAllUsers(Pageable pageable) {
         return userInfoRepository.findAll(pageable);
     }
