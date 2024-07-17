@@ -21,6 +21,7 @@ public class ProductImageController {
     private ProductImageService productImageService;
 
     @PutMapping("/update/{productId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String, Object>> updateProductImages(@PathVariable int productId, @RequestParam("files") MultipartFile[] files) {
         List<ProductImage> updatedProductImages = productImageService.updateImages(productId, files);
 
@@ -49,19 +50,6 @@ public class ProductImageController {
         List<ProductImage> productImages = productImageService.getAllProductImages();
         // Không thêm phần "/api/v1/images/" vào đường dẫn ảnh
         return ResponseEntity.ok(productImages);
-    }
-
-
-
-    @PostMapping("/upload/{productId}")
-    public ResponseEntity<Map<String, Object>> uploadProductImages(@RequestParam("files") MultipartFile[] files, @PathVariable int productId) {
-        List<ProductImage> savedProductImages = productImageService.saveImages(files, productId);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("productId", productId);
-        response.put("productImages", savedProductImages);
-
-        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/byProduct/{productId}")
