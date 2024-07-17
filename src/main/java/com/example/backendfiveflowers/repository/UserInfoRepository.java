@@ -9,4 +9,5 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Integer> {
     Optional<UserInfo> findById(int id);
     Optional<UserInfo> findByUserName(String userName); // Correct method name matching the field
     Optional<UserInfo> findByUserNameIgnoreCase(String userName);
+
 }
