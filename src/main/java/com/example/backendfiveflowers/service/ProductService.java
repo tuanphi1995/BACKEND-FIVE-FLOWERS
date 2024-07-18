@@ -44,7 +44,7 @@ public class ProductService {
             product.setCategory(category.get());
             return productRepository.save(product);
         } else {
-            throw new RuntimeException("Không tìm thấy thương hiệu hoặc danh mục");
+            throw new RuntimeException("Not found brand or category");
         }
     }
 
@@ -65,7 +65,7 @@ public class ProductService {
                 product.setBrand(brand.get());
                 product.setCategory(category.get());
             } else {
-                throw new RuntimeException("Không tìm thấy thương hiệu hoặc danh mục");
+                throw new RuntimeException("Not found brand or category");
             }
 
             Product updatedProduct = productRepository.save(product);

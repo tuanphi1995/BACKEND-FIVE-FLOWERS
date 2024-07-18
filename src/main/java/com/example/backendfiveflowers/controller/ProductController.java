@@ -31,7 +31,6 @@ public class ProductController {
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Product> addProduct(@RequestBody Product product) {
-        System.out.println("Received product: " + product);
         Product savedProduct = productService.addProduct(product);
         return ResponseEntity.ok(savedProduct);
     }
@@ -92,16 +91,12 @@ public class ProductController {
     @PostMapping("/add/images/{productId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Map<String, Object>> uploadProductImages(@RequestParam("files") MultipartFile[] files, @PathVariable int productId) {
+        List<ProductImage> uploadedImages = productImageService.saveImages(files, productId);
+
         Map<String, Object> response = new HashMap<>();
-        try {
-            List<ProductImage> uploadedImages = productImageService.saveImages(files, productId);
-            response.put("message", "Images uploaded successfully");
-            response.put("productId", productId);
-            response.put("productImages", uploadedImages);
-        } catch (Exception e) {
-            response.put("message", "Failed to upload images");
-            response.put("error", e.getMessage());
-        }
+        response.put("productId", productId);
+        response.put("productImages", uploadedImages);
+
         return ResponseEntity.ok(response);
     }
 
