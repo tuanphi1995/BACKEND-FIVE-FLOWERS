@@ -26,7 +26,7 @@ public class ImageController {
 
             if (resource.exists() || resource.isReadable()) {
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                         .body(resource);
             } else {
                 throw new RuntimeException("Could not read the file!");

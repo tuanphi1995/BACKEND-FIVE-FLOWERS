@@ -126,6 +126,8 @@ public class ProductImageService {
         return savedProductImages;
     }
 
+
+
     public List<ProductImage> getProductImagesByProductId(int productId) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (!productOptional.isPresent()) {
