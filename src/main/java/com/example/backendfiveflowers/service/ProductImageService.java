@@ -127,7 +127,6 @@ public class ProductImageService {
     }
 
 
-
     public List<ProductImage> getProductImagesByProductId(int productId) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (!productOptional.isPresent()) {
@@ -137,6 +136,7 @@ public class ProductImageService {
         return productImageRepository.findByProduct(product);
     }
 
+
     public void addExistingImages(int productId, List<String> imageUrls) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (!productOptional.isPresent()) {
@@ -145,14 +145,16 @@ public class ProductImageService {
 
         Product product = productOptional.get();
         for (String imageUrl : imageUrls) {
-            if (!productImageRepository.existsByImageUrlAndProduct(imageUrl, product)) {
+            // Kiểm tra xem ảnh đã tồn tại chưa
+            if (!productImageRepository.existsByImageUrlAndProduct(imageUrl.trim(), product)) {
                 ProductImage productImage = new ProductImage();
-                productImage.setImageUrl(imageUrl);
+                productImage.setImageUrl(imageUrl.trim());
                 productImage.setProduct(product);
                 productImageRepository.save(productImage);
             }
         }
     }
+
 
     public void updateExistingImages(int productId, List<String> imageUrls) {
         Optional<Product> productOptional = productRepository.findById(productId);
@@ -165,16 +167,16 @@ public class ProductImageService {
 
         // Xóa các ảnh cũ không còn trong danh sách mới
         for (ProductImage existingImage : existingImages) {
-            if (!imageUrls.contains(existingImage.getImageUrl())) {
+            if (!imageUrls.contains(existingImage.getImageUrl().trim())) {
                 productImageRepository.delete(existingImage);
             }
         }
 
         // Thêm các ảnh mới chưa có trong danh sách
         for (String imageUrl : imageUrls) {
-            if (!existingImages.stream().anyMatch(img -> img.getImageUrl().equals(imageUrl))) {
+            if (existingImages.stream().noneMatch(img -> img.getImageUrl().trim().equals(imageUrl.trim()))) {
                 ProductImage newImage = new ProductImage();
-                newImage.setImageUrl(imageUrl);
+                newImage.setImageUrl(imageUrl.trim());
                 newImage.setProduct(product);
                 productImageRepository.save(newImage);
             }

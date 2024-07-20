@@ -104,9 +104,11 @@ public class ProductController {
     @PostMapping("/add/existing-images/{productId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> addExistingImages(@PathVariable int productId, @RequestBody List<String> imageUrls) {
+        // Chỉ thêm ảnh nếu chưa tồn tại trong cơ sở dữ liệu
         productImageService.addExistingImages(productId, imageUrls);
         return ResponseEntity.ok().build();
     }
+
 
     @PutMapping("/reduceQuantity/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')")
