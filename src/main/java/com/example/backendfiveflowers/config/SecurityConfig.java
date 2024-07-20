@@ -35,7 +35,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .cors(Customizer.withDefaults()) // CORS với cấu hình mặc định
+                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/welcome", "/api/v1/user/addUser", "/api/v1/user/login").permitAll()
@@ -59,8 +59,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/product_images/**").permitAll()
                         .requestMatchers("/api/v1/order-details/**").hasAnyAuthority("ROLE_ADMIN","ROLE_USER")
                         .requestMatchers("/api/v1/images/**").permitAll()
-                        .requestMatchers("/api/analytics/stats").hasAuthority("ROLE_ADMIN") // Chỉ cho phép admin truy cập endpoint này
-                        .requestMatchers("/api/analytics/track").permitAll() // Cho phép truy cập không cần xác thực
+                        .requestMatchers("/api/analytics/stats").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/analytics/track").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

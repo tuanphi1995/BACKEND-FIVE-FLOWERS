@@ -28,12 +28,11 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private UserInfoService userInfoService;
 
-    // Danh sách các endpoint công khai
     private static final List<String> EXCLUDED_PATHS = Arrays.asList(
             "/api/v1/products/get/",
             "/api/v1/products/all",
-            "/api/v1/brands/all", // Thêm endpoint công khai
-            "/api/v1/categories/all" // Thêm endpoint công khai
+            "/api/v1/brands/all",
+            "/api/v1/categories/all"
     );
 
     @Override
@@ -44,7 +43,6 @@ public class JwtFilter extends OncePerRequestFilter {
         String username = null;
         String jwtToken = null;
 
-        // Kiểm tra xem request path có trong danh sách loại trừ không
         String requestPath = request.getRequestURI();
         if (EXCLUDED_PATHS.stream().anyMatch(requestPath::startsWith)) {
             chain.doFilter(request, response);
