@@ -26,4 +26,9 @@ public class CartController {
     public ResponseEntity<?> getCart(Principal principal) {
         return ResponseEntity.ok(cartService.getCart(principal.getName()));
     }
+    @DeleteMapping("/clear")
+    public ResponseEntity<?> clearCart(Principal principal) {
+        cartService.clearCart(principal.getName());
+        return ResponseEntity.ok().build();
+    }
 }

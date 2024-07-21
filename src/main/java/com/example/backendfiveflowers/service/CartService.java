@@ -55,4 +55,8 @@ public class CartService {
             e.printStackTrace();
         }
     }
+    public void clearCart(String username) {
+        userCarts.remove(username);
+        saveCartsToFile();
+    }
 }
