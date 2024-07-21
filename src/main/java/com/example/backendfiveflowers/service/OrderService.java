@@ -149,14 +149,21 @@ public class OrderService {
         return orderRepository.findByUserId(userId);
     }
 
+    @Transactional
     public Order updateOrderStatus(Integer id, String status) {
         Optional<Order> optionalOrder = orderRepository.findById(id);
         if (optionalOrder.isPresent()) {
             Order order = optionalOrder.get();
             order.setStatus(status);
+            for (OrderDetail detail : order.getOrderDetails()) {
+                detail.setStatus(status);
+                orderDetailRepository.save(detail);
+            }
             return orderRepository.save(order);
         } else {
             throw new RuntimeException("Order not found with id: " + id);
         }
     }
+
+
 }
