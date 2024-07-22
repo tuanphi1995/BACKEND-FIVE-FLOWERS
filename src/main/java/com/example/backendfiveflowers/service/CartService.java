@@ -55,8 +55,18 @@ public class CartService {
             e.printStackTrace();
         }
     }
+
     public void clearCart(String username) {
         userCarts.remove(username);
         saveCartsToFile();
+    }
+
+    public void removeCartItem(String username, Long productId) {
+        List<CartItemRequest> cartItems = userCarts.get(username);
+        if (cartItems != null) {
+            cartItems.removeIf(item -> item.getProductId().equals(productId));
+            userCarts.put(username, cartItems);
+            saveCartsToFile();
+        }
     }
 }

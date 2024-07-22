@@ -26,9 +26,16 @@ public class CartController {
     public ResponseEntity<?> getCart(Principal principal) {
         return ResponseEntity.ok(cartService.getCart(principal.getName()));
     }
+
     @DeleteMapping("/clear")
     public ResponseEntity<?> clearCart(Principal principal) {
         cartService.clearCart(principal.getName());
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/remove/{productId}")
+    public ResponseEntity<?> removeCartItem(Principal principal, @PathVariable Long productId) {
+        cartService.removeCartItem(principal.getName(), productId);
         return ResponseEntity.ok().build();
     }
 }
