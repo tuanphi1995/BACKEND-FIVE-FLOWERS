@@ -26,8 +26,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class BlogService {
@@ -39,6 +42,10 @@ public class BlogService {
     private UserInfoRepository userInfoRepository;
 
     private final Path fileStorageLocation = Paths.get("uploads").toAbsolutePath().normalize();
+
+    private static final Set<String> KEYWORDS = new HashSet<>(Arrays.asList(
+            "Bicycles", "bicycle racing", "bicycle maintenance", "bicycle accessories", "effects of cycling"
+    ));
 
     public BlogService() {
         try {
@@ -107,7 +114,7 @@ public class BlogService {
 
     public List<Blog> fetchBicycleNews() {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "https://newsapi.org/v2/everything?q=bicycle&apiKey=d8a0a2831ea443a1b746f7cdcd0c8e1b";
+        String url = "https://newsapi.org/v2/everything?q=" + String.join(" OR ", KEYWORDS) + "&apiKey=d8a0a2831ea443a1b746f7cdcd0c8e1b";
         NewsResponse response = restTemplate.getForObject(url, NewsResponse.class);
 
         if (response != null && response.getArticles() != null) {
@@ -147,7 +154,7 @@ public class BlogService {
 
     public Blog autoPostBlog() {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "https://newsapi.org/v2/everything?q=bicycle+race+OR+bicycle+knowledge&sortBy=publishedAt&apiKey=d8a0a2831ea443a1b746f7cdcd0c8e1b";
+        String url = "https://newsapi.org/v2/everything?q=" + String.join(" OR ", KEYWORDS) + "&sortBy=publishedAt&apiKey=d8a0a2831ea443a1b746f7cdcd0c8e1b";
         NewsResponse response = restTemplate.getForObject(url, NewsResponse.class);
 
         if (response != null && response.getArticles() != null && !response.getArticles().isEmpty()) {
