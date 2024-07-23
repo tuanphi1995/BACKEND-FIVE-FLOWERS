@@ -23,7 +23,7 @@ public class Blog {
 
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
     private String imageUrl; // Thêm trường này để lưu URL của ảnh
 
