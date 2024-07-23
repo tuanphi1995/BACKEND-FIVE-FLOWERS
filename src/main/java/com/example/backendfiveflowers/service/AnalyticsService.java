@@ -1,14 +1,19 @@
 package com.example.backendfiveflowers.service;
 
 import com.example.backendfiveflowers.entity.AnalyticsVisit;
+import com.example.backendfiveflowers.entity.Order;
 import com.example.backendfiveflowers.repository.AnalyticsVisitRepository;
+import com.example.backendfiveflowers.repository.OrderRepository;
+import com.example.backendfiveflowers.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,59 +22,59 @@ public class AnalyticsService {
     @Autowired
     private AnalyticsVisitRepository visitRepository;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private CartRepository cartRepository;
+
     public void saveVisit(AnalyticsVisit visit) {
         visitRepository.save(visit);
         System.out.println("Visit saved: " + visit);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public Map<String, List<?>> getStats(LocalDateTime startDate, LocalDateTime endDate) {
-        List<AnalyticsVisit> visits = visitRepository.findAll();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    public Map<String, Object> getStatsByDate(LocalDate date) {
+        LocalDateTime startDate = date.atStartOfDay();
+        LocalDateTime endDate = date.atTime(23, 59, 59, 999999999);
 
-        System.out.println("Fetching stats from " + startDate + " to " + endDate);
-
-        List<AnalyticsVisit> filteredVisits = visits.stream()
+        // Lấy danh sách visits trong khoảng thời gian
+        List<AnalyticsVisit> visits = visitRepository.findAll().stream()
                 .filter(v -> !v.getVisitTime().isBefore(startDate) && !v.getVisitTime().isAfter(endDate))
                 .collect(Collectors.toList());
 
-        System.out.println("Filtered Visits: " + filteredVisits);
+        // Tính toán số liệu thống kê
+        double totalSale = calculateTotalSale(startDate, endDate);
+        double conversionRate = calculateConversionRate(startDate, endDate);
+        long addToCart = calculateAddToCart(startDate, endDate);
+        long visitor = visits.size();
 
-        Map<String, Long> visitCountByPeriod;
-        long daysBetween = java.time.Duration.between(startDate, endDate).toDays();
-
-        if (daysBetween < 7) {
-            visitCountByPeriod = filteredVisits.stream()
-                    .collect(Collectors.groupingBy(v -> {
-                        LocalDateTime visitTime = v.getVisitTime().withMinute(0).withSecond(0).withNano(0);
-                        return visitTime.format(formatter);
-                    }, Collectors.counting()));
-        } else {
-            visitCountByPeriod = filteredVisits.stream()
-                    .collect(Collectors.groupingBy(v -> {
-                        LocalDateTime visitTime = v.getVisitTime().withHour(0).withMinute(0).withSecond(0).withNano(0);
-                        return visitTime.toLocalDate().toString();
-                    }, Collectors.counting()));
-        }
-
-        List<String> times = new ArrayList<>(visitCountByPeriod.keySet());
-        List<Long> totalVisits = new ArrayList<>(visitCountByPeriod.values());
-
-        System.out.println("Times: " + times);
-        System.out.println("Total Visits: " + totalVisits);
-
-        Map<String, List<?>> stats = new HashMap<>();
-        stats.put("times", times);
-        stats.put("totalVisits", totalVisits);
+        // Tạo map để trả về
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalSale", totalSale);
+        stats.put("conversionRate", conversionRate);
+        stats.put("addToCart", addToCart);
+        stats.put("visitor", visitor);
 
         return stats;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public Map<String, List<?>> getYesterdayStats() {
-        LocalDateTime startDate = LocalDateTime.now().minusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
-        LocalDateTime endDate = LocalDateTime.now().minusDays(1).withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+    private double calculateTotalSale(LocalDateTime startDate, LocalDateTime endDate) {
+        return orderRepository.findAll().stream()
+                .filter(o -> !o.getCreatedAt().isBefore(startDate) && !o.getCreatedAt().isAfter(endDate))
+                .mapToDouble(Order::getPrice)
+                .sum();
+    }
 
-        return getStats(startDate, endDate);
+    private double calculateConversionRate(LocalDateTime startDate, LocalDateTime endDate) {
+        long totalVisitors = visitRepository.count();
+        long totalOrders = orderRepository.findAll().stream()
+                .filter(o -> !o.getCreatedAt().isBefore(startDate) && !o.getCreatedAt().isAfter(endDate))
+                .count();
+        return totalVisitors == 0 ? 0 : ((double) totalOrders / totalVisitors) * 100;
+    }
+
+    private long calculateAddToCart(LocalDateTime startDate, LocalDateTime endDate) {
+        return cartRepository.countByAddToCartTimeBetween(startDate, endDate);
     }
 }

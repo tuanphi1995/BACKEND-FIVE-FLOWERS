@@ -9,14 +9,17 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-public class AnalyticsVisit {
+public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private LocalDateTime visitTime;
+    private LocalDateTime addToCartTime;
 
     @Column(nullable = false)
-    private String page;
+    private Integer productId;
+
+    @Column(nullable = false)
+    private Integer userId;
 }
