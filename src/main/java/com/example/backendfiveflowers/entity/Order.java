@@ -41,6 +41,9 @@ public class Order {
 
     private String status;
 
+    @Column(nullable = false)
+    private double shippingCost;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

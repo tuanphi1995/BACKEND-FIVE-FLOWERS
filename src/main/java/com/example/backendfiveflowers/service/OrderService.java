@@ -83,7 +83,10 @@ public class OrderService {
             totalOrderPrice += detailPrice;
         }
 
-        order.setPrice(totalOrderPrice);
+        // Add shipping cost to total order price
+        double shippingCost = 5.0; // Định nghĩa phí vận chuyển cố định
+        order.setShippingCost(shippingCost);
+        order.setPrice(totalOrderPrice + shippingCost);
 
         // Set order status based on input (default to "Pending" if not provided)
         if (order.getStatus() == null || order.getStatus().isEmpty()) {
@@ -92,6 +95,7 @@ public class OrderService {
 
         return orderRepository.save(order);
     }
+
 
     @Transactional
     public Order updateOrder(Integer id, Order order) {

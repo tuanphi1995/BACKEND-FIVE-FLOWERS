@@ -31,6 +31,7 @@ public class OrderController {
         return orderService.updateOrder(id, order);
     }
 
+
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public void deleteOrder(@PathVariable Integer id) {
