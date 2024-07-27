@@ -40,6 +40,18 @@ public class UserInfoService implements UserDetailsService {
         return "User added successfully";
     }
 
+    public String addAdmin(UserInfo userInfo) {
+        // Kiểm tra tên người dùng trùng lặp (không phân biệt chữ hoa chữ thường)
+        if (userInfoRepository.findByUserNameIgnoreCase(userInfo.getUserName()).isPresent()) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
+        userInfo.setRoles("ROLE_ADMIN");
+        userInfoRepository.save(userInfo);
+        return "Admin added successfully";
+    }
+
     public UserInfo findByUserName(String userName) {
         return userInfoRepository.findByUserName(userName)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
