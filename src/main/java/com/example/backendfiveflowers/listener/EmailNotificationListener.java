@@ -22,7 +22,7 @@ public class EmailNotificationListener implements ApplicationListener<OrderCreat
     public void onApplicationEvent(OrderCreatedEvent event) {
         Order order = event.getOrder();
         String customerEmail = order.getUser().getEmail();
-        String subject = "Xác nhận đơn hàng #" + order.getOrderId();
+        String subject = "Order confirmation #" + order.getOrderId();
         String body = emailContentBuilder.buildOrderConfirmationEmail(order);
 
         EmailRequest emailRequest = new EmailRequest(customerEmail, subject, body);
