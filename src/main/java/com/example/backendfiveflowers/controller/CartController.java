@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/cart")
@@ -38,4 +40,11 @@ public class CartController {
         cartService.removeCartItem(principal.getName(), productId);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/stats")
+    public ResponseEntity<?> getCartStats(@RequestParam String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        int addToCartCount = cartService.getTotalAddToCartByDate(localDate);
+        return ResponseEntity.ok(Map.of("addToCart", addToCartCount));
+    }
+
 }
