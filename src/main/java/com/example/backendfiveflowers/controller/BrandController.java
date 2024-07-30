@@ -26,7 +26,7 @@ public class BrandController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/update/{id}")
     public Brand updateBrand(@PathVariable Integer id, @RequestBody Brand brandDetails) {
-        brandDetails.setBrandId(id); // Đảm bảo brand ID được đặt từ URL
+        brandDetails.setBrandId(id); // Ensure brand ID is set from URL
         return brandService.updateBrand(brandDetails);
     }
 

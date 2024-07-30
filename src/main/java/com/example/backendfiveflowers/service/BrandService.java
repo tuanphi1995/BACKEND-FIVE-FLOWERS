@@ -24,6 +24,7 @@ public class BrandService {
         if (existingBrand.isPresent()) {
             Brand brand = existingBrand.get();
             brand.setName(brandDetails.getName());
+            brand.setDescription(brandDetails.getDescription()); // Ensure description is updated
             return brandRepository.save(brand);
         } else {
             throw new RuntimeException("Brand not found");
