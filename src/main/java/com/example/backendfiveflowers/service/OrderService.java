@@ -190,19 +190,46 @@ public class OrderService {
         return topSellingProducts.stream().limit(3).collect(Collectors.toList());
     }
 
-    public Map<String, Double> getDailySalesTotalsForLast7Days() {
-        LocalDate today = LocalDate.now();
+    public Map<String, Double> getDailySalesTotals(LocalDate startDate, LocalDate endDate) {
         Map<String, Double> dailySalesTotals = new LinkedHashMap<>();
 
-        for (int i = 6; i >= 0; i--) {
-            LocalDate date = today.minusDays(i);
-            LocalDateTime startOfDay = date.atStartOfDay();
-            LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        while (!startDate.isAfter(endDate)) {
+            LocalDateTime startOfDay = startDate.atStartOfDay();
+            LocalDateTime endOfDay = startDate.atTime(LocalTime.MAX);
             List<Order> orders = orderRepository.findAllByCreatedAtBetween(startOfDay, endOfDay);
             double totalSales = orders.stream().mapToDouble(Order::getPrice).sum();
-            dailySalesTotals.put(date.toString(), totalSales);
+            dailySalesTotals.put(startDate.toString(), totalSales);
+            startDate = startDate.plusDays(1);
         }
 
         return dailySalesTotals;
+    }
+
+    public List<Map<String, Object>> getTopSellingProducts(LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+
+        List<Order> orders = orderRepository.findAllByCreatedAtBetween(startOfDay, endOfDay);
+        Map<Integer, Map<String, Object>> productCountMap = new HashMap<>();
+
+        for (Order order : orders) {
+            for (OrderDetail detail : order.getOrderDetails()) {
+                int productId = detail.getProduct().getProductId();
+                productCountMap.putIfAbsent(productId, new HashMap<>());
+                Map<String, Object> productInfo = productCountMap.get(productId);
+
+                productInfo.put("name", detail.getProduct().getName());
+                productInfo.put("imageUrl", detail.getProduct().getProductImages().get(0));
+                productInfo.put("price", detail.getProduct().getPrice());
+
+                int currentCount = (int) productInfo.getOrDefault("count", 0);
+                productInfo.put("count", currentCount + detail.getQuantity());
+            }
+        }
+
+        List<Map<String, Object>> topSellingProducts = new ArrayList<>(productCountMap.values());
+        topSellingProducts.sort((a, b) -> (int) b.get("count") - (int) a.get("count"));
+
+        return topSellingProducts.stream().limit(3).collect(Collectors.toList());
     }
 }

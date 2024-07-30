@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,7 +31,6 @@ public class OrderController {
     public Order updateOrder(@PathVariable Integer id, @RequestBody Order order) {
         return orderService.updateOrder(id, order);
     }
-
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
@@ -72,7 +72,13 @@ public class OrderController {
 
     @GetMapping("/daily-sales-totals")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
-    public Map<String, Double> getDailySalesTotalsForLast7Days() {
-        return orderService.getDailySalesTotalsForLast7Days();
+    public Map<String, Double> getDailySalesTotals(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) {
+        return orderService.getDailySalesTotals(LocalDate.parse(startDate), LocalDate.parse(endDate));
+    }
+
+    @GetMapping("/top-selling-products")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public List<Map<String, Object>> getTopSellingProducts(@RequestParam("date") String date) {
+        return orderService.getTopSellingProducts(LocalDate.parse(date));
     }
 }
