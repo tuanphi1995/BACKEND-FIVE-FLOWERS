@@ -59,12 +59,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/product_images/**").permitAll()
                         .requestMatchers("/api/v1/order-details/**").hasAnyAuthority("ROLE_ADMIN","ROLE_USER")
                         .requestMatchers("/api/v1/images/**").permitAll()
+                        .requestMatchers("/api/v1/orders/daily-sales-total", "/api/v1/orders/top-selling-products-today").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/analytics/stats").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/analytics/track").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return httpSecurity.build();
     }

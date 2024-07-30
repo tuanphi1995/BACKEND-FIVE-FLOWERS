@@ -63,4 +63,16 @@ public class OrderController {
         String status = statusUpdate.get("status");
         return orderService.updateOrderStatus(id, status);
     }
+
+    @GetMapping("/top-selling-products-today")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public List<Map<String, Object>> getTopSellingProductsToday() {
+        return orderService.getTopSellingProductsToday();
+    }
+
+    @GetMapping("/daily-sales-totals")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public Map<String, Double> getDailySalesTotalsForLast7Days() {
+        return orderService.getDailySalesTotalsForLast7Days();
+    }
 }

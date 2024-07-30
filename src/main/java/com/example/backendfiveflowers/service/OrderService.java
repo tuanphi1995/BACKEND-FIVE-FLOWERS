@@ -10,8 +10,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -38,21 +41,18 @@ public class OrderService {
 
     @Transactional
     public Order addOrder(Order order) {
-        // Validate and set user
         Optional<UserInfo> userInfoOptional = userInfoRepository.findById(order.getUser().getId());
         if (!userInfoOptional.isPresent()) {
             throw new RuntimeException("User not found");
         }
         order.setUser(userInfoOptional.get());
 
-        // Validate and set address
         Optional<Address> addressOptional = addressRepository.findById(order.getAddress().getAddressId());
         if (!addressOptional.isPresent()) {
             throw new RuntimeException("Address not found");
         }
         order.setAddress(addressOptional.get());
 
-        // Handle payment
         Payment payment = order.getPayment();
         if (payment.getPaymentId() != 0) {
             Optional<Payment> paymentOptional = paymentRepository.findById(payment.getPaymentId());
@@ -66,7 +66,6 @@ public class OrderService {
             order.setPayment(payment);
         }
 
-        // Calculate total price and set order details
         double totalOrderPrice = 0.0;
         for (OrderDetail orderDetail : order.getOrderDetails()) {
             Optional<Product> productOptional = productRepository.findById(orderDetail.getProduct().getProductId());
@@ -83,19 +82,16 @@ public class OrderService {
             totalOrderPrice += detailPrice;
         }
 
-        // Add shipping cost to total order price
-        double shippingCost = 5.0; // Định nghĩa phí vận chuyển cố định
+        double shippingCost = 5.0;
         order.setShippingCost(shippingCost);
         order.setPrice(totalOrderPrice + shippingCost);
 
-        // Set order status based on input (default to "Pending" if not provided)
         if (order.getStatus() == null || order.getStatus().isEmpty()) {
             order.setStatus("Pending");
         }
 
         return orderRepository.save(order);
     }
-
 
     @Transactional
     public Order updateOrder(Integer id, Order order) {
@@ -110,11 +106,8 @@ public class OrderService {
         existingOrder.setStatus(order.getStatus());
 
         double totalOrderPrice = 0.0;
-
-        // Xóa các chi tiết đơn hàng cũ
         existingOrder.getOrderDetails().clear();
 
-        // Thêm các chi tiết đơn hàng mới
         for (OrderDetail orderDetail : order.getOrderDetails()) {
             Optional<Product> productOptional = productRepository.findById(orderDetail.getProduct().getProductId());
             if (!productOptional.isPresent()) {
@@ -128,14 +121,13 @@ public class OrderService {
             orderDetail.setPrice(detailPrice);
             totalOrderPrice += detailPrice;
 
-            existingOrder.getOrderDetails().add(orderDetail); // Thêm chi tiết đơn hàng mới vào đơn hàng
+            existingOrder.getOrderDetails().add(orderDetail);
         }
 
         existingOrder.setPrice(totalOrderPrice);
 
         return orderRepository.save(existingOrder);
     }
-
 
     public void deleteOrder(Integer id) {
         orderRepository.deleteById(id);
@@ -169,5 +161,48 @@ public class OrderService {
         }
     }
 
+    public List<Map<String, Object>> getTopSellingProductsToday() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
 
+        List<Order> orders = orderRepository.findAllByCreatedAtBetween(startOfDay, endOfDay);
+        Map<Integer, Map<String, Object>> productCountMap = new HashMap<>();
+
+        for (Order order : orders) {
+            for (OrderDetail detail : order.getOrderDetails()) {
+                int productId = detail.getProduct().getProductId();
+                productCountMap.putIfAbsent(productId, new HashMap<>());
+                Map<String, Object> productInfo = productCountMap.get(productId);
+
+                productInfo.put("name", detail.getProduct().getName());
+                productInfo.put("imageUrl", detail.getProduct().getProductImages().get(0));
+                productInfo.put("price", detail.getProduct().getPrice());
+
+                int currentCount = (int) productInfo.getOrDefault("count", 0);
+                productInfo.put("count", currentCount + detail.getQuantity());
+            }
+        }
+
+        List<Map<String, Object>> topSellingProducts = new ArrayList<>(productCountMap.values());
+        topSellingProducts.sort((a, b) -> (int) b.get("count") - (int) a.get("count"));
+
+        return topSellingProducts.stream().limit(3).collect(Collectors.toList());
+    }
+
+    public Map<String, Double> getDailySalesTotalsForLast7Days() {
+        LocalDate today = LocalDate.now();
+        Map<String, Double> dailySalesTotals = new LinkedHashMap<>();
+
+        for (int i = 6; i >= 0; i--) {
+            LocalDate date = today.minusDays(i);
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+            List<Order> orders = orderRepository.findAllByCreatedAtBetween(startOfDay, endOfDay);
+            double totalSales = orders.stream().mapToDouble(Order::getPrice).sum();
+            dailySalesTotals.put(date.toString(), totalSales);
+        }
+
+        return dailySalesTotals;
+    }
 }
