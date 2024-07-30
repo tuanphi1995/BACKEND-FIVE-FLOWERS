@@ -229,8 +229,10 @@ public class OrderService {
                 Map<String, Object> productInfo = productCountMap.get(productId);
 
                 productInfo.put("name", detail.getProduct().getName());
-                productInfo.put("imageUrl", detail.getProduct().getProductImages().get(0));
+                productInfo.put("imageUrl", detail.getProduct().getProductImages().get(0).getImageUrl());
                 productInfo.put("price", detail.getProduct().getPrice());
+                productInfo.put("brand", detail.getProduct().getBrand().getName()); // Đổi lại thành getName
+                productInfo.put("category", detail.getProduct().getCategory().getName()); // Đổi lại thành getName
 
                 int currentCount = (int) productInfo.getOrDefault("count", 0);
                 productInfo.put("count", currentCount + detail.getQuantity());
