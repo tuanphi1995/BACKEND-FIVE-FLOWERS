@@ -8,6 +8,7 @@ import com.example.backendfiveflowers.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,16 +27,17 @@ public class UserInfoController {
     @Autowired
     private JwtService jwtService;
 
-    @GetMapping("/welcome")
-    public String welcome() {
-        return "Welcome to Spring Boot Security JWT!";
-    }
+
 
     @PostMapping("/addUser")
     public String addUser(@RequestBody UserInfo userInfo) {
         return userInfoService.addUser(userInfo);
     }
-
+    @PostMapping("/addAdmin")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public String addAdmin(@RequestBody UserInfo userInfo) {
+        return userInfoService.addAdmin(userInfo);
+    }
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
         try {

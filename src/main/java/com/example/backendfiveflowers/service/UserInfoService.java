@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
 @Service
 public class UserInfoService implements UserDetailsService {
 
@@ -29,7 +30,6 @@ public class UserInfoService implements UserDetailsService {
     }
 
     public String addUser(UserInfo userInfo) {
-        // Kiểm tra tên người dùng trùng lặp (không phân biệt chữ hoa chữ thường)
         if (userInfoRepository.findByUserNameIgnoreCase(userInfo.getUserName()).isPresent()) {
             throw new RuntimeException("Username already exists");
         }
@@ -38,6 +38,17 @@ public class UserInfoService implements UserDetailsService {
         userInfo.setRoles("ROLE_USER");
         userInfoRepository.save(userInfo);
         return "User added successfully";
+    }
+
+    public String addAdmin(UserInfo userInfo) {
+        if (userInfoRepository.findByUserNameIgnoreCase(userInfo.getUserName()).isPresent()) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
+        userInfo.setRoles("ROLE_ADMIN");
+        userInfoRepository.save(userInfo);
+        return "Admin added successfully";
     }
 
     public UserInfo findByUserName(String userName) {
@@ -72,5 +83,9 @@ public class UserInfoService implements UserDetailsService {
         UserInfo existingUser = userInfoRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
         userInfoRepository.delete(existingUser);
+    }
+
+    public Page<UserInfo> getAllAdmins(Pageable pageable) {
+        return userInfoRepository.findAllAdmins("ROLE_ADMIN", pageable);
     }
 }

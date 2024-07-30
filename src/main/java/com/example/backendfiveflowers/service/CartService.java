@@ -90,4 +90,9 @@ public class CartService {
         }
         cartAdditionLogRepository.save(log);
     }
+    public int getTotalAddToCartByDate(LocalDate date) {
+        CartAdditionLog log = cartAdditionLogRepository.findByDate(date);
+        return log != null ? log.getCount() : 0;
+    }
+
 }

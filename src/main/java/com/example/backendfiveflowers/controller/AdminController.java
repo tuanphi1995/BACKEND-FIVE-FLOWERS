@@ -28,6 +28,17 @@ public class AdminController {
         return userInfoService.getAllUsers(pageable);
     }
 
+    @GetMapping("/getAllAdmins")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public Page<UserInfo> getAllAdmins(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return userInfoService.getAllAdmins(pageable);
+    }
+
     @GetMapping("/getUserById/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public UserInfo getUserById(@PathVariable int id) {

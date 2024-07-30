@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/orders/daily-sales-total", "/api/v1/orders/top-selling-products-today").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/analytics/stats").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/analytics/track").permitAll()
+                        .requestMatchers("/api/v1/user/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
