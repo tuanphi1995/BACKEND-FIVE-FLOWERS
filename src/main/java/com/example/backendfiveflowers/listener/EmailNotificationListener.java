@@ -15,6 +15,8 @@ public class EmailNotificationListener implements ApplicationListener<OrderCreat
     @Autowired
     private EmailService emailService;
 
+    private final String adminEmail = "tuanphi1995@gmail.com";
+
     @Autowired
     private EmailContentBuilder emailContentBuilder;
 
@@ -27,5 +29,11 @@ public class EmailNotificationListener implements ApplicationListener<OrderCreat
 
         EmailRequest emailRequest = new EmailRequest(customerEmail, subject, body);
         emailService.sendHtmlEmail(emailRequest);
+
+        // Gửi email cho admin
+        String adminSubject = "New Order Received #" + order.getOrderId();
+        String adminBody = "Admin notification: A new order has been placed. Order details:\n" + body;
+        EmailRequest adminEmailRequest = new EmailRequest(adminEmail, adminSubject, adminBody);
+        emailService.sendHtmlEmail(adminEmailRequest);
     }
 }
