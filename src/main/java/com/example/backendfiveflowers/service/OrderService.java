@@ -1,11 +1,13 @@
 package com.example.backendfiveflowers.service;
 
 import com.example.backendfiveflowers.entity.*;
+import com.example.backendfiveflowers.event.OrderCreatedEvent;
 import com.example.backendfiveflowers.repository.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,9 @@ public class OrderService {
 
     @Autowired
     private AddressRepository addressRepository;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Order addOrder(Order order) {
@@ -90,7 +95,12 @@ public class OrderService {
             order.setStatus("Pending");
         }
 
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        // Kích hoạt event gửi email
+        eventPublisher.publishEvent(new OrderCreatedEvent(this, savedOrder));
+
+        return savedOrder;
     }
 
     @Transactional
