@@ -90,6 +90,12 @@ public class OrderController {
         return Collections.singletonMap("newOrdersCount", newOrdersCount);
     }
 
+    @GetMapping("/pending-orders")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public Map<String, Integer> getPendingOrdersCount(@RequestParam("date") String date) {
+        int pendingOrdersCount = orderService.getPendingOrdersCount(LocalDate.parse(date));
+        return Collections.singletonMap("pendingOrdersCount", pendingOrdersCount);
+    }
 
 
 }

@@ -253,4 +253,11 @@ public class OrderService {
         return orders.size();
     }
 
+
+    public int getPendingOrdersCount(LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        List<Order> orders = orderRepository.findAllByCreatedAtBetweenAndStatus(startOfDay, endOfDay, "Pending");
+        return orders.size();
+    }
 }
