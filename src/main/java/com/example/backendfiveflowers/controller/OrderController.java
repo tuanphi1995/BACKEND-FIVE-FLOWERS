@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -81,4 +82,12 @@ public class OrderController {
     public List<Map<String, Object>> getTopSellingProducts(@RequestParam("date") String date) {
         return orderService.getTopSellingProducts(LocalDate.parse(date));
     }
+
+    @GetMapping("/new-orders")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public Map<String, Integer> getNewOrdersCount(@RequestParam("date") String date) {
+        int newOrdersCount = orderService.getNewOrdersCount(LocalDate.parse(date));
+        return Collections.singletonMap("newOrdersCount", newOrdersCount);
+    }
+
 }

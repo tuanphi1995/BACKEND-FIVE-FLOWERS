@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface UserInfoRepository extends JpaRepository<UserInfo, Integer> {
@@ -15,4 +16,6 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Integer> {
 
     @Query("SELECT u FROM UserInfo u WHERE u.roles LIKE %?1%")
     Page<UserInfo> findAllAdmins(String role, Pageable pageable);
+
+    int countByCreatedAtBetweenAndRolesContaining(LocalDateTime startOfDay, LocalDateTime endOfDay, String role);
 }

@@ -6,6 +6,7 @@ import com.example.backendfiveflowers.entity.UserInfo;
 import com.example.backendfiveflowers.service.JwtService;
 import com.example.backendfiveflowers.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +14,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -56,5 +61,12 @@ public class UserInfoController {
             e.printStackTrace(); // Add this line to see the exception details
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
+    }
+
+    @GetMapping("/new-users")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Map<String, Integer>> getNewUsersCount(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        int newUsersCount = userInfoService.getNewUsersCount(date, "ROLE_USER");
+        return new ResponseEntity<>(Collections.singletonMap("newUsersCount", newUsersCount), HttpStatus.OK);
     }
 }

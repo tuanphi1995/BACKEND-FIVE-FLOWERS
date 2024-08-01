@@ -244,4 +244,11 @@ public class OrderService {
 
         return topSellingProducts.stream().limit(3).collect(Collectors.toList());
     }
+    public int getNewOrdersCount(LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        List<Order> orders = orderRepository.findAllByCreatedAtBetween(startOfDay, endOfDay);
+        return orders.size();
+    }
+
 }

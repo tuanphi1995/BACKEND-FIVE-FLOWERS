@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Service
@@ -87,5 +90,11 @@ public class UserInfoService implements UserDetailsService {
 
     public Page<UserInfo> getAllAdmins(Pageable pageable) {
         return userInfoRepository.findAllAdmins("ROLE_ADMIN", pageable);
+    }
+
+     public int getNewUsersCount(LocalDate date, String role) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        return userInfoRepository.countByCreatedAtBetweenAndRolesContaining(startOfDay, endOfDay, role);
     }
 }
