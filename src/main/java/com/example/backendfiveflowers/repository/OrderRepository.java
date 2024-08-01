@@ -12,4 +12,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<Order> findAllByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 
     List<Order> findByUserId(Integer userId);
+
+    List<Order> findAllByCreatedAtBetweenAndStatus(LocalDateTime start, LocalDateTime end, String status);
+
 }
