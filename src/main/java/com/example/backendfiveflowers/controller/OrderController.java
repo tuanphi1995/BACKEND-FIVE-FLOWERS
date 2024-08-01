@@ -59,7 +59,7 @@ public class OrderController {
     }
 
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public Order updateOrderStatus(@PathVariable Integer id, @RequestBody Map<String, String> statusUpdate) {
         String status = statusUpdate.get("status");
         return orderService.updateOrderStatus(id, status);
@@ -89,5 +89,7 @@ public class OrderController {
         int newOrdersCount = orderService.getNewOrdersCount(LocalDate.parse(date));
         return Collections.singletonMap("newOrdersCount", newOrdersCount);
     }
+
+
 
 }

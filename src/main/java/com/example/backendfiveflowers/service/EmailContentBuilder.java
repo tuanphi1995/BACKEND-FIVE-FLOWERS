@@ -49,7 +49,7 @@ public class EmailContentBuilder {
                 .append("</div>")
                 .append("<p>If you have any questions, please contact us at support@ecowheels.com.</p>")
                 .append("</div>")
-                .append("<div class='email-footer'><p>&copy; 2024 Your Company. All rights reserved.</p></div>")
+                .append("<div class='email-footer'><p>&copy; 2024 Bike Club . All rights reserved.</p></div>")
                 .append("</div>")
                 .append("</body></html>");
         return builder.toString();
