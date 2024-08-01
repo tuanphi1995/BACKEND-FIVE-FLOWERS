@@ -2,6 +2,7 @@ package com.example.backendfiveflowers.service;
 
 import com.example.backendfiveflowers.entity.*;
 import com.example.backendfiveflowers.event.OrderCreatedEvent;
+import com.example.backendfiveflowers.event.OrderCancelledEvent;
 import com.example.backendfiveflowers.repository.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -165,13 +166,17 @@ public class OrderService {
                 detail.setStatus(status);
                 orderDetailRepository.save(detail);
             }
+
+            if ("Cancelled".equals(status)) {
+                // Kích hoạt event gửi email thông báo hủy đơn hàng
+                eventPublisher.publishEvent(new OrderCancelledEvent(this, order));
+            }
+
             return orderRepository.save(order);
         } else {
             throw new RuntimeException("Order not found with id: " + id);
         }
     }
-
-
 
     public List<Map<String, Object>> getTopSellingProductsToday() {
         LocalDate today = LocalDate.now();
@@ -233,8 +238,8 @@ public class OrderService {
                 productInfo.put("name", detail.getProduct().getName());
                 productInfo.put("imageUrl", detail.getProduct().getProductImages().get(0).getImageUrl());
                 productInfo.put("price", detail.getProduct().getPrice());
-                productInfo.put("brand", detail.getProduct().getBrand().getName()); // Đổi lại thành getName
-                productInfo.put("category", detail.getProduct().getCategory().getName()); // Đổi lại thành getName
+                productInfo.put("brand", detail.getProduct().getBrand().getName());
+                productInfo.put("category", detail.getProduct().getCategory().getName());
 
                 int currentCount = (int) productInfo.getOrDefault("count", 0);
                 productInfo.put("count", currentCount + detail.getQuantity());
@@ -246,11 +251,16 @@ public class OrderService {
 
         return topSellingProducts.stream().limit(3).collect(Collectors.toList());
     }
+    public int getPendingOrdersCount(LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        List<Order> orders = orderRepository.findAllByCreatedAtBetweenAndStatus(startOfDay, endOfDay, "Pending");
+        return orders.size();
+    }
     public int getNewOrdersCount(LocalDate date) {
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
         List<Order> orders = orderRepository.findAllByCreatedAtBetween(startOfDay, endOfDay);
         return orders.size();
     }
-
 }
