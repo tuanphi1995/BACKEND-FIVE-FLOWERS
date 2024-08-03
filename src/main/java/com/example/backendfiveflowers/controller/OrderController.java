@@ -96,6 +96,4 @@ public class OrderController {
         int pendingOrdersCount = orderService.getPendingOrdersCount(LocalDate.parse(date));
         return Collections.singletonMap("pendingOrdersCount", pendingOrdersCount);
     }
-
-
 }

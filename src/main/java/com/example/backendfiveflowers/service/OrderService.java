@@ -98,7 +98,6 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        // Kích hoạt event gửi email
         eventPublisher.publishEvent(new OrderCreatedEvent(this, savedOrder));
 
         return savedOrder;
@@ -168,7 +167,6 @@ public class OrderService {
             }
 
             if ("Cancelled".equals(status)) {
-                // Kích hoạt event gửi email thông báo hủy đơn hàng
                 eventPublisher.publishEvent(new OrderCancelledEvent(this, order));
             }
 
@@ -241,22 +239,24 @@ public class OrderService {
                 productInfo.put("brand", detail.getProduct().getBrand().getName());
                 productInfo.put("category", detail.getProduct().getCategory().getName());
 
-                int currentCount = (int) productInfo.getOrDefault("count", 0);
-                productInfo.put("count", currentCount + detail.getQuantity());
+                int currentCount = (int) productInfo.getOrDefault("quantitySold", 0);
+                productInfo.put("quantitySold", currentCount + detail.getQuantity());
             }
         }
 
         List<Map<String, Object>> topSellingProducts = new ArrayList<>(productCountMap.values());
-        topSellingProducts.sort((a, b) -> (int) b.get("count") - (int) a.get("count"));
+        topSellingProducts.sort((a, b) -> (int) b.get("quantitySold") - (int) a.get("quantitySold"));
 
         return topSellingProducts.stream().limit(3).collect(Collectors.toList());
     }
+
     public int getPendingOrdersCount(LocalDate date) {
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
         List<Order> orders = orderRepository.findAllByCreatedAtBetweenAndStatus(startOfDay, endOfDay, "Pending");
         return orders.size();
     }
+
     public int getNewOrdersCount(LocalDate date) {
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
