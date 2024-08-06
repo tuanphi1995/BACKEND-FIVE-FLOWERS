@@ -44,6 +44,11 @@ public class OrderService {
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
+    @Autowired
+    private AnalyticsVisitRepository analyticsVisitRepository;
+
+    @Autowired
+    private CartAdditionLogRepository cartAdditionLogRepository;
 
     @Transactional
     public Order addOrder(Order order) {
@@ -205,6 +210,7 @@ public class OrderService {
         return topSellingProducts.stream().limit(3).collect(Collectors.toList());
     }
 
+
     public Map<String, Double> getDailySalesTotals(LocalDate startDate, LocalDate endDate) {
         Map<String, Double> dailySalesTotals = new LinkedHashMap<>();
 
@@ -220,9 +226,9 @@ public class OrderService {
         return dailySalesTotals;
     }
 
-    public List<Map<String, Object>> getTopSellingProducts(LocalDate date) {
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+    public List<Map<String, Object>> getTopSellingProducts(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime startOfDay = startDate.atStartOfDay();
+        LocalDateTime endOfDay = endDate.atTime(LocalTime.MAX);
 
         List<Order> orders = orderRepository.findAllByCreatedAtBetween(startOfDay, endOfDay);
         Map<Integer, Map<String, Object>> productCountMap = new HashMap<>();
@@ -250,6 +256,7 @@ public class OrderService {
         return topSellingProducts.stream().limit(3).collect(Collectors.toList());
     }
 
+
     public int getPendingOrdersCount(LocalDate date) {
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
@@ -263,4 +270,23 @@ public class OrderService {
         List<Order> orders = orderRepository.findAllByCreatedAtBetween(startOfDay, endOfDay);
         return orders.size();
     }
+
+    public Map<String, Object> getSummary(LocalDate startDate, LocalDate endDate) {
+        Map<String, Object> summary = new HashMap<>();
+
+        int totalNewOrders = orderRepository.findAllByCreatedAtBetween(startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX)).size();
+        int totalPendingOrders = orderRepository.findAllByCreatedAtBetweenAndStatus(startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX), "Pending").size();
+        double totalSales = orderRepository.findAllByCreatedAtBetween(startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX)).stream().mapToDouble(Order::getPrice).sum();
+        int totalVisitors = analyticsVisitRepository.countByVisitTimeBetween(startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX));
+        int addToCartCount = cartAdditionLogRepository.findByDateBetween(startDate, endDate).size();
+
+        summary.put("totalSales", totalSales);
+        summary.put("newOrders", totalNewOrders);
+        summary.put("pendingOrders", totalPendingOrders);
+        summary.put("visitors", totalVisitors);
+        summary.put("addToCart", addToCartCount);
+
+        return summary;
+    }
+
 }

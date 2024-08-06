@@ -47,4 +47,11 @@ public class CartController {
         return ResponseEntity.ok(Map.of("addToCart", addToCartCount));
     }
 
+    @GetMapping("/stats/range")
+    public ResponseEntity<?> getCartStatsByRange(@RequestParam String startDate, @RequestParam String endDate) {
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+        int addToCartCount = cartService.getTotalAddToCartByDateRange(start, end);
+        return ResponseEntity.ok(Map.of("addToCart", addToCartCount));
+    }
 }

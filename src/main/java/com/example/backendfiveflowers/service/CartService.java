@@ -95,4 +95,9 @@ public class CartService {
         return log != null ? log.getCount() : 0;
     }
 
+    public int getTotalAddToCartByDateRange(LocalDate startDate, LocalDate endDate) {
+        return cartAdditionLogRepository.findByDateBetween(startDate, endDate).stream()
+                .mapToInt(CartAdditionLog::getCount)
+                .sum();
+    }
 }

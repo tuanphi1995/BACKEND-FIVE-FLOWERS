@@ -79,9 +79,12 @@ public class OrderController {
 
     @GetMapping("/top-selling-products")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
-    public List<Map<String, Object>> getTopSellingProducts(@RequestParam("date") String date) {
-        return orderService.getTopSellingProducts(LocalDate.parse(date));
+    public List<Map<String, Object>> getTopSellingProducts(
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate) {
+        return orderService.getTopSellingProducts(LocalDate.parse(startDate), LocalDate.parse(endDate));
     }
+
 
     @GetMapping("/new-orders")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
@@ -96,4 +99,13 @@ public class OrderController {
         int pendingOrdersCount = orderService.getPendingOrdersCount(LocalDate.parse(date));
         return Collections.singletonMap("pendingOrdersCount", pendingOrdersCount);
     }
+
+    @GetMapping("/summary")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public Map<String, Object> getSummary(
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate) {
+        return orderService.getSummary(LocalDate.parse(startDate), LocalDate.parse(endDate));
+    }
+
 }
