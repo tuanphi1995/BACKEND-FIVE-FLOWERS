@@ -35,7 +35,6 @@ public class ProductController {
         return ResponseEntity.ok(savedProduct);
     }
 
-
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody Product productDetails) {
@@ -65,9 +64,7 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-
-
-    @DeleteMapping("/delete/{id}")
+    @PutMapping("/delete/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
         productService.deleteProduct(id);
@@ -100,7 +97,6 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-
     @PostMapping("/add/existing-images/{productId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> addExistingImages(@PathVariable int productId, @RequestBody List<String> imageUrls) {
@@ -109,13 +105,13 @@ public class ProductController {
         return ResponseEntity.ok().build();
     }
 
-
     @PutMapping("/reduceQuantity/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')")
     public ResponseEntity<Void> reduceQuantity(@PathVariable Integer id, @RequestParam int quantity) {
         productService.reduceQuantity(id, quantity);
         return ResponseEntity.ok().build();
     }
+
     @GetMapping("/search")
     public ResponseEntity<Page<Product>> searchProducts(
             @RequestParam String query,

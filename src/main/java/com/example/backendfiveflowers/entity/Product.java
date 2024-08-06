@@ -11,14 +11,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +40,7 @@ public class Product {
     private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ProductImage> productImages; // Đổi tên từ productImages sang media để đồng nhất
+    private List<ProductImage> productImages;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -51,4 +49,11 @@ public class Product {
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    private boolean isDeleted = false;
+
+    public void setDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 }
+

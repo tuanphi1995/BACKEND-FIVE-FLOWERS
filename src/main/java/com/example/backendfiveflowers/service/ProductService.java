@@ -89,18 +89,21 @@ public class ProductService {
     public void deleteProduct(Integer id) {
         Optional<Product> product = productRepository.findById(id);
         if (product.isPresent()) {
-            productRepository.deleteById(id);
+            Product existingProduct = product.get();
+            existingProduct.setDeleted(true); // Sử dụng setter setDeleted
+            productRepository.save(existingProduct);
         } else {
             throw new RuntimeException("Không tìm thấy sản phẩm với id: " + id);
         }
     }
 
+
     public Optional<Product> getProductById(Integer id) {
-        return productRepository.findById(id);
+        return productRepository.findByProductIdAndIsDeletedFalse(id);
     }
 
     public Page<Product> getAllProducts(Pageable pageable) {
-        return productRepository.findAll(pageable);
+        return productRepository.findAllByIsDeletedFalse(pageable);
     }
 
     public void reduceQuantity(int productId, int quantity) {
@@ -165,6 +168,7 @@ public class ProductService {
     }
 
     public Page<Product> searchProducts(String name, Pageable pageable) {
-        return productRepository.findByNameContaining(name, pageable);
+        return productRepository.findByNameContainingAndIsDeletedFalse(name, pageable);
     }
+
 }
