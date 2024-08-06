@@ -97,4 +97,10 @@ public class UserInfoService implements UserDetailsService {
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
         return userInfoRepository.countByCreatedAtBetweenAndRolesContaining(startOfDay, endOfDay, role);
     }
+    public UserInfo getCurrentUser(String userName) {
+        return findByUserName(userName);
+    }
+
+
+
 }

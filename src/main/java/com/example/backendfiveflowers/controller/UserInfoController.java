@@ -5,6 +5,7 @@ import com.example.backendfiveflowers.entity.AuthResponse;
 import com.example.backendfiveflowers.entity.UserInfo;
 import com.example.backendfiveflowers.service.JwtService;
 import com.example.backendfiveflowers.service.UserInfoService;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -13,8 +14,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Map;
@@ -38,11 +41,13 @@ public class UserInfoController {
     public String addUser(@RequestBody UserInfo userInfo) {
         return userInfoService.addUser(userInfo);
     }
+
     @PostMapping("/addAdmin")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String addAdmin(@RequestBody UserInfo userInfo) {
         return userInfoService.addAdmin(userInfo);
     }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
         try {
@@ -68,5 +73,12 @@ public class UserInfoController {
     public ResponseEntity<Map<String, Integer>> getNewUsersCount(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         int newUsersCount = userInfoService.getNewUsersCount(date, "ROLE_USER");
         return new ResponseEntity<>(Collections.singletonMap("newUsersCount", newUsersCount), HttpStatus.OK);
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    public ResponseEntity<UserInfo> getCurrentUser(Principal principal) {
+        UserInfo currentUser = userInfoService.getCurrentUser(principal.getName());
+        return ResponseEntity.ok(currentUser);
     }
 }
