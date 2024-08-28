@@ -22,7 +22,6 @@ public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;  // Thay đổi từ int thành Integer
-
     private String userName;
     private String password;
     private String email;
