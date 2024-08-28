@@ -170,5 +170,7 @@ public class ProductService {
     public Page<Product> searchProducts(String name, Pageable pageable) {
         return productRepository.findByNameContainingAndIsDeletedFalse(name, pageable);
     }
-
+    public int getTotalInStock() {
+        return productRepository.sumTotalInStock();
+    }
 }
