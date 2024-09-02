@@ -64,6 +64,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/analytics/track").permitAll()
                         .requestMatchers("/api/v1/user/**").permitAll()
                         .requestMatchers("/api/v1/user/me").hasAuthority("ROLE_USER")
+                        .requestMatchers("/api/v1/calorie-consumption").hasAuthority("ROLE_USER")
+
+
+                        .requestMatchers("/api/v1/bot/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

@@ -4,8 +4,10 @@ import com.example.backendfiveflowers.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Integer>, PagingAndSortingRepository<Product, Integer> {
@@ -14,5 +16,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, Pagi
     Page<Product> findAllByIsDeletedFalse(Pageable pageable);
 
     Optional<Product> findByProductIdAndIsDeletedFalse(Integer productId);
+    @Query("SELECT SUM(p.quantity) FROM Product p WHERE p.isDeleted = false")
+    int sumTotalInStock();
 }
 
