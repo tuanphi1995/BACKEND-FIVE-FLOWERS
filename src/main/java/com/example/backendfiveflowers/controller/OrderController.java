@@ -107,5 +107,9 @@ public class OrderController {
             @RequestParam("endDate") String endDate) {
         return orderService.getSummary(LocalDate.parse(startDate), LocalDate.parse(endDate));
     }
-
+    @GetMapping("/count-status/{userId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public Map<String, Integer> getOrderCountByStatus(@PathVariable Integer userId) {
+        return orderService.getOrderCountByStatus(userId);
+    }
 }

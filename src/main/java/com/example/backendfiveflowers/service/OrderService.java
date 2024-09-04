@@ -288,5 +288,16 @@ public class OrderService {
 
         return summary;
     }
+    // Hàm để đếm số lượng đơn hàng theo trạng thái
+    public Map<String, Integer> getOrderCountByStatus(Integer userId) {
+        List<Order> orders = orderRepository.findByUserId(userId);
+        Map<String, Integer> statusCountMap = new HashMap<>();
 
+        for (Order order : orders) {
+            String status = order.getStatus();
+            statusCountMap.put(status, statusCountMap.getOrDefault(status, 0) + 1);
+        }
+
+        return statusCountMap;
+    }
 }
