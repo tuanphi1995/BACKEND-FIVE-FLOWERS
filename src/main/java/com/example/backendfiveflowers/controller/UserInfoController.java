@@ -2,7 +2,9 @@ package com.example.backendfiveflowers.controller;
 
 import com.example.backendfiveflowers.entity.AuthRequest;
 import com.example.backendfiveflowers.entity.AuthResponse;
+import com.example.backendfiveflowers.entity.Bike;
 import com.example.backendfiveflowers.entity.UserInfo;
+import com.example.backendfiveflowers.repository.BikeRepository;
 import com.example.backendfiveflowers.service.JwtService;
 import com.example.backendfiveflowers.service.UserInfoService;
 import org.apache.catalina.User;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -34,6 +37,9 @@ public class UserInfoController {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private BikeRepository bikeRepository;
 
 
 
@@ -80,5 +86,21 @@ public class UserInfoController {
     public ResponseEntity<UserInfo> getCurrentUser(Principal principal) {
         UserInfo currentUser = userInfoService.getCurrentUser(principal.getName());
         return ResponseEntity.ok(currentUser);
+    }
+
+    @GetMapping("/bikes")
+    public ResponseEntity<List<Bike>> getUserBikes(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+
+        UserInfo user = userInfoService.getCurrentUser(principal.getName());
+
+        if (user == null) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+
+        List<Bike> bikes = bikeRepository.findByUserId(user.getId());
+        return ResponseEntity.ok(bikes);
     }
 }
