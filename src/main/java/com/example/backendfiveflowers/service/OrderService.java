@@ -50,6 +50,9 @@ public class OrderService {
     @Autowired
     private CartAdditionLogRepository cartAdditionLogRepository;
 
+    @Autowired
+    private BikeRepository bikeRepository;
+
     @Transactional
     public Order addOrder(Order order) {
         Optional<UserInfo> userInfoOptional = userInfoRepository.findById(order.getUser().getId());
@@ -171,6 +174,12 @@ public class OrderService {
                 orderDetailRepository.save(detail);
             }
 
+            if ("Delivered".equalsIgnoreCase(status)) {
+                saveBikes(order);  // Lưu thông tin xe đạp
+            }
+
+
+
             if ("Cancelled".equals(status)) {
                 eventPublisher.publishEvent(new OrderCancelledEvent(this, order));
             }
@@ -180,6 +189,25 @@ public class OrderService {
             throw new RuntimeException("Order not found with id: " + id);
         }
     }
+
+    public void saveBikes(Order order) {
+        List<String> validCategories = Arrays.asList("Mountain Bikes", "Electric Mountain Bikes", "ROAD BIKES");
+
+        for (OrderDetail detail : order.getOrderDetails()) {
+            Product product = detail.getProduct();
+            String categoryName = product.getCategory().getName();
+
+            if (validCategories.contains(categoryName)) {
+                Bike bike = new Bike();
+                bike.setName(product.getName());
+                bike.setImageUrl(product.getProductImages().get(0).getImageUrl());  // Sử dụng ảnh đầu tiên của sản phẩm
+                bike.setUser(order.getUser());  // Gán xe đạp cho người dùng đã đặt hàng
+                bikeRepository.save(bike);  // Lưu vào bảng Bike
+            }
+        }
+    }
+
+
 
     public List<Map<String, Object>> getTopSellingProductsToday() {
         LocalDate today = LocalDate.now();
