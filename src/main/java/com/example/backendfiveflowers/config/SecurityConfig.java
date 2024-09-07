@@ -65,9 +65,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/user/**").permitAll()
                         .requestMatchers("/api/v1/user/me").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/v1/calorie-consumption").hasAuthority("ROLE_USER")
-
-
                         .requestMatchers("/api/v1/user/bikes").permitAll()
+                        .requestMatchers("/api/v1/routes/**").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/v1/bot/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
