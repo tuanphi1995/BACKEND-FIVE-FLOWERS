@@ -3,6 +3,7 @@ package com.example.backendfiveflowers.controller;
 import com.example.backendfiveflowers.entity.Route;
 import com.example.backendfiveflowers.entity.UserInfo;
 import com.example.backendfiveflowers.service.RouteService;
+import com.example.backendfiveflowers.service.UserInfoDetails;
 import com.example.backendfiveflowers.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,8 @@ public class RouteController {
 
 
     private UserInfo getCurrentUser() {
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserInfoDetails userInfoDetails = (UserInfoDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userInfoDetails.getUsername();
         return userInfoService.findByUserName(username);
     }
 }
