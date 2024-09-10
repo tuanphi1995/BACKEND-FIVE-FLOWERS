@@ -34,7 +34,8 @@ public class RouteController {
 
 
     @PostMapping("post-route")
-    public ResponseEntity<Route> saveRoute(@RequestBody Route route, @AuthenticationPrincipal UserInfo currentUser) {
+    public ResponseEntity<Route> saveRoute(@RequestBody Route route) {
+        UserInfo currentUser = getCurrentUser();
         route.setJourneyDate(LocalDateTime.now());
         Route savedRoute = routeService.saveRoute(route, currentUser);
         return ResponseEntity.ok(savedRoute);
