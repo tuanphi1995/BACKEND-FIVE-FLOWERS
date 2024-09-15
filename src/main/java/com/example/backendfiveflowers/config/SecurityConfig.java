@@ -69,6 +69,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/routes/get-route").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/v1/routes/post-route").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/v1/bot/**").permitAll()
+                        .requestMatchers("/api/v1/contact/submit").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

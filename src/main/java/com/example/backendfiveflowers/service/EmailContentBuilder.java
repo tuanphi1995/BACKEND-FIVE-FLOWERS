@@ -103,4 +103,26 @@ public class EmailContentBuilder {
                 .append("</body></html>");
         return builder.toString();
     }
+    public String buildContactConfirmationEmail(String name) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<!DOCTYPE html>");
+        builder.append("<html><head><style>")
+                .append("body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }")
+                .append(".email-container { width: 100%; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 5px; overflow: hidden; }")
+                .append(".email-header, .email-footer { background-color: #f4f4f4; padding: 20px; text-align: center; }")
+                .append(".email-body { padding: 20px; }")
+                .append(".email-body h1 { color: #007bff; font-size: 24px; }")
+                .append("</style></head><body>");
+        builder.append("<div class='email-container'>")
+                .append("<div class='email-header'><h1>Thank You for Contacting Us!</h1></div>")
+                .append("<div class='email-body'>")
+                .append("<p>Dear ").append(name).append(",</p>")
+                .append("<p>We have received your message and will respond to you as soon as possible.</p>")
+                .append("<p>If you have any urgent queries, feel free to contact us at support@yourcompany.com.</p>")
+                .append("</div>")
+                .append("<div class='email-footer'><p>&copy; 2024 Your Company. All rights reserved.</p></div>")
+                .append("</div>")
+                .append("</body></html>");
+        return builder.toString();
+    }
 }
