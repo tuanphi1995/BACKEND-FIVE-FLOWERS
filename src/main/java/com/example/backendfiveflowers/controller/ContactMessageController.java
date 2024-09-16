@@ -8,7 +8,10 @@ import com.example.backendfiveflowers.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/contact")
@@ -38,5 +41,10 @@ public class ContactMessageController {
 
         // Phản hồi lại rằng tin nhắn đã được gửi thành công
         return new ResponseEntity<>("Tin nhắn đã được gửi thành công!", HttpStatus.OK);
+    }
+    @GetMapping("/allcontact")
+    public ResponseEntity<List<ContactMessage>> getAllMessages() {
+        List<ContactMessage> messages = service.getAllMessages();
+        return new ResponseEntity<>(messages, HttpStatus.OK);
     }
 }
