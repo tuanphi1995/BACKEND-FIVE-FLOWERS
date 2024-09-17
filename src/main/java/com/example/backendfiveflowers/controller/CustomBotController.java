@@ -1,5 +1,7 @@
 package com.example.backendfiveflowers.controller;
 
+import com.example.backendfiveflowers.entity.ChatbotMessage;
+import com.example.backendfiveflowers.service.ChatbotMessageService;
 import com.example.backendfiveflowers.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,13 +31,12 @@ public class CustomBotController {
     @Value("${flask.base.url}")
     private String flaskBaseUrl;
 
-    @Autowired
-    private RestTemplate template;
 
     @Autowired
-    private ProductService productService;
-    @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private ChatbotMessageService chatbotMessageService;
 
     @PostMapping("/learn")
     public String learn(@RequestBody Map<String, Object> text) {
@@ -50,66 +52,17 @@ public class CustomBotController {
         return response.getBody();
     }
 
-    @PostMapping("/learn_image")
-    public String learnImage(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return "No image provided";
-        }
 
-        try {
-            String url = flaskBaseUrl + "/learn_from_image";
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("file", new ByteArrayResource(file.getBytes()) {
-                @Override
-                public String getFilename() {
-                    return file.getOriginalFilename();
-                }
-            });
-
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-            // Gửi request đến Flask và nhận phản hồi
-            ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-            return response.getBody();
-        } catch (IOException e) {
-            return "Failed to process image";
-        }
+    @PostMapping("/save")
+    public ResponseEntity<?> saveBotResponse(@RequestBody Map<String, String> request) {
+        String botResponse = request.get("botResponse");
+        chatbotMessageService.saveBotResponse(botResponse);
+        return ResponseEntity.ok("Phản hồi của chatbot đã được lưu!");
     }
 
-    @PostMapping("/upload_file")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("No file provided");
-        }
-
-        try {
-            String url = flaskBaseUrl + "/upload_file";
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("file", new ByteArrayResource(file.getBytes()) {
-                @Override
-                public String getFilename() {
-                    return file.getOriginalFilename();
-                }
-            });
-
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-            ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-            return ResponseEntity.ok(response.getBody());
-        } catch (HttpClientErrorException e) {
-            // Bắt và xử lý lỗi từ Flask server
-            return ResponseEntity.status(e.getStatusCode()).body("Error processing file: " + e.getMessage());
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process file");
-        }
+    @GetMapping("/history")
+    public ResponseEntity<List<ChatbotMessage>> getChatHistory() {
+        List<ChatbotMessage> history = chatbotMessageService.getAllMessages();
+        return ResponseEntity.ok(history);
     }
-
 }
