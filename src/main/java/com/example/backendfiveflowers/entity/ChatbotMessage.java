@@ -3,7 +3,6 @@ package com.example.backendfiveflowers.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.Date;
 
 @Getter
@@ -14,9 +13,11 @@ public class ChatbotMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob  // Đánh dấu rằng trường này có thể chứa dữ liệu lớn
+    @Lob
     private String botResponse; // Phản hồi từ chatbot
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp; // Thời gian phản hồi
+
+    private String name; // Tên của lịch trình, ví dụ: "Lịch trình 1"
 }

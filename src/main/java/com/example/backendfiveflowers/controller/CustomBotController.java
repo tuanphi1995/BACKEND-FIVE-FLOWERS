@@ -65,4 +65,29 @@ public class CustomBotController {
         List<ChatbotMessage> history = chatbotMessageService.getAllMessages();
         return ResponseEntity.ok(history);
     }
+    @GetMapping("/history/{id}")
+    public ResponseEntity<List<ChatbotMessage>> getChatHistory(@PathVariable Long id) {
+        List<ChatbotMessage> history = chatbotMessageService.getMessagesById(id);
+        return ResponseEntity.ok(history);
+    }
+    @PutMapping("/updateName/{id}")
+    public ResponseEntity<?> updateConversationName(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        String newName = request.get("name");
+
+        try {
+            ChatbotMessage updatedMessage = chatbotMessageService.updateConversationName(id, newName);
+            return ResponseEntity.ok("Tên cuộc trò chuyện đã được cập nhật!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteChatHistory(@PathVariable Long id) {
+        try {
+            chatbotMessageService.deleteChatById(id);
+            return ResponseEntity.ok("Đã xóa lịch trình thành công");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy lịch trình");
+        }
+    }
 }
