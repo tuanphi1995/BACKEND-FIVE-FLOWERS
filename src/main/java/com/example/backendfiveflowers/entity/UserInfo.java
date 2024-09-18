@@ -1,5 +1,6 @@
 package com.example.backendfiveflowers.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -35,6 +36,7 @@ public class UserInfo {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatbotMessage> chatbotMessages; // Danh sách các tin nhắn chatbot của người dùng
 }

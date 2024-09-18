@@ -43,6 +43,10 @@ public class ChatbotMessageService {
     public List<ChatbotMessage> getMessagesByUserId(Integer userId) {
         return chatbotMessageRepository.findByUserInfoId(userId);
     }
+    public Optional<ChatbotMessage> getMessagesByMessageId(Long id) {
+        return chatbotMessageRepository.findById(id); // Trả về Optional<ChatbotMessage>
+    }
+
 
     // Hàm lấy tất cả các tin nhắn đã lưu
     public List<ChatbotMessage> getAllMessages() {
@@ -65,6 +69,9 @@ public class ChatbotMessageService {
     // Hàm xóa tin nhắn dựa trên ID
     public void deleteChatById(Long id) {
         chatbotMessageRepository.deleteById(id);
+    }
+    public List<ChatbotMessage> getMessagesByUserIdAndMessageId(Integer userId, Long id) {
+        return chatbotMessageRepository.findByUserInfoIdAndId(userId, id);
     }
 
     // Hàm cập nhật nội dung phản hồi của chatbot trong lịch sử cuộc trò chuyện

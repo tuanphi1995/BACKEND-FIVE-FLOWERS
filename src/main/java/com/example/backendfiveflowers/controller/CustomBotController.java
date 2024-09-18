@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/bot")
@@ -74,7 +75,6 @@ public class CustomBotController {
         return ResponseEntity.ok("Chatbot response saved with user information!");
     }
 
-
     @GetMapping("/history")
     public ResponseEntity<List<ChatbotMessage>> getChatHistory() {
         List<ChatbotMessage> history = chatbotMessageService.getAllMessages();
@@ -83,9 +83,13 @@ public class CustomBotController {
 
     @GetMapping("/history/{userId}")
     public ResponseEntity<List<ChatbotMessage>> getChatHistoryByUserId(@PathVariable Integer userId) {
+        System.out.println("Fetching chat history for userId: " + userId);
         List<ChatbotMessage> history = chatbotMessageService.getMessagesByUserId(userId);
+        System.out.println("Chat history for userId " + userId + ": " + history);
         return ResponseEntity.ok(history);
     }
+
+
 
     @PutMapping("/updateName/{id}")
     public ResponseEntity<?> updateConversationName(@PathVariable Long id, @RequestBody Map<String, String> request) {
@@ -118,4 +122,15 @@ public class CustomBotController {
             return ResponseEntity.status(404).body(e.getMessage());
         }
     }
+    @GetMapping("/history/chat/{chatId}")
+    public ResponseEntity<?> getChatHistoryByChatId(@PathVariable Long chatId) {
+        System.out.println("Fetching chat history for chatId: " + chatId);
+        Optional<ChatbotMessage> chatHistory = chatbotMessageService.getMessagesByMessageId(chatId); // Gọi service
+        if (chatHistory.isPresent()) {
+            return ResponseEntity.ok(chatHistory.get()); // Trả về đối tượng nếu tìm thấy
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy cuộc trò chuyện với chatId: " + chatId);
+        }
+    }
+
 }
