@@ -1,7 +1,9 @@
 package com.example.backendfiveflowers.service;
 
 import com.example.backendfiveflowers.entity.ChatbotMessage;
+import com.example.backendfiveflowers.entity.UserInfo;
 import com.example.backendfiveflowers.repository.ChatbotMessageRepository;
+import com.example.backendfiveflowers.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,22 +13,35 @@ import java.util.Optional;
 
 @Service
 public class ChatbotMessageService {
+
     @Autowired
     private ChatbotMessageRepository chatbotMessageRepository;
 
-    // Hàm lưu phản hồi của chatbot vào cơ sở dữ liệu
-    public void saveBotResponse(String botResponse, String startLocation, String endLocation) {
+    @Autowired
+    private UserInfoRepository userInfoRepository;
+
+    // Hàm lưu phản hồi của chatbot vào cơ sở dữ liệu với thông tin người dùng
+    public void saveBotResponse(String botResponse, String startLocation, String endLocation, Integer userId) {
         ChatbotMessage message = new ChatbotMessage();
         message.setBotResponse(botResponse);
-        message.setStartLocation(startLocation);  // Lưu địa chỉ bắt đầu
-        message.setEndLocation(endLocation);      // Lưu địa chỉ kết thúc
+        message.setStartLocation(startLocation);
+        message.setEndLocation(endLocation);
         message.setTimestamp(new Date());
+
+        // Lấy thông tin người dùng từ ID
+        UserInfo user = userInfoRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Gắn người dùng vào tin nhắn chatbot
+        message.setUserInfo(user);
+
+        // Lưu tin nhắn
         chatbotMessageRepository.save(message);
     }
 
-    // Hàm lấy tất cả các tin nhắn đã lưu theo id của cuộc trò chuyện
-    public List<ChatbotMessage> getMessagesById(Long id) {
-        return chatbotMessageRepository.findAllById(id);  // Sử dụng phương thức tùy chỉnh
+    // Hàm lấy tin nhắn theo `userId`
+    public List<ChatbotMessage> getMessagesByUserId(Integer userId) {
+        return chatbotMessageRepository.findByUserInfoId(userId);
     }
 
     // Hàm lấy tất cả các tin nhắn đã lưu
@@ -47,10 +62,12 @@ public class ChatbotMessageService {
         }
     }
 
+    // Hàm xóa tin nhắn dựa trên ID
     public void deleteChatById(Long id) {
         chatbotMessageRepository.deleteById(id);
     }
 
+    // Hàm cập nhật nội dung phản hồi của chatbot trong lịch sử cuộc trò chuyện
     public ChatbotMessage updateChatHistory(Long id, String newBotResponse) {
         Optional<ChatbotMessage> optionalMessage = chatbotMessageRepository.findById(id);
         if (optionalMessage.isPresent()) {

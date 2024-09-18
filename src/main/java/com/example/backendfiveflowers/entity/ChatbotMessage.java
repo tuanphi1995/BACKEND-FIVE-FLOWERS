@@ -24,4 +24,9 @@ public class ChatbotMessage {
     private String startLocation; // Điểm bắt đầu
 
     private String endLocation; // Điểm kết thúc
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserInfo userInfo; // Người dùng đã tạo tin nhắn này
 }

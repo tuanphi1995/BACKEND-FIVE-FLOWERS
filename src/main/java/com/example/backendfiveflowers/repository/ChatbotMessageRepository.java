@@ -8,6 +8,5 @@ import java.util.Optional;
 
 
 public interface ChatbotMessageRepository extends JpaRepository<ChatbotMessage, Long> {
-    List<ChatbotMessage> findAllById(Long id);
-
+    List<ChatbotMessage> findByUserInfoId(Integer userId); // Tìm các tin nhắn theo ID người dùng
 }

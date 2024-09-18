@@ -71,7 +71,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/bot/**").permitAll()
                         .requestMatchers("/api/v1/contact/**").permitAll()
 
-
+                        .requestMatchers("/api/v1/expenses/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
