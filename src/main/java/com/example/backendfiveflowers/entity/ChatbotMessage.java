@@ -20,4 +20,8 @@ public class ChatbotMessage {
     private Date timestamp; // Thời gian phản hồi
 
     private String name; // Tên của lịch trình, ví dụ: "Lịch trình 1"
+
+    private String startLocation; // Điểm bắt đầu
+
+    private String endLocation; // Điểm kết thúc
 }

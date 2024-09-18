@@ -56,8 +56,12 @@ public class CustomBotController {
     @PostMapping("/save")
     public ResponseEntity<?> saveBotResponse(@RequestBody Map<String, String> request) {
         String botResponse = request.get("botResponse");
-        chatbotMessageService.saveBotResponse(botResponse);
-        return ResponseEntity.ok("Phản hồi của chatbot đã được lưu!");
+        String startLocation = request.get("startLocation");
+        String endLocation = request.get("endLocation");
+
+        // Lưu phản hồi chatbot cùng với startLocation và endLocation
+        chatbotMessageService.saveBotResponse(botResponse, startLocation, endLocation);
+        return ResponseEntity.ok("Phản hồi của chatbot đã được lưu cùng với thông tin điểm đi và đến!");
     }
 
     @GetMapping("/history")
@@ -88,6 +92,17 @@ public class CustomBotController {
             return ResponseEntity.ok("Đã xóa lịch trình thành công");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy lịch trình");
+        }
+    }
+    @PutMapping("/updateHistory/{id}")
+    public ResponseEntity<?> updateChatHistory(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        String newBotResponse = request.get("botResponse");
+
+        try {
+            ChatbotMessage updatedMessage = chatbotMessageService.updateChatHistory(id, newBotResponse);
+            return ResponseEntity.ok("Lịch sử cuộc trò chuyện đã được cập nhật!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
         }
     }
 }
