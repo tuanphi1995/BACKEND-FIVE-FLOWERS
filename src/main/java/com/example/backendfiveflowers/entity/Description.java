@@ -8,17 +8,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Expense {
+public class Description {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double amount;
-    private String category;
-    private String note;
+    private String content;
 
     @ManyToOne
     @JoinColumn(name = "hour_id")
-    @JsonBackReference // Ngăn việc tuần tự hóa ngược từ Expense sang Hour
+    @JsonBackReference // Ngăn việc tuần tự hóa ngược từ Description sang Hour
     private Hour hour;
 }
