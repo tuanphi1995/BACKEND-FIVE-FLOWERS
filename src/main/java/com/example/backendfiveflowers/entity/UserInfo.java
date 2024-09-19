@@ -30,6 +30,7 @@ public class UserInfo {
     private String userName;
     private String password;
     private String email;
+    private String img = "https://tintuc.dienthoaigiakho.vn/wp-content/uploads/2024/01/trend-avatar-vo-danh-1.jpg";
     private String roles;
 
     @CreatedDate
