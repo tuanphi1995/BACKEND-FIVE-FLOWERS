@@ -13,11 +13,18 @@ public class ExpenseController {
     @Autowired
     private ExpenseService expenseService;
 
-    // Thêm mới hoặc cập nhật chi phí và liên kết với giờ trong lịch trình
+    // Thêm hoặc cập nhật chi phí (Expense)
     @PostMapping("/save/{hourId}")
     public ResponseEntity<Expense> saveOrUpdateExpense(@PathVariable Long hourId, @RequestBody Expense expense) {
         Expense savedExpense = expenseService.saveOrUpdateExpense(hourId, expense);
         return ResponseEntity.ok(savedExpense);
+    }
+
+    // Sửa chi phí (Expense) độc lập
+    @PutMapping("/update/{expenseId}")
+    public ResponseEntity<Expense> updateExpense(@PathVariable Long expenseId, @RequestBody Expense updatedExpense) {
+        Expense updated = expenseService.updateExpense(expenseId, updatedExpense);
+        return ResponseEntity.ok(updated);
     }
 
     // Lấy chi phí theo ID
