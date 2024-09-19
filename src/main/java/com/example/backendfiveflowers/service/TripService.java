@@ -216,6 +216,11 @@ public class TripService {
         existingTrip.setEndLocation(updatedTrip.getEndLocation());
         existingTrip.setTotalBudget(updatedTrip.getTotalBudget());
 
+        // Đảm bảo cập nhật các trường cần thiết
+        existingTrip.setDistance(updatedTrip.getDistance());
+        existingTrip.setStartDate(updatedTrip.getStartDate());
+        existingTrip.setEndDate(updatedTrip.getEndDate());
+
         // Xử lý các thực thể con nếu cần
         if (updatedTrip.getItineraries() != null) {
             existingTrip.getItineraries().clear();
@@ -224,5 +229,6 @@ public class TripService {
 
         return tripRepository.save(existingTrip);
     }
+
 
 }
