@@ -29,6 +29,13 @@ public class TripController {
         return ResponseEntity.ok(updated);
     }
 
+    // API để lấy chuyến đi theo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Trip> getTripById(@PathVariable Long id) {
+        Trip trip = tripService.getTripById(id);
+        return ResponseEntity.ok(trip);
+    }
+
     // API để xóa chuyến đi theo ID
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteTripById(@PathVariable Long id) {
@@ -36,13 +43,10 @@ public class TripController {
         return ResponseEntity.ok("Trip deleted successfully");
     }
 
-
-    // API để lấy tất cả chuyến đi của người dùng theo userId
-    @GetMapping("/{id}")
-    public ResponseEntity<Trip> getTripById(@PathVariable Long id) {
-        Trip trip = tripService.getTripById(id);
-        return ResponseEntity.ok(trip);
+    // API để lấy tất cả chuyến đi theo userId
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Trip>> getTripsByUserId(@PathVariable Integer userId) {
+        List<Trip> trips = tripService.getTripsByUserId(userId);
+        return ResponseEntity.ok(trips);
     }
-
-
 }

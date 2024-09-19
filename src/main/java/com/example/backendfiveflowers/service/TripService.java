@@ -81,6 +81,11 @@ public class TripService {
             existingTrip.setTotalBudget(updatedTrip.getTotalBudget());
         }
 
+        // Cập nhật trường khoảng cách nếu có
+        if (updatedTrip.getDistance() != null) {
+            existingTrip.setDistance(updatedTrip.getDistance());
+        }
+
         // Xử lý cập nhật các thực thể con (Itinerary, Day, Hour, Description, Expense)
         if (updatedTrip.getItineraries() != null) {
             existingTrip.getItineraries().clear(); // Xóa các lịch trình cũ
@@ -121,5 +126,7 @@ public class TripService {
         return tripRepository.findById(tripId)
                 .orElseThrow(() -> new RuntimeException("Trip not found with id: " + tripId));
     }
-
+    public List<Trip> getTripsByUserId(Integer userId) {
+        return tripRepository.findByUser_Id(userId);
+    }
 }

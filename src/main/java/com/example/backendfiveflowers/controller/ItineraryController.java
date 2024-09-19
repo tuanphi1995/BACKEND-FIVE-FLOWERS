@@ -11,6 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/itineraries")
 public class ItineraryController {
+
     @Autowired
     private ItineraryService itineraryService;
 
@@ -30,7 +31,14 @@ public class ItineraryController {
         return itinerary != null ? ResponseEntity.ok(itinerary) : ResponseEntity.notFound().build();
     }
 
-    // API để xóa lịch trình theo ID
+    // Sửa lịch trình theo ID
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Itinerary> updateItinerary(@PathVariable Long id, @RequestBody Itinerary updatedItinerary) {
+        Itinerary itinerary = itineraryService.updateItinerary(id, updatedItinerary);
+        return ResponseEntity.ok(itinerary);
+    }
+
+    // Xóa lịch trình theo ID
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteItineraryById(@PathVariable Long id) {
         itineraryService.deleteItineraryById(id);

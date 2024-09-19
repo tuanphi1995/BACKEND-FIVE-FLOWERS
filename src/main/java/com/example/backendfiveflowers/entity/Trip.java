@@ -22,14 +22,18 @@ public class Trip {
     private LocalDate endDate;
     private String startLocation;
     private String endLocation;
+
+    // Thêm cột lưu trữ khoảng cách dưới dạng text
+    private String distance; // Lưu khoảng cách dưới dạng văn bản
+
     private Double totalBudget;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonBackReference // Ngăn việc tuần tự hóa ngược từ Trip sang UserInfo
+    @JsonBackReference
     private UserInfo user;
 
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference // Quản lý việc tuần tự hóa từ Trip sang Itinerary
+    @JsonManagedReference
     private List<Itinerary> itineraries;
 }

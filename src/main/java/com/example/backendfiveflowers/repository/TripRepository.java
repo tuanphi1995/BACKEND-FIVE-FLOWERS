@@ -7,7 +7,7 @@ import java.util.List;
 
 
 public interface TripRepository extends JpaRepository<Trip, Long> {
-    List<Trip> findByUserId(Integer userId); // Lưu ý là `User_Id`
+    List<Trip> findByUser_Id(Integer userId);
 
 }
 
