@@ -45,10 +45,15 @@ public class DayService {
     }
 
     // Xóa ngày (Day) theo ID
-    public void deleteDayById(Long dayId) {
-        Day day = dayRepository.findById(dayId)
-                .orElseThrow(() -> new RuntimeException("Day not found with id: " + dayId));
+    public void deleteDayById(Long id) {
+        Day day = dayRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Day not found with id: " + id));
         dayRepository.delete(day);
+    }
+
+    // Xóa nhiều ngày theo danh sách ID
+    public void deleteDaysByIds(List<Long> dayIds) {
+        dayIds.forEach(this::deleteDayById);
     }
 
     // Lấy tất cả các ngày trong lịch trình

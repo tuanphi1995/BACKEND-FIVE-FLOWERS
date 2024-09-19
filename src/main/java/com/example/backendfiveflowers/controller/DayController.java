@@ -2,6 +2,7 @@ package com.example.backendfiveflowers.controller;
 
 import com.example.backendfiveflowers.entity.Day;
 import com.example.backendfiveflowers.service.DayService;
+import com.example.backendfiveflowers.service.TripService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,9 @@ public class DayController {
 
     @Autowired
     private DayService dayService;
+
+    @Autowired
+    private TripService tripService; ;
 
     // Thêm hoặc cập nhật ngày (Day)
     @PostMapping("/save/{itineraryId}")
@@ -36,12 +40,18 @@ public class DayController {
         return ResponseEntity.ok(day);
     }
 
-    // Xóa ngày theo ID
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteDayById(@PathVariable Long id) {
         dayService.deleteDayById(id);
         return ResponseEntity.ok("Day deleted successfully");
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteDaysByIds(@RequestBody List<Long> dayIds) {
+        dayService.deleteDaysByIds(dayIds);
+        return ResponseEntity.ok("Days deleted successfully");
+    }
+
 
     // Lấy tất cả các ngày
     @GetMapping("/all")

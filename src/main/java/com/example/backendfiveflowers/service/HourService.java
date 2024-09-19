@@ -45,11 +45,17 @@ public class HourService {
     }
 
     // Xóa giờ (Hour) theo ID
-    public void deleteHourById(Long hourId) {
-        Hour hour = hourRepository.findById(hourId)
-                .orElseThrow(() -> new RuntimeException("Hour not found with id: " + hourId));
+    public void deleteHourById(Long id) {
+        Hour hour = hourRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Hour not found with id: " + id));
         hourRepository.delete(hour);
     }
+
+    // Xóa nhiều giờ theo danh sách ID
+    public void deleteHoursByIds(List<Long> hourIds) {
+        hourIds.forEach(this::deleteHourById);
+    }
+
 
     // Lấy tất cả các giờ
     public List<Hour> getAllHours() {

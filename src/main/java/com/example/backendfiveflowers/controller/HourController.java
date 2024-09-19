@@ -2,6 +2,7 @@ package com.example.backendfiveflowers.controller;
 
 import com.example.backendfiveflowers.entity.Hour;
 import com.example.backendfiveflowers.service.HourService;
+import com.example.backendfiveflowers.service.TripService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,9 @@ public class HourController {
 
     @Autowired
     private HourService hourService;
+
+    @Autowired
+    private TripService tripService;
 
     // Thêm hoặc cập nhật giờ (Hour)
     @PostMapping("/save/{dayId}")
@@ -43,9 +47,17 @@ public class HourController {
         return ResponseEntity.ok("Hour deleted successfully");
     }
 
+    // Xóa nhiều giờ theo danh sách ID
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteHoursByIds(@RequestBody List<Long> hourIds) {
+        hourService.deleteHoursByIds(hourIds);
+        return ResponseEntity.ok("Hours deleted successfully");
+    }
     // Lấy tất cả các giờ
     @GetMapping("/all")
     public List<Hour> getAllHours() {
         return hourService.getAllHours();
     }
+
+
 }
