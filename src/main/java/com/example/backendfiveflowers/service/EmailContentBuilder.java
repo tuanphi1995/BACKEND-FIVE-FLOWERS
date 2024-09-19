@@ -125,4 +125,33 @@ public class EmailContentBuilder {
                 .append("</body></html>");
         return builder.toString();
     }
+    public String buildDynamicResponseEmail(String name, String dynamicContent) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<!DOCTYPE html>");
+        builder.append("<html><head><style>")
+                .append("body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }")
+                .append(".email-container { width: 100%; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 5px; overflow: hidden; }")
+                .append(".email-header, .email-footer { background-color: #f4f4f4; padding: 20px; text-align: center; }")
+                .append(".email-body { padding: 20px; }")
+                .append(".email-body h1 { color: #007bff; font-size: 24px; }")
+                .append("</style></head><body>");
+        builder.append("<div class='email-container'>")
+                .append("<div class='email-header'><h1>Response from Our Team</h1></div>")
+                .append("<div class='email-body'>")
+                .append("<p>Dear ").append(name).append(",</p>")
+                .append("<p>We have reviewed your inquiry and here is our response:</p>")
+
+                // Phần động chèn vào email
+                .append("<div class='dynamic-content'>")
+                .append("<p>").append(dynamicContent).append("</p>")  // Nội dung động được chèn vào đây
+                .append("</div>")
+
+                .append("<p>If you have any further questions, feel free to contact us at support@yourcompany.com.</p>")
+                .append("</div>")
+                .append("<div class='email-footer'><p>&copy; 2024 Your Company. All rights reserved.</p></div>")
+                .append("</div>")
+                .append("</body></html>");
+        return builder.toString();
+    }
+
 }

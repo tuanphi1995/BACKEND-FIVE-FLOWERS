@@ -15,8 +15,15 @@ public class ContactMessageService {
     public ContactMessage saveMessage(ContactMessage message) {
         return repository.save(message);
     }
+
     public List<ContactMessage> getAllMessages() {
         return repository.findAll();
     }
+
+    // Phương thức mới để lấy ContactMessage theo ID
+    public ContactMessage getMessageById(Long id) {
+        return repository.findById(id).orElse(null);
+    }
 }
+
 

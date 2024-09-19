@@ -21,30 +21,35 @@ public class ContactMessageController {
     private ContactMessageService service;
 
     @Autowired
-    private EmailService emailService; // Thêm EmailService
+    private EmailService emailService;
 
     @Autowired
-    private EmailContentBuilder emailContentBuilder; // Thêm EmailContentBuilder để tạo nội dung email
+    private EmailContentBuilder emailContentBuilder;
+
+    // API để lấy thông tin ContactMessage theo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<ContactMessage> getContactMessageById(@PathVariable Long id) {
+        ContactMessage contactMessage = service.getMessageById(id);
+        if (contactMessage != null) {
+            return new ResponseEntity<>(contactMessage, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
     @PostMapping("/submit")
     public ResponseEntity<String> submitContactForm(@RequestBody ContactMessage message) {
-        // Lưu thông tin liên hệ vào cơ sở dữ liệu
         service.saveMessage(message);
-
-        // Xây dựng nội dung email xác nhận
         String emailBody = emailContentBuilder.buildContactConfirmationEmail(message.getName());
-
-        // Gửi email xác nhận cho người dùng với địa chỉ email họ đã nhập
         EmailRequest emailRequest = new EmailRequest(message.getEmail(), "Thank you for contacting us", emailBody);
-
-        emailService.sendHtmlEmail(emailRequest);  // Gửi email xác nhận
-
-        // Phản hồi lại rằng tin nhắn đã được gửi thành công
-        return new ResponseEntity<>("Tin nhắn đã được gửi thành công!", HttpStatus.OK);
+        emailService.sendHtmlEmail(emailRequest);
+        return new ResponseEntity<>("The message has been sent successfully!", HttpStatus.OK);
     }
+
     @GetMapping("/allcontact")
     public ResponseEntity<List<ContactMessage>> getAllMessages() {
         List<ContactMessage> messages = service.getAllMessages();
         return new ResponseEntity<>(messages, HttpStatus.OK);
     }
 }
+
