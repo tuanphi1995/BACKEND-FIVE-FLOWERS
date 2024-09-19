@@ -103,4 +103,9 @@ public class UserInfoController {
         List<Bike> bikes = bikeRepository.findByUserId(user.getId());
         return ResponseEntity.ok(bikes);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserInfo> put (@PathVariable Integer id, @RequestBody UserInfo userInfo){
+        return userInfoService.putUser(id, userInfo);
+    }
 }

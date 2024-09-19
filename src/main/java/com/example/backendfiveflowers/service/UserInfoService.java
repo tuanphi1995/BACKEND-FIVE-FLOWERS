@@ -7,6 +7,7 @@ import com.example.backendfiveflowers.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -114,5 +115,27 @@ public class UserInfoService implements UserDetailsService {
         return bikeRepository.findByUserId(userId);
     }
 
+    public ResponseEntity<UserInfo> putUser(Integer id, UserInfo userInfo) {
+        Optional<UserInfo> existingUserInfo = userInfoRepository.findById(id);
+        if (!existingUserInfo.isPresent()) {
+            throw new IllegalArgumentException("ID not found");
+        }
 
+        UserInfo updatedUserInfo = existingUserInfo.get();
+        updatedUserInfo.setUserName(userInfo.getUserName());
+
+        // Check if the password is different, if yes, encode the new password
+        if (!passwordEncoder.matches(userInfo.getPassword(), updatedUserInfo.getPassword())) {
+            updatedUserInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
+        }
+
+        updatedUserInfo.setEmail(userInfo.getEmail());
+        updatedUserInfo.setImg(userInfo.getImg());
+        updatedUserInfo.setRoles(userInfo.getRoles());
+
+        // Save the updated user info object to the database
+        userInfoRepository.save(updatedUserInfo);
+
+        return ResponseEntity.ok(updatedUserInfo);
+    }
 }
