@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -18,8 +19,8 @@ public class Trip {
     private Long id;
 
     private String tripName;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private Date startDate;
+    private Date  endDate;
     private String startLocation;
     private String endLocation;
 
