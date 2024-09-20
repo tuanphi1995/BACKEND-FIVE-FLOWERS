@@ -13,6 +13,7 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = true) // Cho phép null
     private Double amount;
     private String category;
     private String note;

@@ -1,7 +1,10 @@
 package com.example.backendfiveflowers.controller;
 
+import com.example.backendfiveflowers.entity.Day;
+import com.example.backendfiveflowers.entity.Hour;
 import com.example.backendfiveflowers.entity.Itinerary;
 import com.example.backendfiveflowers.entity.Trip;
+import com.example.backendfiveflowers.service.HourService;
 import com.example.backendfiveflowers.service.ItineraryService;
 import com.example.backendfiveflowers.service.TripService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,8 @@ public class ItineraryController {
 
     @Autowired
     private TripService tripService;
+    @Autowired
+    private HourService hourService;
 
 
     @GetMapping("/all")
@@ -51,5 +56,16 @@ public class ItineraryController {
             tripService.deleteItinerariesByIds(itineraryIds);
             return ResponseEntity.ok("Itineraries deleted successfully");
         }
+    @PostMapping("/{itineraryId}/days")
+    public ResponseEntity<Itinerary> addDayToItinerary(@PathVariable Long itineraryId, @RequestBody Day newDay) {
+        Itinerary updatedItinerary = itineraryService.addDayToItinerary(itineraryId, newDay);
+        return ResponseEntity.ok(updatedItinerary); // Trả về Itinerary đã cập nhật
+    }
+    @PostMapping("/{itineraryId}/days/{dayId}/hours")
+    public ResponseEntity<Day> addHourToDay(@PathVariable Long itineraryId, @PathVariable Long dayId, @RequestBody Hour newHour) {
+        Day updatedDay = itineraryService.addHourToDay(itineraryId, dayId, newHour);
+        return ResponseEntity.ok(updatedDay); // Trả về ngày đã được cập nhật với giờ mới
+    }
+
 
 }

@@ -24,6 +24,7 @@ public class Itinerary {
     private Trip trip;
 
     @OneToMany(mappedBy = "itinerary", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference // Quản lý việc tuần tự hóa từ Itinerary sang Day
+    @JsonManagedReference
     private List<Day> days;
+
 }

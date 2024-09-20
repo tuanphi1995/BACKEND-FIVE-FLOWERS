@@ -55,9 +55,7 @@ public class TripService {
                             if (day.getHours() != null) {
                                 day.getHours().forEach(hour -> {
                                     hour.setDay(day);
-                                    if (hour.getDescriptions() != null) {
-                                        hour.getDescriptions().forEach(description -> description.setHour(hour));
-                                    }
+
                                     if (hour.getExpenses() != null) {
                                         hour.getExpenses().forEach(expense -> expense.setHour(hour));
                                     }
@@ -105,11 +103,7 @@ public class TripService {
                                 day.getHours().forEach(hour -> {
                                     hour.setDay(day); // Gán day cho hour
 
-                                    if (hour.getDescriptions() != null) {
-                                        hour.getDescriptions().forEach(description -> {
-                                            description.setHour(hour); // Gán hour cho description
-                                        });
-                                    }
+
 
                                     if (hour.getExpenses() != null) {
                                         hour.getExpenses().forEach(expense -> {
@@ -192,9 +186,7 @@ public class TripService {
                     for (Expense expense : hour.getExpenses()) {
                         expense.setHour(hour); // Gán Hour cho từng Expense
                     }
-                    for (Description description : hour.getDescriptions()) {
-                        description.setHour(hour); // Gán Hour cho từng Description
-                    }
+
                 }
             }
             itineraryRepository.save(itinerary); // Lưu Itinerary cùng các phần tử liên quan

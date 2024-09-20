@@ -20,11 +20,11 @@ public class Day {
     private LocalDate date;
 
     @ManyToOne
-    @JoinColumn(name = "itinerary_id")
-    @JsonBackReference // Ngăn việc tuần tự hóa ngược từ Day sang Itinerary
+    @JoinColumn(name = "itinerary_id", nullable = true) // Để nullable = true nếu có thể null
+    @JsonBackReference
     private Itinerary itinerary;
 
     @OneToMany(mappedBy = "day", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference // Quản lý việc tuần tự hóa từ Day sang Hour
-    private List<Hour> hours;
+    @JsonManagedReference
+    private List<Hour> hours; // Có thể là null
 }

@@ -1,5 +1,6 @@
 package com.example.backendfiveflowers.service;
 
+import com.example.backendfiveflowers.entity.Expense;
 import com.example.backendfiveflowers.entity.Hour;
 import com.example.backendfiveflowers.entity.Day;
 import com.example.backendfiveflowers.repository.HourRepository;
@@ -60,5 +61,15 @@ public class HourService {
     // Lấy tất cả các giờ
     public List<Hour> getAllHours() {
         return hourRepository.findAll();
+    }
+    public Hour addExpenseToHour(Long hourId,Expense newExpense) {
+        Hour hour = hourRepository.findById(hourId)
+                .orElseThrow(() -> new RuntimeException("Hour not found with id: " + hourId));
+
+        // Thêm expense mới vào danh sách expenses của giờ
+        newExpense.setHour(hour);
+        hour.getExpenses().add(newExpense);
+
+        return hourRepository.save(hour); // Lưu và trả về giờ đã cập nhật
     }
 }

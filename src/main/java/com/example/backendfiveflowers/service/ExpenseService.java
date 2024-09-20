@@ -22,9 +22,16 @@ public class ExpenseService {
     public Expense saveOrUpdateExpense(Long hourId, Expense expense) {
         Hour hour = hourRepository.findById(hourId)
                 .orElseThrow(() -> new RuntimeException("Hour not found with id: " + hourId));
+
+        // Nếu amount là null, đặt giá trị mặc định
+        if (expense.getAmount() == null) {
+            expense.setAmount(0.0); // Đặt giá trị mặc định cho amount
+        }
+
         expense.setHour(hour);
         return expenseRepository.save(expense);
     }
+
 
     // Lấy danh sách chi phí của một giờ cụ thể
     public List<Expense> getExpensesByHourId(Long hourId) {

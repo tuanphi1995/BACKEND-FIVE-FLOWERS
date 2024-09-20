@@ -1,13 +1,15 @@
 package com.example.backendfiveflowers.service;
 
-import com.example.backendfiveflowers.entity.Day;
-import com.example.backendfiveflowers.entity.Hour;
-import com.example.backendfiveflowers.entity.Itinerary;
-import com.example.backendfiveflowers.entity.Trip;
+import com.example.backendfiveflowers.entity.*;
+import com.example.backendfiveflowers.repository.DayRepository;
+import com.example.backendfiveflowers.repository.HourRepository;
 import com.example.backendfiveflowers.repository.ItineraryRepository;
 import com.example.backendfiveflowers.repository.TripRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,6 +17,12 @@ public class ItineraryService {
 
     @Autowired
     private ItineraryRepository itineraryRepository;
+
+    @Autowired
+    private DayRepository dayRepository;
+
+    @Autowired
+    private HourRepository hourRepository;
 
     public List<Itinerary> getAllItineraries() {
         return itineraryRepository.findAll();
@@ -24,6 +32,19 @@ public class ItineraryService {
 
 
     public Itinerary saveItinerary(Itinerary itinerary) {
+        // Kiểm tra nếu danh sách days hoặc hours có null thì bỏ qua hoặc khởi tạo danh sách rỗng
+        if (itinerary.getDays() != null) {
+            for (Day day : itinerary.getDays()) {
+                if (day.getHours() != null) {
+                    for (Hour hour : day.getHours()) {
+                        if (hour.getTime() == null) {
+                            // Nếu hour null, có thể bỏ qua hoặc set mặc định giá trị cho hour
+                            hour.setTime(LocalTime.now()); // Đặt giờ mặc định nếu cần
+                        }
+                    }
+                }
+            }
+        }
         return itineraryRepository.save(itinerary);
     }
 
@@ -43,7 +64,7 @@ public class ItineraryService {
         Itinerary existingItinerary = itineraryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Itinerary not found with id: " + id));
 
-        // Cập nhật description nếu có (giữ nguyên nếu null)
+        // Cập nhật description nếu có
         if (updatedItinerary.getDescription() != null) {
             existingItinerary.setDescription(updatedItinerary.getDescription());
         }
@@ -57,42 +78,53 @@ public class ItineraryService {
                         .orElse(null);
 
                 if (existingDay != null) {
-                    // Cập nhật ngày (giữ nguyên nếu null)
+                    // Cập nhật ngày
                     if (updatedDay.getDate() != null) {
                         existingDay.setDate(updatedDay.getDate());
                     }
 
-                    // Cập nhật hours (giữ nguyên nếu null)
+                    // Cập nhật hours
                     if (updatedDay.getHours() != null && !updatedDay.getHours().isEmpty()) {
-                        for (Hour updatedHour : updatedDay.getHours()) {
-                            Hour existingHour = existingDay.getHours().stream()
-                                    .filter(hour -> hour.getId().equals(updatedHour.getId()))
-                                    .findFirst()
-                                    .orElse(null);
-
-                            if (existingHour != null) {
-                                // Cập nhật giờ (giữ nguyên nếu null)
-                                if (updatedHour.getTime() != null) {
-                                    existingHour.setTime(updatedHour.getTime());
-                                }
-
-                                // Cập nhật mô tả (giữ nguyên nếu null)
-                                if (updatedHour.getDescriptions() != null && !updatedHour.getDescriptions().isEmpty()) {
-                                    existingHour.setDescriptions(updatedHour.getDescriptions());
-                                }
-
-                                // Cập nhật chi phí (giữ nguyên nếu null)
-                                if (updatedHour.getExpenses() != null && !updatedHour.getExpenses().isEmpty()) {
-                                    existingHour.setExpenses(updatedHour.getExpenses());
-                                }
-                            }
-                        }
+                        existingDay.getHours().clear();
+                        existingDay.getHours().addAll(updatedDay.getHours());
                     }
+                } else {
+                    // Thêm ngày mới nếu không tồn tại
+                    existingItinerary.getDays().add(updatedDay);
                 }
             }
         }
 
         return itineraryRepository.save(existingItinerary); // Lưu lại sau khi cập nhật
     }
+    public Itinerary addDayToItinerary(Long itineraryId, Day newDay) {
+        Itinerary itinerary = itineraryRepository.findById(itineraryId)
+                .orElseThrow(() -> new RuntimeException("Itinerary not found with id: " + itineraryId));
+
+        // Nếu danh sách days của itinerary là null, khởi tạo danh sách mới
+        if (itinerary.getDays() == null) {
+            itinerary.setDays(new ArrayList<>());
+        }
+
+        // Thêm day vào danh sách
+        itinerary.getDays().add(newDay);
+        newDay.setItinerary(itinerary);
+
+        return itineraryRepository.save(itinerary);
+    }
+    public Day addHourToDay(Long itineraryId, Long dayId, Hour newHour) {
+        Itinerary itinerary = itineraryRepository.findById(itineraryId)
+                .orElseThrow(() -> new RuntimeException("Itinerary not found with id: " + itineraryId));
+        Day day = dayRepository.findById(dayId)
+                .orElseThrow(() -> new RuntimeException("Day not found with id: " + dayId));
+
+        // Set quan hệ giữa hour và day
+        newHour.setDay(day);
+        day.getHours().add(newHour); // Thêm giờ mới vào danh sách hours của ngày
+
+        return dayRepository.save(day); // Lưu và trả về ngày đã cập nhật
+    }
+
+
 
 }
