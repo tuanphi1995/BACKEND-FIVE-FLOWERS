@@ -1,12 +1,13 @@
 package com.example.backendfiveflowers.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -17,10 +18,12 @@ public class Day {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate date;
+    // Sử dụng java.util.Date thay vì LocalDate
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date date;
 
     @ManyToOne
-    @JoinColumn(name = "itinerary_id", nullable = true) // Để nullable = true nếu có thể null
+    @JoinColumn(name = "itinerary_id", nullable = true) // nullable nếu cần
     @JsonBackReference
     private Itinerary itinerary;
 
