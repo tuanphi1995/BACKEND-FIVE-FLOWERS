@@ -123,12 +123,7 @@ public class UserInfoService implements UserDetailsService {
 
         UserInfo updatedUserInfo = existingUserInfo.get();
         updatedUserInfo.setUserName(userInfo.getUserName());
-
-        // Check if the password is different, if yes, encode the new password
-        if (!passwordEncoder.matches(userInfo.getPassword(), updatedUserInfo.getPassword())) {
-            updatedUserInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
-        }
-
+        updatedUserInfo.setPassword(userInfo.getPassword());
         updatedUserInfo.setEmail(userInfo.getEmail());
         updatedUserInfo.setImg(userInfo.getImg());
         updatedUserInfo.setRoles(userInfo.getRoles());
