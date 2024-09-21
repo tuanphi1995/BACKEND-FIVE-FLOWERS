@@ -6,9 +6,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-
 @Getter
 @Setter
 @Entity
@@ -17,14 +17,14 @@ public class Hour {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalTime time;
+    private LocalTime time; // Sử dụng LocalTime
 
     @ManyToOne
-    @JoinColumn(name = "day_id", nullable = true) // Để nullable = true nếu có thể null
+    @JoinColumn(name = "day_id", nullable = true)
     @JsonBackReference
     private Day day;
 
     @OneToMany(mappedBy = "hour", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<Expense> expenses; // Có thể là null
+    private List<Expense> expenses;
 }

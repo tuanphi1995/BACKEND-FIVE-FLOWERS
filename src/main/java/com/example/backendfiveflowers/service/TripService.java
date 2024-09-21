@@ -45,13 +45,15 @@ public class TripService {
 
             trip.setUser(user); // Gán user cho trip
 
-            // Kiểm tra và xử lý các thực thể con
+            // Kiểm tra và xử lý các thực thể con (Itineraries)
             if (trip.getItineraries() != null) {
                 trip.getItineraries().forEach(itinerary -> {
                     itinerary.setTrip(trip);
+
                     if (itinerary.getDays() != null) {
                         itinerary.getDays().forEach(day -> {
                             day.setItinerary(itinerary);
+
                             if (day.getHours() != null) {
                                 day.getHours().forEach(hour -> {
                                     hour.setDay(day);
@@ -70,6 +72,7 @@ public class TripService {
         return tripRepository.saveAll(trips);
     }
 
+
     // Sửa thông tin danh sách các chuyến đi và các thực thể liên quan
     public List<Trip> updateTripsWithDetails(List<Long> tripIds, List<Trip> updatedTrips) {
         if (tripIds.size() != updatedTrips.size()) {
@@ -82,41 +85,31 @@ public class TripService {
             Trip existingTrip = tripRepository.findById(tripId)
                     .orElseThrow(() -> new RuntimeException("Trip not found with id: " + tripId));
 
-            // Cập nhật các trường của Trip nếu có, sử dụng giá trị mặc định nếu cần
-            existingTrip.setTripName(updatedTrip.getTripName() != null ? updatedTrip.getTripName() : "No data");
-            existingTrip.setStartLocation(updatedTrip.getStartLocation() != null ? updatedTrip.getStartLocation() : "No data");
-            existingTrip.setEndLocation(updatedTrip.getEndLocation() != null ? updatedTrip.getEndLocation() : "No data");
-            existingTrip.setTotalBudget(updatedTrip.getTotalBudget() != null ? updatedTrip.getTotalBudget() : null); // Cho phép null
-            existingTrip.setDistance(updatedTrip.getDistance() != null ? updatedTrip.getDistance() : "No data");
+            // Cập nhật các trường của Trip nếu có
+            existingTrip.setTripName(updatedTrip.getTripName() != null ? updatedTrip.getTripName() : existingTrip.getTripName());
+            existingTrip.setStartLocation(updatedTrip.getStartLocation() != null ? updatedTrip.getStartLocation() : existingTrip.getStartLocation());
+            existingTrip.setEndLocation(updatedTrip.getEndLocation() != null ? updatedTrip.getEndLocation() : existingTrip.getEndLocation());
+            existingTrip.setTotalBudget(updatedTrip.getTotalBudget() != null ? updatedTrip.getTotalBudget() : existingTrip.getTotalBudget());
+            existingTrip.setDistance(updatedTrip.getDistance() != null ? updatedTrip.getDistance() : existingTrip.getDistance());
 
-            // Xử lý cập nhật các thực thể con (Itinerary, Day, Hour, Description, Expense)
+            // Cập nhật Itineraries
             if (updatedTrip.getItineraries() != null) {
-                existingTrip.getItineraries().clear(); // Xóa các lịch trình cũ
-                updatedTrip.getItineraries().forEach(itinerary -> {
-                    itinerary.setTrip(existingTrip); // Gán trip cho itinerary mới
+                for (Itinerary updatedItinerary : updatedTrip.getItineraries()) {
+                    Itinerary existingItinerary = existingTrip.getItineraries().stream()
+                            .filter(itinerary -> itinerary.getId().equals(updatedItinerary.getId()))
+                            .findFirst()
+                            .orElse(null);
 
-                    if (itinerary.getDays() != null) {
-                        itinerary.getDays().forEach(day -> {
-                            day.setItinerary(itinerary); // Gán itinerary cho day
-
-                            if (day.getHours() != null) {
-                                day.getHours().forEach(hour -> {
-                                    hour.setDay(day); // Gán day cho hour
-
-
-
-                                    if (hour.getExpenses() != null) {
-                                        hour.getExpenses().forEach(expense -> {
-                                            expense.setHour(hour); // Gán hour cho expense
-                                        });
-                                    }
-                                });
-                            }
-                        });
+                    if (existingItinerary != null) {
+                        // Cập nhật itinerary hiện tại
+                        existingItinerary.setDescription(updatedItinerary.getDescription());
+                        // Cập nhật tiếp các trường khác cho itinerary...
+                    } else {
+                        // Thêm mới itinerary nếu chưa có
+                        updatedItinerary.setTrip(existingTrip);
+                        existingTrip.getItineraries().add(updatedItinerary);
                     }
-
-                    existingTrip.getItineraries().add(itinerary);
-                });
+                }
             }
 
             tripRepository.save(existingTrip);
