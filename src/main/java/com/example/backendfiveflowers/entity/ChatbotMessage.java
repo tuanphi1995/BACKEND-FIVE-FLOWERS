@@ -14,6 +14,7 @@ public class ChatbotMessage {
     private Long id;
 
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String botResponse; // Phản hồi từ chatbot
 
     @Temporal(TemporalType.TIMESTAMP)
